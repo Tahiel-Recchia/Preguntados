@@ -7,8 +7,8 @@ $database = $factory->create("database");
 $renderer = $factory->create("renderer");
 $loginController = $factory->create("loginController");
 
-$controllerParam = $_GET["controller"] ?? "login";
-$methodParam = $_GET["method"] ?? "login";
+$controllerParam = isset($_GET["controller"]) ? $_GET["controller"] : "login";
+$methodParam     = isset($_GET["method"]) ? $_GET["method"] : "login";
 $controllers = [
     "login" => $loginController,
 ];
@@ -16,12 +16,12 @@ $controllers = [
 if (isset($controllers[$controllerParam])) {
     $controller = $controllers[$controllerParam];
 
-    // si el método no existe, usar login() por defecto
+    // si el metodo no existe, usar login() por defecto
     if (!method_exists($controller, $methodParam)) {
         $methodParam = 'login';
     }
 
-    // Llamar al método
+    // Llamar al metodo
     $controller->$methodParam();
 } else {
     // controlador no existe, fallback

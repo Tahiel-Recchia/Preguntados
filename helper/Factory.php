@@ -25,4 +25,3 @@ include_once("helper/Renderer.php");
        }
 
 }
-?>
