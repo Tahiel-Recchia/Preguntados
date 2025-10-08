@@ -1,0 +1,47 @@
+
+<body class="flex font-sora justify-center items-center  bg-[url('../resources/bg.jpg')] bg-cover bg-center h-screen w-full font-sans gap-4">
+<main class="flex  flex-col h-[60%] w-1/2 mx-auto">
+    <!-- Header: Title + Points -->
+    <div class="flex justify-between items-center max-w-[1024px] pb-[40px]">
+        <h1 class="text-white text-xl font-bold">Preguntados</h1>
+        <div class="text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] rounded-3xl px-[16px] py-[8px] font-semibold">🏆 2/10 Puntos</div>
+    </div>
+
+    <!-- Rectángulo principal -->
+    <div class="bg-[#343964] py-[62px] rounded-2xl w-full  justify-center flex flex-col">
+
+        <!-- Question Numbers -->
+        <div>
+            <div class="flex gap-3 flex-wrap mb-4 justify-center pb-[32px]">
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">1</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">2</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">3</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">4</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">5</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">6</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">7</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">8</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">9</span>
+                <span class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold">10</span>
+            </div>
+            <!-- Question -->
+
+            <p class="text-white text-center text-lg font-medium pb-[42px]">
+                Parrafo de la pregunta
+            </p>
+        </div>
+
+        <!-- Options Grid -->
+        <div class="grid grid-cols-2 gap-[20px] w-2/3 self-center">
+
+            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">Respuesta 1</button>
+            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">Respuesta 2</button>
+            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg border-2 border-green-400 hover:bg-gray-200 transition">Respuesta 3</button>
+            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">Respuesta 4</button>
+
+        </div>
+
+    </div>
+</main>
+
+</body>
