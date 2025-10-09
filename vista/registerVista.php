@@ -11,7 +11,7 @@
 <main class="bg-[#343964] rounded-2xl shadow-2xl w-[33%] p-8 flex flex-col gap-5 text-[#E2E4F3]">
     <h1 class="text-2xl font-bold text-center mb-4">Crear cuenta</h1>
 
-    <form class="grid grid-cols-2 gap-4" method="POST" enctype="multipart/form-data">
+    <form class="grid grid-cols-2 gap-4" method="POST" action="/preguntados/login/register" enctype="multipart/form-data">
         <!-- Foto de perfil -->
         <div class="col-span-2 flex flex-col items-center mb-6">
             <label for="profilePic" class="cursor-pointer">
@@ -19,25 +19,25 @@
                      alt="Previsualización"
                      class="w-[100px] h-[100px] rounded-full object-cover border-2 border-[#E65895] mb-3 object-contain">
             </label>
-            <input type="file" id="profilePic" accept="image/*" class="hidden">
+            <input type="file" name="profilePic" id="profilePic" accept="image/*" class="hidden">
             <p class="text-sm opacity-70">Haz clic en la imagen para subir una foto</p>
         </div>
         <!-- Nombre completo -->
         <div>
             <label class="block text-sm font-semibold mb-1">Nombre completo</label>
-            <input type="text" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Ej: Juan Pérez">
+            <input type="text" name="name" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Ej: Juan Pérez">
         </div>
 
         <!-- Año de nacimiento -->
         <div>
             <label class="block text-sm font-semibold mb-1">Año de nacimiento</label>
-            <input type="number" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Ej: 1998">
+            <input type="number" name="birth" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Ej: 1998">
         </div>
 
         <!-- Sexo -->
         <div>
             <label class="block text-sm font-semibold mb-1">Sexo</label>
-            <select class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none">
+            <select name="gender" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none">
                 <option>Masculino</option>
                 <option>Femenino</option>
                 <option>Prefiero no cargarlo</option>
@@ -46,32 +46,32 @@
 
         <!-- País y ciudad -->
         <div>
-            <label class="block text-sm font-semibold mb-1">País y ciudad</label>
-            <input type="text" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Seleccionar desde el mapa">
+            <label  class="block text-sm font-semibold mb-1">País y ciudad</label>
+            <input name="address" type="text" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Seleccionar desde el mapa">
         </div>
 
         <!-- Email -->
         <div>
             <label class="block text-sm font-semibold mb-1">Correo electrónico</label>
-            <input type="email" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="usuario@ejemplo.com">
+            <input name="email" type="email" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="usuario@ejemplo.com">
         </div>
 
         <!-- Nombre de usuario -->
         <div>
             <label class="block text-sm font-semibold mb-1">Nombre de usuario</label>
-            <input type="text" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Tu usuario">
+            <input name="user" type="text" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Tu usuario">
         </div>
 
         <!-- Contraseña -->
         <div>
             <label class="block text-sm font-semibold mb-1">Contraseña</label>
-            <input type="password" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="********">
+            <input name="password" type="password" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="********">
         </div>
 
         <!-- Repetir contraseña -->
         <div>
             <label class="block text-sm font-semibold mb-1">Repetir contraseña</label>
-            <input type="password" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="********">
+            <input name="passwordRepeated" type="password" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="********">
         </div>
             <!-- Botón de registro -->
 
