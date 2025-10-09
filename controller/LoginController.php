@@ -21,7 +21,7 @@ class LoginController
             $sql = "SELECT * FROM users WHERE user='$user' AND password_hash='$password'";
             $resultado = $this->conexion->query($sql);
             if (sizeof($resultado) > 0) {
-                $_SESSION["usuario"] = $usuario;
+                $_SESSION["user"] = $user;
                 header("Location: /");
                 exit;
             } else {
@@ -55,7 +55,7 @@ class LoginController
             $gender = $_POST["gender"];
             $address = $_POST["address"];
             $email = $_POST["email"];
-            $token = bin2hex(random_bytes(16));
+            $token = $token = bin2hex(openssl_random_pseudo_bytes(16));
             $tokenHash = hash('sha256', $token);
             $expiresAt = (new DateTime('+24 hours'))->format('Y-m-d H:i:s');
 
