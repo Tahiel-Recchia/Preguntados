@@ -34,7 +34,7 @@ class LoginController
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->renderer->render("registro");
+            $this->renderer->render("register");
             return;
         }
         if (isset($_POST["user"]) && isset($_POST["password"])) {
@@ -45,7 +45,7 @@ class LoginController
             //Verificacion de contraseña
             $pwError = $this->verifyPassword($password, $passwordRepeated);
             if ($pwError !== null) {
-                $this->renderer->render("registro", ["error" => $pwError]);
+                $this->renderer->render("register", ["error" => $pwError]);
                 return;
             }
 
@@ -93,7 +93,7 @@ class LoginController
         }
 
         if (!empty($error)) {
-            $this->renderer->render("registro", ["error" => $error]);
+            $this->renderer->render("register", ["error" => $error]);
         }
     }
 

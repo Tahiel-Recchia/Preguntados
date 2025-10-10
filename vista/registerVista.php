@@ -6,7 +6,7 @@
     <title>Registro</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#1e1f3b] bg-[url('imagenes/bg.jpg')] bg-cover bg-center flex justify-center items-center min-h-screen">
+<body class="bg-[#1e1f3b] bg-[url('/preguntados/imagenes/bg.jpg')] bg-cover bg-center flex justify-center items-center min-h-screen">
 
 <main class="bg-[#343964] rounded-2xl shadow-2xl w-[33%] p-8 flex flex-col gap-5 text-[#E2E4F3]">
     <h1 class="text-2xl font-bold text-center mb-4">Crear cuenta</h1>
@@ -15,7 +15,7 @@
         <!-- Foto de perfil -->
         <div class="col-span-2 flex flex-col items-center mb-6">
             <label for="profilePic" class="cursor-pointer">
-                <img id="previewImage" src="imagenes/placeholder.png"
+                <img id="previewImage" src="/preguntados/imagenes/placeholder.png"
                      alt="Previsualización"
                      class="w-[100px] h-[100px] rounded-full object-cover border-2 border-[#E65895] mb-3 object-contain">
             </label>
