@@ -12,6 +12,11 @@ class LoginController
         $this->renderer = $renderer;
     }
 
+    public function base()
+    {
+        header('Location: /preguntados/register' );
+    }
+
 
     public function login()
     {
@@ -31,46 +36,7 @@ class LoginController
         $this->renderer->render("register");
     }
 
-    public function register()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->renderer->render("register");
-            return;
-        }
-        if (isset($_POST["user"]) && isset($_POST["password"])) {
-            $user = $_POST["user"];
-            $password = $_POST["password"];
-            $passwordRepeated = $_POST["passwordRepeated"];
 
-            //Verificacion de contraseña
-            $pwError = $this->verifyPassword($password, $passwordRepeated);
-            if ($pwError !== null) {
-                $this->renderer->render("register", ["error" => $pwError]);
-                return;
-            }
-
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-            $name = $_POST["name"];
-            $birth = $_POST["birth"];
-            $gender = $_POST["gender"];
-            $address = $_POST["address"];
-            $email = $_POST["email"];
-            $token = $token = bin2hex(openssl_random_pseudo_bytes(16));
-            $tokenHash = hash('sha256', $token);
-            $expiresAt = (new DateTime('+24 hours'))->format('Y-m-d H:i:s');
-
-
-            $sql = "INSERT INTO users (user, email, password_hash, verified, verification_token_hash, token_expires_at, name)
-        VALUES (?,?,?,0,?,?,?)";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bind_param("ssssss", $user, $email, $passwordHash, $tokenHash, $expiresAt, $name);
-            if (!$stmt->execute()) {
-                die("Error al insertar usuario: " . $stmt->error);
-            }
-            $stmt->close();
-            $this->sendVerificationEmail($email, $user, $token);
-        }
-    }
 
 
     public function logout()
