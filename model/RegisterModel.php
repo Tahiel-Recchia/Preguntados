@@ -45,13 +45,13 @@ class RegisterModel
     private function insertUserIntoDatabase($userData, $tokenData, $passwordHash)
     {
 
-        $sql = "INSERT INTO users (user, email, password_hash, verified, verification_token_hash, token_expires_at, name)
+        $sql = "INSERT INTO users (username, email, password_hash, verified, verification_token_hash, token_expires_at, name)
         VALUES (?,?,?,0,?,?,?)";
 
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param(
             "ssssss",
-            $userData["user"],
+            $userData["username"],
             $userData["email"],
             $passwordHash,
             $tokenData["token"],

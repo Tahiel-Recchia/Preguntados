@@ -21,28 +21,37 @@ public function base()
     }
     if (isset($_POST["username"]) && isset($_POST["password"])) {
 
-    $userData =[
-        "username" => $_POST["username"],
-        "password" => $_POST["password"],
-        "passwordRepeated" => $_POST["passwordRepeated"],
-        "name" => $_POST["name"],
-        "birthdate" => $_POST["birthdate"],
-        "gender" => $_POST["gender"],
-        "address" => $_POST["address"],
-        "email" => $_POST["email"]
-    ];
+        $userData = [
+            "username" => $_POST["username"],
+            "password" => $_POST["password"],
+            "passwordRepeated" => $_POST["passwordRepeated"],
+            "name" => $_POST["name"],
+            "birthdate" => $_POST["birthdate"],
+            "gender" => $_POST["gender"],
+            "address" => $_POST["address"],
+            "email" => $_POST["email"]
+        ];
 
         //Verificacion de contraseña
-        $passwordError = $this->verifyPassword($userData["password"], $userData["passwordRepeated"]);
-        if ($passwordError !== null) {
-            $this->renderer->render("register", ["error" => $passwordError]);
+        $passwordErrors = $this->verifyPassword($userData["password"], $userData["passwordRepeated"]);
+        if (!empty($passwordErrors)) {
+            $this->renderer->render("register", ["error" => $passwordErrors]);
             return;
         }
 
-    $this->model->registerUser($userData);
+        try {
+            $this->model->registerUser($userData);
 
+            $this->renderer->render("login");
 
+        } catch (\Exception $e) {
+            $messages = explode(" | ", $e->getMessage());
+            foreach ($messages as $msg) {
+                $errors[] = $msg;
+            }
 
+            $this->renderer->render("register", ["errors" => $errors]);
+        }
     }
 }
 private function verifyPassword($password, $passwordRepeated){
