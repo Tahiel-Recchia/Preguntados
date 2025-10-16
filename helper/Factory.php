@@ -19,7 +19,7 @@ include_once("model/RegisterModel.php");
                  $this->config["database"]
              );
              $this->objetos["renderer"] = new Renderer();
-             $this->objetos["router"] = new Router($this, 'login', 'base');
+             $this->objetos["router"] = new Router($this, 'register', 'base');
              $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"]);
              $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"]);
             $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this);

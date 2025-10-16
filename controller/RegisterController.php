@@ -11,10 +11,11 @@ class RegisterController
         $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->factory = $factory;
-        $this->model = $this->factory->create("registerModel");
     }
 public function base()
 {
+    $this->model = $this->factory->create("registerModel");
+    var_dump($this->model);
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         $this->renderer->render("register");
         return;

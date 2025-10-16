@@ -85,5 +85,10 @@ class RegisterModel
         $stmt->close();
         return $emailExists;
     }
+    public function saludar(){
+        echo "hola";
+    }
 }
+
+
 ?>

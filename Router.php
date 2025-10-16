@@ -19,8 +19,9 @@ class Router
     public function executeController($controllerName, $methodName){
         $controller = $this->getController($controllerName);
         if ($controller === null) {
-            // getController ya hizo render o no existe: salimos
-           $this->defaultController->defaultMethod();
+            $defaultControllerInstance = $this->getController($this->defaultController);
+
+            $this->executeMethod($defaultControllerInstance, $this->defaultMethod);
             exit;
         }
         $this->executeMethod($controller, $methodName);
@@ -41,7 +42,7 @@ class Router
     }
 
     private function getControllerName($controllerName){
-        $controllerName = $controllerName ? $controllerName . 'Controller' : $this->defaultController;
+        $controllerName = isset($controllerName) ? $controllerName . 'Controller' : $this->defaultController;
         return $this->factory->create($controllerName);
 }
 }

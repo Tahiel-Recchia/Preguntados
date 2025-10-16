@@ -11,7 +11,7 @@
 <main class="bg-[#343964] rounded-2xl shadow-2xl w-[33%] p-8 flex flex-col gap-5 text-[#E2E4F3]">
     <h1 class="text-2xl font-bold text-center mb-4">Crear cuenta</h1>
 
-    <form class="grid grid-cols-2 gap-4" method="POST" action="/preguntados/login/register" enctype="multipart/form-data">
+    <form class="grid grid-cols-2 gap-4" method="POST" action="/preguntados/register/base" enctype="multipart/form-data">
         <!-- Foto de perfil -->
         <div class="col-span-2 flex flex-col items-center mb-6">
             <label for="profilePic" class="cursor-pointer">
