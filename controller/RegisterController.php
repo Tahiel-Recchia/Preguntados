@@ -14,8 +14,9 @@ class RegisterController
     }
 public function base()
 {
-    $this->model = $this->factory->create("registerModel");
-    var_dump($this->model);
+    if ($this->model === null) {
+        $this->model = $this->factory->create("registerModel");
+    }
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         $this->renderer->render("register");
         return;
@@ -41,6 +42,7 @@ public function base()
         }
 
         try {
+
             $this->model->registerUser($userData);
 
             $this->renderer->render("login");

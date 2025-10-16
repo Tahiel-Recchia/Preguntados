@@ -19,30 +19,26 @@ class Router
     public function executeController($controllerName, $methodName){
         $controller = $this->getController($controllerName);
         if ($controller === null) {
-            $defaultControllerInstance = $this->getController($this->defaultController);
-
-            $this->executeMethod($defaultControllerInstance, $this->defaultMethod);
+            $this->executeMethod($this->defaultController, $this->defaultMethod);
             exit;
         }
         $this->executeMethod($controller, $methodName);
     }
 
     public function getController($controllerName){
-        $controller = $this->getControllerName($controllerName);
-        return $controller;
+        $controllerName = isset($controllerName) ? $controllerName . 'Controller' : $this->defaultController ;
+        return $this->factory->create($controllerName);
     }
 
     public function executeMethod($controller, $method){
+
         $validMethod = method_exists($controller, $method) ? $method : "";
         if($validMethod === ""){
             call_user_func([$controller, $this->defaultMethod]);
             exit;
         }
-        $controller->$validMethod();
+        call_user_func([$controller, $method]);
     }
 
-    private function getControllerName($controllerName){
-        $controllerName = isset($controllerName) ? $controllerName . 'Controller' : $this->defaultController;
-        return $this->factory->create($controllerName);
-}
+
 }

@@ -8,8 +8,9 @@ class RegisterModel
     }
 
     public function registerUser($userData){
+        echo "hola";
         $internalErrors = [];
-        if ($this->verifyUsername($userData["user"])) {
+        if ($this->verifyUsername($userData["username"])) {
             $internalErrors[] = "El nombre de usuario ya está registrado.";
         }
         if ($this->verifyEmail($userData["email"])) {
