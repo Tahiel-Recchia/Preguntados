@@ -8,7 +8,6 @@ class RegisterModel
     }
 
     public function registerUser($userData){
-        echo "hola";
         $internalErrors = [];
         if ($this->verifyUsername($userData["username"])) {
             $internalErrors[] = "El nombre de usuario ya está registrado.";
@@ -18,7 +17,6 @@ class RegisterModel
         }
         if (!empty($internalErrors)) {
             $errorMessage = implode(" | ", $internalErrors);
-
             throw new \Exception($errorMessage);
         }
 
@@ -33,7 +31,7 @@ class RegisterModel
         $token = bin2hex(openssl_random_pseudo_bytes(16));
 
         $tokenHash = hash('sha256', $token);
-        $expiresAt = (new DateTime('+24 hours'))->format('Y-m-d H:i:s');
+        $expiresAt = (new \DateTime('+24 hours'))->format('Y-m-d H:i:s');
         $tokenData = [ "token" => $tokenHash, "expires_at" => $expiresAt ];
     return $tokenData;
     }
@@ -81,14 +79,14 @@ class RegisterModel
         $sql = "SELECT 1 FROM users WHERE email = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $email);
+        // 👈 ¡Añadir esta línea!
+        $stmt->execute();
         $stmt->store_result();
         $emailExists = ($stmt->num_rows > 0);
         $stmt->close();
         return $emailExists;
     }
-    public function saludar(){
-        echo "hola";
-    }
+
 }
 
 
