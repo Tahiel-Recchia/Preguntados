@@ -30,15 +30,16 @@ class Router
         return $this->factory->create($controllerName);
     }
 
-    public function executeMethod($controller, $method){
-
-        $validMethod = method_exists($controller, $method) ? $method : "";
-        if($validMethod === ""){
-            call_user_func([$controller, $this->defaultMethod]);
-            exit;
-        }
-        call_user_func([$controller, $method]);
+    public function executeMethod($controller, $method) {
+    // Evita pasar null a method_exists()
+    if ($method === null || !method_exists($controller, $method)) {
+        call_user_func([$controller, $this->defaultMethod]);
+        return;
     }
+
+    call_user_func([$controller, $method]);
+}
+
 
 
 }
