@@ -14,6 +14,7 @@ class RegisterController
     }
 public function base()
 {
+    echo "llego aca?";
     if ($this->model === null) {
         $this->model = $this->factory->create("registerModel");
     }
