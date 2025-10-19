@@ -59,16 +59,70 @@ class LoginController
             $tokenHash = hash('sha256', $token);
             $expiresAt = (new DateTime('+24 hours'))->format('Y-m-d H:i:s');
 
+            // Validación de imagen de perfil
+            $fotoPath = null;
 
-            $sql = "INSERT INTO users (user, email, password_hash, verified, verification_token_hash, token_expires_at, name)
-        VALUES (?,?,?,0,?,?,?)";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bind_param("ssssss", $user, $email, $passwordHash, $tokenHash, $expiresAt, $name);
-            if (!$stmt->execute()) {
-                die("Error al insertar usuario: " . $stmt->error);
+            if (isset($_FILES['profilePic']) && $_FILES['profilePic']['error'] === UPLOAD_ERR_OK) {
+            $foto = $_FILES['profilePic'];
+
+            // Tamaño máximo permitido: 2MB
+            $maxSize = 2 * 1024 * 1024;
+            if ($foto['size'] > $maxSize) {
+            $this->renderer->render("register", ["error" => "La imagen no puede superar los 2MB."]);
+            return;
             }
-            $stmt->close();
-            $this->sendVerificationEmail($email, $user, $token);
+
+            // Tipos permitidos
+            $permitidos = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!in_array($foto['type'], $permitidos)) {
+                $this->renderer->render("register", ["error" => "Formato no permitido. Solo JPG, PNG o GIF."]);
+                return;
+            }
+
+            // Verificar que sea imagen real
+            $check = getimagesize($foto['tmp_name']);
+            if ($check === false) {
+                $this->renderer->render("register", ["error" => "El archivo no es una imagen válida."]);
+                return;
+            }
+
+            // Crear nombre único
+            $extension = pathinfo($foto['name'], PATHINFO_EXTENSION);
+            $nuevoNombre = uniqid('pf_', true) . '.' . strtolower($extension);
+
+            // Ruta destino
+            $destino = __DIR__ . "/../imagenes/perfiles/" . $nuevoNombre;
+
+            // Mover archivo
+            if (!move_uploaded_file($foto['tmp_name'], $destino)) {
+                $this->renderer->render("register", ["error" => "Error al subir la imagen."]);
+                return;
+            }
+
+            // Guardamos solo el nombre en la BD
+            $fotoPath = "imagenes/perfiles/" . $nuevoNombre;
+            } else {
+            // Si no sube nada, usar imagen por defecto
+            $fotoPath = "imagenes/placeholder.png";
+            }
+            
+        // Insertar usuario en la base de datos
+        $sql = "INSERT INTO users 
+                (user, email, password_hash, verified, verification_token_hash, token_expires_at, name, foto)
+                VALUES (?, ?, ?, 0, ?, ?, ?, ?)";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("sssssss", $user, $email, $passwordHash, $tokenHash, $expiresAt, $name, $fotoPath);
+
+        if (!$stmt->execute()) {
+            die("Error al insertar usuario: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // Enviar correo de verificación
+        $this->sendVerificationEmail($email, $user, $token);
+
+        // Mostrar mensaje de éxito o redirigir
+        $this->renderer->render("register", ["success" => "Registro exitoso. Revisa tu correo para verificar la cuenta."]);
         }
     }
 
