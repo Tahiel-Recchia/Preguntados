@@ -1,10 +1,8 @@
 <?php
 session_start();
-
+require 'vendor/autoload.php';
 include_once("helper/Factory.php");
 $factory = new Factory();
-$database = $factory->create("database");
-$renderer = $factory->create("renderer");
 $router = $factory->create("router");
 
 $controller = isset($_GET['controller']) ? $_GET['controller'] : null;

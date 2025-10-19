@@ -6,6 +6,8 @@ include_once("controller/MenuController.php");
 include_once("Router.php");
 include_once("controller/RegisterController.php");
 include_once("model/RegisterModel.php");
+include_once("model/LoginModel.php");
+
     class Factory {
         private $config;
         private $objetos;
@@ -18,12 +20,13 @@ include_once("model/RegisterModel.php");
                  $this->config["pass"],
                  $this->config["database"]
              );
-             $this->objetos["renderer"] = new Renderer();
+             $this->objetos["renderer"] = new Renderer("vista", "vista/partial");
              $this->objetos["router"] = new Router($this, 'registercontroller', 'base');
-             $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"]);
+            $this->objetos["loginmodel"] = new LoginModel($this->objetos["database"]);
+             $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["loginmodel"]);
              $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"]);
-            $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this);
             $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
+            $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
       }
 
 

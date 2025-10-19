@@ -5,36 +5,43 @@ class LoginController
 {
     private $conexion;
     private $renderer;
+    private $model;
 
-    public function __construct($conexion, $renderer)
+    public function __construct($conexion, $renderer, $model)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
+        $this->model = $model;
     }
 
-    public function base()
-    {
-        header('Location: /preguntados/register' );
-    }
-
-
-    public function login()
-    {
-        if (isset($_POST["user"]) && isset($_POST["password"])) {
-            $user = $_POST["user"];
-            $password = $_POST["password"];
-            $sql = "SELECT * FROM users WHERE user='$user' AND password_hash='$password'";
-            $resultado = $this->conexion->query($sql);
-            if (sizeof($resultado) > 0) {
-                $_SESSION["user"] = $user;
-                header("Location: /");
-                exit;
-            } else {
-                $error = "Usuario o clave incorrecta";
-            }
+    public function base(){
+        if (isset($_POST["username"]) && isset($_POST["password"])){
+            $this->login();
+        } else{
+            $this->renderer->render('login');
         }
-        $this->renderer->render("register");
+
     }
+
+
+    public function login(){
+            $user = $_POST["username"];
+            $password = $_POST["password"];
+
+            $result = $this->model->login($user, $password);
+
+            if (is_array($result)) {
+
+                $_SESSION["user_id"] = $result['user_id'];
+                $_SESSION["username"] = $result['username'];
+                header("Location: /Preguntados/menu");
+                exit();
+            } else{
+                $data = ['error' => $result];
+                $this->renderer->render('login', $data);
+            }
+
+        }
 
 
 
@@ -48,20 +55,6 @@ class LoginController
     }
 
 
-    private function verifyPassword($password, $passwordRepeated)
-    {
-        if ($password === '' || $passwordRepeated === '') {
-            $error = "Completá ambos campos de contraseña.";
-        } elseif ($password !== $passwordRepeated) {
-            $error = "Las contraseñas no coinciden.";
-        } elseif (strlen($password) < 1) {
-            $error = "La contraseña debe tener al menos 1 caracter.";
-        }
-
-        if (!empty($error)) {
-            $this->renderer->render("register", ["error" => $error]);
-        }
-    }
 
     private function sendVerificationEmail($email, $username, $token)
     {

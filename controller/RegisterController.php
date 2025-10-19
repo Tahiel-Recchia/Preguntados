@@ -3,20 +3,16 @@ class RegisterController
 {
     private $conexion;
     private $renderer;
-    private $factory;
     private $model;
 
-    public function __construct($conexion, $renderer, $factory)
+    public function __construct($conexion, $renderer, $model)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
-        $this->factory = $factory;
+        $this->model = $model;
     }
 public function base()
 {
-    if ($this->model === null) {
-        $this->model = $this->factory->create("registerModel");
-    }
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         $this->renderer->render("register");
         return;

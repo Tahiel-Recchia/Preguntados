@@ -1,0 +1,20 @@
+<body class="bg-[#1e1f3b] bg-[url('/preguntados/imagenes/bg.jpg')] bg-cover bg-center flex justify-center items-center h-screen min-h-screen">
+
+<main class="bg-[#343964] rounded-2xl shadow-2xl w-[25%] h-[60%] p-8 flex justify-center items-center flex-col gap-5 text-[#E2E4F3]">
+    <h1 class="text-2xl font-bold text-center mb-4">Ingresá a tu cuenta</h1>
+    <form class="flex flex-col justify-center items-center gap-4 h-[90%] w-full" method="POST" action="/preguntados/login/base" enctype="">
+        <div class="w-[90%]">
+            <label class="block text-sm font-semibold mb-1">Nombre usuario</label>
+            <input type="text" name="username" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="Ej: Juan Pérez" required>
+        </div>
+        <div class="w-[90%]">
+            <label class="block text-sm font-semibold mb-1">Contraseña</label>
+            <input name="password" type="password" class="w-full p-2 rounded-md bg-[#2c2f56] border border-gray-500 focus:outline-none" placeholder="********" required>
+        </div>
+        <button type="submit" class="col-span-2 justify-self-center w-2/3 mt-3 py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 transition">Ingresar</button>
+    </form>
+{{#error}}
+    <p>{{error}}</p>
+{{/error}}
+</main>
+</body>
