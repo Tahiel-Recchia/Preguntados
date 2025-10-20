@@ -18,7 +18,13 @@ class LoginController
         if (isset($_POST["username"]) && isset($_POST["password"])){
             $this->login();
         } else{
-            $this->renderer->render('login');
+            $data = [];
+            if (isset($_SESSION['login_error'])) {
+
+                $data['error'] = $_SESSION['login_error'];
+                unset($_SESSION['login_error']);
+            }
+            $this->renderer->render('login', $data);
         }
 
     }
@@ -37,8 +43,9 @@ class LoginController
                 header("Location: /Preguntados/menu");
                 exit();
             } else{
-                $data = ['error' => $result];
-                $this->renderer->render('login', $data);
+                $_SESSION['login_error'] = $result;
+                header("Location: /Preguntados/login");
+                exit();
             }
 
         }
@@ -48,7 +55,6 @@ class LoginController
 
     public function logout()
     {
-        session_start();
         session_destroy();
         header("Location: index.php");
         exit();
