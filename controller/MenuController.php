@@ -13,7 +13,6 @@ class MenuController{
 
 
 public function base(){
-   $this->renderer->render("menu");
-
+        $this->renderer->render("menu");
     }
 }

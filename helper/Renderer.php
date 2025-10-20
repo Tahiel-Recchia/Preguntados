@@ -20,9 +20,9 @@ class Renderer{
     }
 
     public function generateHtml($contentFile, $data = array()) {
-        $contentAsString = file_get_contents( $this->partialsPath .'/header.mustache');
+        $contentAsString = file_get_contents( $this->partialsPath .'/headerVista.mustache');
         $contentAsString .= file_get_contents( $contentFile );
-        $contentAsString .= file_get_contents($this->partialsPath . '/footer.mustache');
+        $contentAsString .= file_get_contents($this->partialsPath . '/footerVista.mustache');
 
         return $this->mustache->render($contentAsString, $data);
     }

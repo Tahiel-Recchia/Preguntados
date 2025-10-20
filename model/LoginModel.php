@@ -7,7 +7,7 @@ class LoginModel {
     }
 
     public function login($user, $password_plano){
-        $sql = "SELECT id, password_hash, verified FROM users WHERE username = ?";
+        $sql = "SELECT id, contrasenia, validado FROM usuario WHERE nombreDeUsuario = ?";
 
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $user);
@@ -23,11 +23,11 @@ class LoginModel {
 
 
 
-        if (!password_verify($password_plano, $fila["password_hash"])) {
+        if (!password_verify($password_plano, $fila["contrasenia"])) {
             return "Usuario o clave incorrecta";
         }
 
-        if ($fila["verified"] != 1) {
+        if ($fila["validado"] != 1) {
             return "Usuario no verificado";
         }
 
