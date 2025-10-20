@@ -7,35 +7,39 @@ include_once("Router.php");
 include_once("controller/RegisterController.php");
 include_once("model/RegisterModel.php");
 include_once("model/LoginModel.php");
+include_once("helper/MustacheRenderer.php");
 
-    class Factory {
-        private $config;
-        private $objetos;
+class Factory
+{
+    private $config;
+    private $objetos;
 
-        public function __construct(){
-             $this->config = parse_ini_file("config/config.ini");
-             $this->objetos["database"] = new Database(
-                 $this->config["server"],
-                 $this->config["user"],
-                 $this->config["pass"],
-                 $this->config["database"]
-             );
-             $this->objetos["renderer"] = new Renderer("vista", "vista/partial");
-             $this->objetos["router"] = new Router($this, 'registercontroller', 'base');
-            $this->objetos["loginmodel"] = new LoginModel($this->objetos["database"]);
-             $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["loginmodel"]);
-             $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"]);
-            $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
-            $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
-      }
+    public function __construct()
+    {
+        $this->config = parse_ini_file("config/config.ini");
+        $this->objetos["database"] = new Database(
+            $this->config["server"],
+            $this->config["user"],
+            $this->config["pass"],
+            $this->config["database"]
+        );
+        $this->objetos["renderer"] = new Renderer("vista", "vista/partial");
+        $this->objetos["router"] = new Router($this, 'registercontroller', 'base');
+        $this->objetos["loginmodel"] = new LoginModel($this->objetos["database"]);
+        $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["loginmodel"]);
+        $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"]);
+        $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
+        $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
+    }
 
 
-        public function create($string) {
-            $string = strtolower($string);
-            if (isset($this->objetos[$string])) {
-                return $this->objetos[$string];
-            }
-            return null;
+    public function create($string)
+    {
+        $string = strtolower($string);
+        if (isset($this->objetos[$string])) {
+            return $this->objetos[$string];
         }
+        return null;
+    }
 
 }
