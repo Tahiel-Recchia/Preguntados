@@ -18,7 +18,7 @@ class LoginController
         if (isset($_POST["username"]) && isset($_POST["password"])){
             $this->login();
         } else{
-            $data = [];
+            $data = ['noNavbar' => true, 'noFooter' => true];
             if (isset($_SESSION['login_error'])) {
 
                 $data['error'] = $_SESSION['login_error'];

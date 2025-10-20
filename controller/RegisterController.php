@@ -14,7 +14,7 @@ class RegisterController
 public function base()
 {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        $this->renderer->render("register");
+        $this->renderer->render("register", ['noNavbar' => true, 'noFooter' => true]);
         return;
     }
     if (isset($_POST["username"]) && isset($_POST["password"])) {
@@ -33,7 +33,7 @@ public function base()
         //Verificacion de contraseña
         $passwordErrors = $this->verifyPassword($userData["password"], $userData["passwordRepeated"]);
         if (!empty($passwordErrors)) {
-            $this->renderer->render("register", ["error" => $passwordErrors]);
+            $this->renderer->render("register", ["error" => $passwordErrors, 'noNavbar' => true, 'noFooter' => true]);
             return;
         }
 
@@ -49,7 +49,7 @@ public function base()
                 $errors[] = $msg;
             }
 
-            $this->renderer->render("register", ["errors" => $errors]);
+            $this->renderer->render("register", ["errors" => $errors, 'noNavbar' => true, 'noFooter' => true]);
         }
     }
 }

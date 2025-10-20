@@ -7,6 +7,7 @@ include_once("Router.php");
 include_once("controller/RegisterController.php");
 include_once("model/RegisterModel.php");
 include_once("model/LoginModel.php");
+include_once("vendor/autoload.php");
 
     class Factory {
         private $config;

@@ -20,8 +20,12 @@ class Renderer{
     }
 
     public function generateHtml($contentFile, $data = array()) {
-        $contentAsString = file_get_contents( $this->partialsPath .'/headerVista.mustache');
-        $contentAsString .= file_get_contents( $contentFile );
+        $contentAsString = '';
+        $contentAsString = file_get_contents($this->partialsPath . '/headerVista.mustache');
+        if (!isset($data['noNavbar']) || $data['noNavbar'] == false) {
+            $contentAsString .= file_get_contents($this->partialsPath . '/navbarVista.mustache');
+        }
+        $contentAsString .= file_get_contents($contentFile);
         $contentAsString .= file_get_contents($this->partialsPath . '/footerVista.mustache');
 
         return $this->mustache->render($contentAsString, $data);
