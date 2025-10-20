@@ -6,25 +6,22 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
     <title>Document</title>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;400;500&display=swap" rel="stylesheet">
     <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        fontFamily: {
-                            sora: ['Sora', 'sans-serif'],
-                                },
-                    }
-                }
-            }
-    </script>
-
+tailwind.config = {
+    theme: {
+        extend: {
+            fontFamily: {
+                sora: ['Sora', 'sans-serif'],
+                    },
+        }
+    }
+}
     </script>
     <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <style>
     #map {
@@ -38,5 +35,5 @@
     .leaflet-container {
       background: #2c2f56 !important;
     }
-    </style>
+  </style>
 </head>

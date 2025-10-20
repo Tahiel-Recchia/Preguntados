@@ -3,12 +3,13 @@
 class Router
 {
 
-   private $factory;
-   private $renderer;
-   private $defaultController;
-   private $defaultMethod;
+    private $factory;
+    private $renderer;
+    private $defaultController;
+    private $defaultMethod;
 
-    public function __construct( $factory, $defaultController, $defaultMethod ){
+    public function __construct($factory, $defaultController, $defaultMethod)
+    {
         $this->factory = $factory;
         $this->renderer = $factory->create('renderer');
         $this->defaultController = $defaultController;
@@ -16,7 +17,8 @@ class Router
     }
 
 
-    public function executeController($controllerName, $methodName){
+    public function executeController($controllerName, $methodName)
+    {
         $controller = $this->getController($controllerName);
         if ($controller === null) {
             $this->executeMethod($this->defaultController, $this->defaultMethod);
@@ -25,20 +27,33 @@ class Router
         $this->executeMethod($controller, $methodName);
     }
 
-    public function getController($controllerName){
-        $controllerName = isset($controllerName) ? $controllerName . 'Controller' : $this->defaultController ;
+    public function getController($controllerName)
+    {
+        $controllerName = isset($controllerName) ? $controllerName . 'Controller' : $this->defaultController;
         return $this->factory->create($controllerName);
     }
 
-    public function executeMethod($controller, $method){
+    // public function executeMethod($controller, $method){
 
-        $validMethod = method_exists($controller, $method) ? $method : "";
-        if($validMethod === ""){
+    //     $validMethod = method_exists($controller, $method) ? $method : "";
+    //     if($validMethod === ""){
+    //         call_user_func([$controller, $this->defaultMethod]);
+    //         exit;
+    //     }
+    //     call_user_func([$controller, $method]);
+    // }
+
+    public function executeMethod($controller, $method)
+    {
+        // Si $method no está definido o no es string, usar el método por defecto
+        if (!is_string($method) || !method_exists($controller, $method)) {
+            // Llama al método por defecto, por ejemplo "base" o "index"
             call_user_func([$controller, $this->defaultMethod]);
-            exit;
+            return;
         }
+
+        // Si el método existe, lo ejecuta
         call_user_func([$controller, $method]);
     }
-
 
 }

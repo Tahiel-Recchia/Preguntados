@@ -55,7 +55,9 @@
 
         <div class="col-span-1 md:col-span-2">
             <label  class="block text-sm font-semibold mb-2">País y ciudad</label>
-                <input type="text" name="address" class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3] focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition" placeholder="Ej: Argentina, Buenos Aires" required>
+            <input id="addressInput" type="text" name="address" class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3] focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition" placeholder="Ej: Argentina, Buenos Aires" required>
+            <div id="map" class="w-full h-[250px] rounded-lg border border-gray-600"></div>
+            <p class="text-xs opacity-70 mt-1">Haz clic en el mapa para seleccionar tu ubicación</p>
         </div>
 
         <div class="col-span-1 md:col-span-2">
@@ -99,6 +101,43 @@
             reader.readAsDataURL(file);
         }
     });
+
+    // Inicializar mapa
+        const map = L.map('map').setView([-34.6037, -58.3816], 4); // Argentina por defecto
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        let marker;
+
+        map.on('click', async (e) => {
+            const { lat, lng } = e.latlng;
+
+            if (marker) marker.remove();
+            marker = L.marker([lat, lng]).addTo(map);
+
+            try {
+                const response = await fetch(`/preguntados/helper/nominatim.php?lat=${lat}&lon=${lng}`);
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error('Error HTTP:', text);
+                    return;
+                }
+
+                const data = await response.json();
+
+                const address = data.address || {};
+                const city = address.city || address.town || address.village || address.state || '';
+                const country = address.country || '';
+                const fullAddress = country && city ? `${country}, ${city}` : (country || city || 'Ubicación desconocida');
+
+                document.getElementById('addressInput').value = fullAddress;
+            } catch (error) {
+                console.error('Error al obtener ubicación:', error);
+            }
+
+        });
 </script>
 
 </body>
