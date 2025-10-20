@@ -51,7 +51,7 @@ class RegisterModel
         if (!$stmt) {
             throw new \Exception("Error al preparar la consulta: " . $this->conexion->error);
         }
-echo $userData["address"];
+
         $stmt->bind_param(
             "ssssssss",
             $userData["name"],

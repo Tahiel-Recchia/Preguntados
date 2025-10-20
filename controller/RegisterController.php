@@ -41,7 +41,7 @@ public function base()
 
             $this->model->registerUser($userData);
 
-            $this->renderer->render("login");
+            $this->renderer->render("login", ['noNavbar' => true, 'noFooter' => true]);
 
         } catch (\Exception $e) {
             $messages = explode(" | ", $e->getMessage());
