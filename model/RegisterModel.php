@@ -31,44 +31,51 @@ class RegisterModel
         $token = bin2hex(openssl_random_pseudo_bytes(16));
 
         $tokenHash = hash('sha256', $token);
-        $expiresAt = (new \DateTime('+24 hours'))->format('Y-m-d H:i:s');
-        $tokenData = [ "token" => $tokenHash, "expires_at" => $expiresAt ];
-    return $tokenData;
+        $tokenData = [ "token" => $tokenHash];
+        return $tokenData;
     }
 
     private function generatePasswordHash($password){
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        return $passwordHash;
+        return password_hash($password, PASSWORD_DEFAULT);
+
     }
 
     private function insertUserIntoDatabase($userData, $tokenData, $passwordHash)
     {
-
-        $sql = "INSERT INTO users (username, email, password_hash, verified, verification_token_hash, token_expires_at, name)
-        VALUES (?,?,?,0,?,?,?)";
+        $sql = "INSERT INTO usuario 
+        (nombreCompleto, nombreDeUsuario, mail, contrasenia, fechaNac, sexo, direccion, token)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $this->conexion->prepare($sql);
+
+        if (!$stmt) {
+            throw new \Exception("Error al preparar la consulta: " . $this->conexion->error);
+        }
+
         $stmt->bind_param(
-            "ssssss",
+            "ssssssss",
+            $userData["name"],
             $userData["username"],
             $userData["email"],
             $passwordHash,
-            $tokenData["token"],
-            $tokenData["expires_at"],
-            $userData["name"]
+            $userData["birthdate"],
+            $userData["gender"],
+            $userData["address"],
+            $tokenData["token"]
         );
 
         if (!$stmt->execute()) {
-// Manejo de errores de BD, no morir con die()
             throw new \Exception("Error al insertar usuario: " . $stmt->error);
         }
+
         $stmt->close();
     }
 
     private function verifyUsername($username){
-        $sql = "SELECT 1 FROM users WHERE username = ?";
+        $sql = "SELECT 1 FROM usuario WHERE nombreDeUsuario = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $username);
+        $stmt->execute();
         $stmt->store_result();
         $userExists = ($stmt->num_rows > 0);
         $stmt->close();
@@ -76,18 +83,14 @@ class RegisterModel
     }
 
     private function verifyEmail($email){
-        $sql = "SELECT 1 FROM users WHERE email = ?";
+        $sql = "SELECT 1 FROM usuario WHERE mail = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $email);
-        // 👈 ¡Añadir esta línea!
         $stmt->execute();
         $stmt->store_result();
         $emailExists = ($stmt->num_rows > 0);
         $stmt->close();
         return $emailExists;
     }
-
 }
-
-
 ?>
