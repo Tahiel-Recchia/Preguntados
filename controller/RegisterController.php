@@ -36,21 +36,8 @@ public function base()
             $this->renderer->render("register", ["error" => $passwordErrors, 'noNavbar' => true, 'noFooter' => true]);
             return;
         }
-
-        try {
-
-            $this->model->registerUser($userData);
-
-            $this->renderer->render("login", ['noNavbar' => true, 'noFooter' => true]);
-
-        } catch (\Exception $e) {
-            $messages = explode(" | ", $e->getMessage());
-            foreach ($messages as $msg) {
-                $errors[] = $msg;
-            }
-
-            $this->renderer->render("register", ["errors" => $errors, 'noNavbar' => true, 'noFooter' => true]);
-        }
+        $this->model->registerUser($userData);
+        $this->renderer->render("login", ['noNavbar' => true, 'noFooter' => true]);
     }
 }
 private function verifyPassword($password, $passwordRepeated){
