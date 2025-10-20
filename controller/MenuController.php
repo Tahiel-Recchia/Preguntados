@@ -13,6 +13,7 @@ class MenuController{
 
 
 public function base(){
-        $this->renderer->render("menu");
+    $data = [ 'username' => $_SESSION['username']];
+    $this->renderer->render("menu", $data);
     }
 }
