@@ -43,8 +43,8 @@ class RegisterModel
     private function insertUserIntoDatabase($userData, $tokenData, $passwordHash)
     {
         $sql = "INSERT INTO usuario 
-        (nombreCompleto, nombreDeUsuario, mail, contrasenia, fechaNac, sexo, direccion, token)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        (nombreCompleto, nombreDeUsuario, mail, contrasenia, fechaNac, sexo, direccion, token, fotoDePerfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $this->conexion->prepare($sql);
 
@@ -53,7 +53,7 @@ class RegisterModel
         }
 
         $stmt->bind_param(
-            "ssssssss",
+            "sssssssss",
             $userData["name"],
             $userData["username"],
             $userData["email"],
@@ -61,7 +61,8 @@ class RegisterModel
             $userData["birthdate"],
             $userData["gender"],
             $userData["address"],
-            $tokenData["token"]
+            $tokenData["token"],
+            $userData["profilePic"]
         );
 
         if (!$stmt->execute()) {
