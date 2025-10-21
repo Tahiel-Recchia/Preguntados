@@ -29,8 +29,8 @@ class Router
 
     public function getController($controllerName)
     {
-        $controllerName = isset($controllerName) ? $controllerName . 'Controller' : $this->defaultController;
-        return $this->factory->create($controllerName);
+        $controllerString = isset($controllerName) ? $controllerName . 'Controller' : $this->defaultController;
+        return $this->factory->create($controllerString);
     }
 
     // public function executeMethod($controller, $method){
@@ -45,6 +45,8 @@ class Router
 
     public function executeMethod($controller, $method)
     {
+        // Manejar sesion ACA
+
         // Si $method no está definido o no es string, usar el método por defecto
         if (!is_string($method) || !method_exists($controller, $method)) {
             // Llama al método por defecto, por ejemplo "base" o "index"

@@ -5,8 +5,8 @@ RewriteEngine On
 # Indicar la carpeta de tu proyecto
 RewriteBase /preguntados/
 
-# 1) NO reescribir las URLs que empiecen con /imagenes/
-RewriteCond %{REQUEST_URI} ^/imagenes/ [NC]
+# 1) NO reescribir las URLs que empiecen con /public/
+RewriteCond %{REQUEST_URI} ^/public/ [NC]
 RewriteRule ^ - [L]
 
 # 2) Si el archivo o directorio existe, no reescribir (CSS, JS, imágenes, etc.)
