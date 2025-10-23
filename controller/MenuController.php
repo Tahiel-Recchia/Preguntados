@@ -12,11 +12,13 @@ class MenuController{
     }
 
 
-public function base(){
-    $data = [];
-    if (isset($_SESSION['username'])) {
-        $data['username'] = $_SESSION['username'];
-    }
-    $this->renderer->render("menu", $data);
+    public function base(){
+        $data = [];
+        if (isset($_SESSION['username'])) {
+            $data['username'] = $_SESSION['username'];
+            $this->renderer->render("menu", $data);
+        }else{
+            header('location: /Preguntados/login');
+        }
     }
 }

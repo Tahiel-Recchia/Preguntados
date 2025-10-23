@@ -20,9 +20,6 @@ class LoginModel {
             return "Usuario o clave incorrecta";
         }
 
-
-
-
         if (!password_verify($password_plano, $fila["contrasenia"])) {
             return "Usuario o clave incorrecta";
         }

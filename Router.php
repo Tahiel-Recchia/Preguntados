@@ -47,6 +47,7 @@ class Router
     {
         // Manejar sesion ACA
 
+
         // Si $method no está definido o no es string, usar el método por defecto
         if (!is_string($method) || !method_exists($controller, $method)) {
             // Llama al método por defecto, por ejemplo "base" o "index"
