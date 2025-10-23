@@ -8,8 +8,6 @@ include_once("controller/RegisterController.php");
 include_once("model/RegisterModel.php");
 include_once("model/LoginModel.php");
 include_once("vendor/autoload.php");
-include_once("helper/MustacheRenderer.php");
-
 class Factory
 {
     private $config;
