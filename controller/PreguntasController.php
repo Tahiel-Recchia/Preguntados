@@ -15,8 +15,8 @@ class PreguntasController
 
     public function base(){
         $data = [];
-        if (isset($_SESSION['username'])) {
-            $data['username'] = $_SESSION['username'];
+        if (isset($_SESSION['nombreDeUsuario'])) {
+            $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'];
         }
         $this->renderer->render("preguntas", $data);
     }

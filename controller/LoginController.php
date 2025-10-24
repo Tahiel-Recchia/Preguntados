@@ -13,7 +13,6 @@ class LoginController
     }
 
     public function base(){
-        echo $_SESSION["nombreDeUsuario"];
         if (isset($_POST["username"]) && isset($_POST["password"])){
             $this->login();
         } else{
