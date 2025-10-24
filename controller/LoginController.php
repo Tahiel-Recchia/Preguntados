@@ -38,7 +38,7 @@ class LoginController
             $_SESSION["nombreDeUsuario"] = $result['nombreDeUsuario'];
 
             session_write_close();
-            header("Location: /menu");
+            header("Location: /perfil");
             exit();
 
         } else{
@@ -51,12 +51,10 @@ class LoginController
         }
     }
 
-
-
     public function logout()
     {
         session_destroy();
-        header("Location: /");
+        header("Location: /login");
         exit();
     }
 }

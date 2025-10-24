@@ -12,6 +12,9 @@ include_once("model/PreguntasModel.php");
 include_once("vendor/autoload.php");
 include_once("controller/PerfilController.php");
 include_once("model/PerfilModel.php");
+include_once("model/BuscarPartidaModel.php");
+include_once("controller/BuscarPartidaController.php");
+
 class Factory
 {
     private $config;
@@ -37,6 +40,9 @@ class Factory
         $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"]);
         $this->objetos["preguntasmodel"] = new PreguntasModel($this->objetos["database"]);
         $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"]);
+        $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
+        $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
+
     }
 
 

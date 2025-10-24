@@ -36,10 +36,7 @@ class Router
 
     public function executeMethod($controller, $method)
     {
-        // Manejar sesion ACA
-
-
-        if (!is_string($method) || !method_exists($controller, $method)) {
+         if (!is_string($method) || !method_exists($controller, $method)) {
 
             call_user_func([$controller, $this->defaultMethod]);
             return;

@@ -7,7 +7,7 @@ class LoginModel {
     }
 
     public function login($user, $password_plano){
-        $sql = "SELECT id, contrasenia, validado FROM usuario WHERE nombreDeUsuario = ?";
+        $sql = "SELECT * FROM usuario WHERE nombreDeUsuario = ?";
 
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $user);
