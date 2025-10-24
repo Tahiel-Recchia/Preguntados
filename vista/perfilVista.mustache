@@ -1,0 +1,78 @@
+
+
+<main class="w-full p-8 flex flex-col gap-8 text-[#E2E4F3]">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <!-- COLUMNA IZQUIERDA -->
+        <aside class="md:col-span-1 flex flex-col items-center">
+
+            <!-- Foto de perfil -->
+            <img src="/imagenes/placeholder.png"
+            alt="Foto de perfil"
+            class="w-32 h-32 rounded-full object-cover border-4 border-[#E65895] shadow-lg" />
+
+            <!-- Nombre de usuario -->
+            <h1 class="text-3xl font-bold text-center mt-4">{{nombreDeUsuario}}</h1>
+
+            <!-- Contenedor de detalles personales -->
+            <div class="w-full bg-[#2c2f56] rounded-lg p-4 mt-8 space-y-4">
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-400 font-medium">Año de Nacimiento</span>
+                    <span class="font-semibold text-white">{{fechaNac}}</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-400 font-medium">Sexo</span>
+                    <span class="font-semibold text-white">{{sexo}}</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-400 font-medium">Miembro desde</span>
+                    <span class="font-semibold text-white">Oct 2025</span> <!-- Dato de ejemplo -->
+                </div>
+            </div>
+
+            <!-- Botón de Compartir -->
+            <button class="w-full mt-6 py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+                </svg>
+                Compartir Perfil
+            </button>
+        </aside>
+
+        <!--COLUMNA DERECHA  -->
+        <section class="md:col-span-2">
+            <h2 class="text-2xl font-bold mb-6 border-b-2 border-[#2c2f56] pb-2">Historial de Partidas</h2>
+
+            <!-- Contenedor del historial (puedes hacerlo 'overflow-y-auto' si es muy largo) -->
+            <div class="space-y-4">
+                <div class="bg-[#2c2f56] rounded-lg p-4 flex items-center justify-between transition hover:bg-[#3f4477]">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-green-900/50 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-6.75c-.621 0-1.125.503-1.125 1.125V18.75M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-6.75c-.621 0-1.125.503-1.125 1.125V18.75" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-white">Victoria vs. @oponente1</p>
+                            <p class="text-sm text-gray-400">Categoría: Geografía</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-green-400">+1250 Pts</p>
+                        <p class="text-xs text-gray-500">Hace 2 horas</p>
+                    </div>
+                </div>
+                <!-- ... más partidas ... -->
+            </div>
+            <div id="map" data-direccion="{{direccion}}" class="w-full h-[250px] rounded-lg border border-gray-600"></div>
+        </section>
+
+
+    </div>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="public/javascript/profileMap.js"></script>
+

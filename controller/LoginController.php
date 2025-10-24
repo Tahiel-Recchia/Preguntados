@@ -13,6 +13,7 @@ class LoginController
     }
 
     public function base(){
+        echo $_SESSION["nombreDeUsuario"];
         if (isset($_POST["username"]) && isset($_POST["password"])){
             $this->login();
         } else{
@@ -28,31 +29,35 @@ class LoginController
 
 
     public function login(){
-            $user = $_POST["username"];
-            $password = $_POST["password"];
+        $user = $_POST["username"];
+        $password = $_POST["password"];
 
-            $result = $this->model->login($user, $password);
+        $result = $this->model->login($user, $password);
 
-            if (is_array($result)) {
-                $_SESSION["user_id"] = $result['user_id'];
-                $_SESSION["username"] = $result['username'];
-                header("Location: /Preguntados/menu");
-                exit();
-            } else{
-                $_SESSION['login_error'] = $result;
-                header("Location: /Preguntados/login");
-                exit();
-            }
+        if (is_array($result)) {
+            $_SESSION["user_id"] = $result['user_id'];
+            $_SESSION["nombreDeUsuario"] = $result['nombreDeUsuario'];
 
+            session_write_close();
+            header("Location: /menu");
+            exit();
+
+        } else{
+            $_SESSION['login_error'] = $result;
+
+            session_write_close();
+
+            header("Location: /login");
+            exit();
         }
-
+    }
 
 
 
     public function logout()
     {
         session_destroy();
-        header("Location: index.php");
+        header("Location: /");
         exit();
     }
 }

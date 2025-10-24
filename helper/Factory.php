@@ -8,6 +8,8 @@ include_once("controller/RegisterController.php");
 include_once("model/RegisterModel.php");
 include_once("model/LoginModel.php");
 include_once("vendor/autoload.php");
+include_once("controller/PerfilController.php");
+include_once("model/PerfilModel.php");
 class Factory
 {
     private $config;
@@ -29,6 +31,8 @@ class Factory
         $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"]);
         $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
         $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
+        $this->objetos["perfilmodel"] = new PerfilModel($this->objetos["database"]);
+        $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"]);
     }
 
 

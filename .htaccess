@@ -2,8 +2,8 @@
 # Activar motor de reescritura
 RewriteEngine On
 
-# Indicar la carpeta de tu proyecto
-RewriteBase /preguntados/
+# Indicar la carpeta de tu proyecto (AHORA ES LA RAÍZ)
+RewriteBase /
 
 # 1) NO reescribir las URLs que empiecen con /public/
 RewriteCond %{REQUEST_URI} ^/public/ [NC]

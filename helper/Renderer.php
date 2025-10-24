@@ -11,7 +11,7 @@ class Renderer{
                 'partials_loader' => new Mustache_Loader_FilesystemLoader( $partialsPath )
             ));
         $this->viewsPath = $viewsPath;
-        $this->partialsPath = $partialsPath;
+        $this->partialsPath = $partialsPath; // Guardamos esto
     }
 
     public function render($contentFile , $data = array() ){
@@ -20,13 +20,12 @@ class Renderer{
     }
 
     public function generateHtml($contentFile, $data = array()) {
-        $contentAsString = file_get_contents($this->partialsPath . '/headerVista.mustache');
-        if (!isset($data['noNavbar']) || $data['noNavbar'] == false) {
-            $contentAsString .= file_get_contents($this->partialsPath . '/navbarVista.mustache');
-        }
-        $contentAsString .= file_get_contents($contentFile);
-        $contentAsString .= file_get_contents($this->partialsPath . '/footerVista.mustache');
+        $layoutTemplate = file_get_contents($this->partialsPath . '/layoutVista.mustache');
+        $contentTemplate = file_get_contents($contentFile);
+        $renderedContent = $this->mustache->render($contentTemplate, $data);
+        $data['content'] = $renderedContent;
 
-        return $this->mustache->render($contentAsString, $data);
+
+        return $this->mustache->render($layoutTemplate, $data);
     }
 }

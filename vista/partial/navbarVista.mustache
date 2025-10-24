@@ -1,70 +1,151 @@
-<header class="bg-gray-900">
+<body class="bg-[#1e1f3b] bg-[url('/preguntados/imagenes/bg.jpg')] bg-cover bg-center flex justify-center min-h-screen items-start h-screen py-12 px-4">
+<div class="w-full  max-w-4xl bg-[#343964] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+<header class="border-b border-[#2c2f56]">
     <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+        <!-- Logo -->
         <div class="flex lg:flex-1">
-            <a href="#" class="-m-1.5 p-1.5">
-                <span class="sr-only">Your Company</span>
-                <img src="https://about.preguntados.com/resources/images/cards/games/TC1_Icon.svg" alt="" class="h-8 w-auto" />
+            <a href="/" class="-m-1.5 p-1.5">
+                <span class="sr-only">Preguntados</span>
+                <img src="https://about.preguntados.com/resources/images/cards/games/TC1_Icon.svg" alt="Logo Preguntados" class="h-8 w-auto" />
             </a>
         </div>
+        <!-- Botón Menú Móvil -->
         <div class="flex lg:hidden">
-            <button type="button" command="show-modal" commandfor="mobile-menu" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-400">
-                <span class="sr-only">Open main menu</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6">
+            <button type="button" data-command="show-modal" data-target="mobile-menu" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-300 hover:text-white">
+                <span class="sr-only">Abrir menú principal</span>
+                <svg viewBox="0 0 24 24"  stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6">
                     <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </button>
         </div>
+
+        <!-- Links de Escritorio -->
         <div class="hidden lg:flex lg:gap-x-12">
-            <a href="#" class="text-sm/6 font-semibold text-white">Menu</a>
-            <a href="#" class="text-sm/6 font-semibold text-white">Historial</a>
-            <a href="#" class="text-sm/6 font-semibold text-white">Ranking</a>
-            {{#username}}
-                <a href="#" class="text-sm/6 font-semibold text-white">{{username}}</a>
-            {{/username}}
-            {{^username}}
-                <a href="#" class="text-sm/6 font-semibold text-white">Desconocido</a>
-            {{/username}}
+            {{#nombreDeUsuario}}
+                <!-- Links si está logueado -->
+                <a href="/" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Menu</a>
+                <a href="/historial" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Historial</a>
+                <a href="/ranking" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Ranking</a>
+                <a href="/perfil" class="text-sm/6 font-semibold text-white hover:text-[#E65895] transition-colors">{{nombreDeUsuario}}</a>
+            {{/nombreDeUsuario}}
+            {{^nombreDeUsuario}}
+                <!-- Links si NO está logueado -->
+            {{/nombreDeUsuario}}
         </div>
+
+        <!-- Login/Logout Escritorio -->
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="login/logout" class="text-sm/6 font-semibold text-white">Log out <span aria-hidden="true">&rarr;</span></a>
+            {{#nombreDeUsuario}}
+                <a href="/login/logout" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Cerrar Sesión <span aria-hidden="true">&rarr;</span></a>
+            {{/nombreDeUsuario}}
+            {{^nombreDeUsuario}}
+                <a href="/login" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Iniciar Sesión</a>
+                <a href="/register" class="ml-6 text-sm/6 font-semibold text-white py-2 px-4 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] hover:opacity-90 transition-opacity">Registrarse</a>
+            {{/nombreDeUsuario}}
         </div>
     </nav>
-    <el-dialog>
-        <dialog id="mobile-menu" class="backdrop:bg-transparent lg:hidden">
-            <div tabindex="0" class="fixed inset-0 focus:outline-none">
-                <el-dialog-panel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-900 p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-100/10">
-                    <div class="flex items-center justify-between">
-                        <a href="#" class="-m-1.5 p-1.5">
-                            <span class="sr-only">Your Company</span>
-                            <img src="https://about.preguntados.com/resources/images/cards/games/TC1_Icon.svg" alt="" class="h-8 w-auto" />
-                        </a>
-                        <button type="button" command="close" commandfor="mobile-menu" class="-m-2.5 rounded-md p-2.5 text-gray-400">
-                            <span class="sr-only">Close menu</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6">
-                                <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="mt-6 flow-root">
-                        <div class="-my-6 divide-y divide-white/10">
-                            <div class="space-y-2 py-6">
-                                {{#username}}
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-white/5">{{username}}</a>
-                                {{/username}}
-                                {{^username}}
-                                    <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-white/5">Desconocido</a>
-                                {{/username}}
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-white/5">Menu</a>
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-white/5">Historial</a>
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-white/5">Ranking</a>
-                            </div>
-                            <div class="py-6">
-                                <a href="login/logout" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-white/5">Log out</a>
-                            </div>
+
+    <!--
+      Menú Móvil (en un <dialog>)
+    -->
+    <dialog id="mobile-menu" class="backdrop:bg-black/50 backdrop:backdrop-blur-sm lg:hidden p-0 m-0 ml-auto h-full max-h-full max-w-full">
+        <div tabindex="0" class="focus:outline-none h-full">
+            <!--
+              Panel del Menú Móvil
+              - USA los colores de tu tema
+            -->
+            <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-[#343964] p-6 sm:max-w-sm sm:ring-1 sm:ring-transparent border-l border-[#2c2f56] h-full">
+                <!-- Header Menú Móvil -->
+                <div class="flex items-center justify-between">
+                    <a href="/" class="-m-1.5 p-1.5">
+                        <span class="sr-only">Preguntados</span>
+                        <img src="https://about.preguntados.com/resources/images/cards/games/TC1_Icon.svg" alt="" class="h-8 w-auto" />
+                    </a>
+                    <button type="button" data-command="close" data-target="mobile-menu" class="-m-2.5 rounded-md p-2.5 text-gray-300 hover:text-white">
+                        <span class="sr-only">Cerrar menú</span>
+                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6">
+                            <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+                <!-- Links Menú Móvil -->
+                <div class="mt-6 flow-root">
+                    <div class="-my-6 divide-y divide-white/10">
+                        <div class="space-y-2 py-6">
+                            {{#nombreDeUsuario}}
+                                <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Menu</a>
+                                <a href="/historial" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Historial</a>
+                                <a href="/ranking" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Ranking</a>
+                                <a href="/perfil" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">{{username}}</a>
+                            {{/nombreDeUsuario}}
+                        </div>
+                        <div class="py-6">
+                            {{#nombreDeUsuario}}
+                                <a href="/login/logout" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Cerrar Sesión</a>
+                            {{/nombreDeUsuario}}
+                            {{^nombreDeUsuario}}
+                                <a href="/login" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Iniciar Sesión</a>
+                                <a href="/register" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Registrarse</a>
+                            {{/nombreDeUsuario}}
                         </div>
                     </div>
-                </el-dialog-panel>
+                </div>
             </div>
-        </dialog>
-    </el-dialog>
+        </div>
+    </dialog>
 </header>
+
+
+<!--
+  Script para manejar el menú móvil.
+  Lo incluyo aquí para que el navbar sea autocontenido.
+-->
+<script>
+    // Asegurarse de que el script no se ejecute múltiples veces si se carga varias veces
+    if (!window.navbarScriptLoaded) {
+        window.navbarScriptLoaded = true;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const openButtons = document.querySelectorAll('[data-command="show-modal"]');
+            const closeButtons = document.querySelectorAll('[data-command="close"]');
+
+            openButtons.forEach(button => {
+                // Evitar duplicar listeners si el DOM se recarga
+                if (button.dataset.listenerAttached) return;
+                button.dataset.listenerAttached = true;
+
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const dialog = document.getElementById(targetId);
+                    if (dialog) {
+                        dialog.showModal();
+                    }
+                });
+            });
+
+            closeButtons.forEach(button => {
+                if (button.dataset.listenerAttached) return;
+                button.dataset.listenerAttached = true;
+
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const dialog = document.getElementById(targetId);
+                    if (dialog) {
+                        dialog.close();
+                    }
+                });
+            });
+
+            document.querySelectorAll('dialog').forEach(dialog => {
+                if (dialog.dataset.listenerAttached) return;
+                dialog.dataset.listenerAttached = true;
+
+                dialog.addEventListener('click', (event) => {
+                    if (event.target === dialog) {
+                        dialog.close();
+                    }
+                });
+            });
+        });
+    }
+</script>

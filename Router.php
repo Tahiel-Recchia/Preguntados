@@ -33,28 +33,17 @@ class Router
         return $this->factory->create($controllerString);
     }
 
-    // public function executeMethod($controller, $method){
-
-    //     $validMethod = method_exists($controller, $method) ? $method : "";
-    //     if($validMethod === ""){
-    //         call_user_func([$controller, $this->defaultMethod]);
-    //         exit;
-    //     }
-    //     call_user_func([$controller, $method]);
-    // }
 
     public function executeMethod($controller, $method)
     {
         // Manejar sesion ACA
 
-        // Si $method no está definido o no es string, usar el método por defecto
+
         if (!is_string($method) || !method_exists($controller, $method)) {
-            // Llama al método por defecto, por ejemplo "base" o "index"
+
             call_user_func([$controller, $this->defaultMethod]);
             return;
         }
-
-        // Si el método existe, lo ejecuta
         call_user_func([$controller, $method]);
     }
 

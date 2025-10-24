@@ -33,7 +33,7 @@ class LoginModel {
 
         return [
             'user_id' => $fila["id"],
-            'username' => $user
+            'nombreDeUsuario' => $user
         ];
     }
 
