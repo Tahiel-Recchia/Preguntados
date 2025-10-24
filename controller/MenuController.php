@@ -20,6 +20,6 @@ class MenuController{
             $data["nombreDeUsuario"] = $_SESSION["nombreDeUsuario"];
         }
 
-        $this->renderer->render("perfil", $data);
+        $this->renderer->render("menu", $data);
     }
 }
