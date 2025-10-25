@@ -16,7 +16,7 @@ class BuscarPartidaController
 
     public function jugarpartida(){
         if(isset($_SESSION['nombreDeUsuario'])){
-            $this->renderer->render("preguntas", ["nombreDeUsuario" => $_SESSION['nombreDeUsuario']]);
+            $this->renderer->render("ruleta", ["nombreDeUsuario" => $_SESSION['nombreDeUsuario']]);
         }else{
             header('Location: /perfil');
         }

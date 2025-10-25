@@ -13,11 +13,12 @@ class PreguntasController
         $this->model = $model;
     }
 
-    public function base(){
-        $data = [];
-        if (isset($_SESSION['nombreDeUsuario'])) {
-            $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'];
+    public function mostarPregunta(){
+        $categoriaId = isset($_POST['categoria']) ? $_POST['categoria'] : null;
+        if($categoriaId == null){
+            header('Location: /menu');
         }
-        $this->renderer->render("preguntas", $data);
+        $pregunta = $this->model->obtenerPorCategoria($categoriaId);
+        $this->renderer->renderPregunta($pregunta, ['pregunta' => $pregunta]);
     }
 }

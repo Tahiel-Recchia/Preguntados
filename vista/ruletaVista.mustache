@@ -1,0 +1,19 @@
+<main>
+<h1>Ruleta de categorías</h1>
+
+<button id="girar">Girar</button>
+<p id="resultado"></p>
+</main>
+
+<script>
+    let categorias = {{#categorias}}{
+        "id": {{id}},
+        "nombre": {{descripcion}}
+    }
+    {{/categorias}};
+
+    document.getElementById('girar').addEventListener('click',() => {
+        let categoria = categorias[Math.floor(Math.random() * categorias.length)];
+        document.getElementById('resultado').innerHTML = 'Categoria ' + categoria.nombre;
+    });
+</script>
