@@ -4,9 +4,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     const mapElement = document.getElementById("map");
     const direccion = mapElement.dataset.direccion;
     async function obtenerCoordenadas(direccion) {
+        if (!direccion) {
+            return null;
+        }
         try{
+            const direccionCodificada = encodeURIComponent(direccion);
             const res = await fetch(
-                `https://nominatim.openstreetmap.org/search?q=${direccion}&format=json&limit=1`
+                `/helper/buscarDireccion.php?direccion=${direccionCodificada}`
             );
 
             if (!res.ok) {
@@ -32,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     let coordenadas = await obtenerCoordenadas(`${direccion}`);
     if (!coordenadas) {
         console.error("No se pudieron obtener las coordenadas. No se puede inicializar el mapa.");
-        map = L.map("map").setView([-34.6, -63.6], 4); //Poner una direccion predeterminada
+        map = L.map("map").setView([-34.6, -63.6], 4); //Si falla poner una direccion predeterminada, en este caso Argentina
     } else {
         map = L.map("map").setView([coordenadas.lat, coordenadas.lon], 13);
     }

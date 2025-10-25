@@ -1,5 +1,3 @@
-
-# Activar motor de reescritura
 RewriteEngine On
 
 # Indicar la carpeta de tu proyecto (AHORA ES LA RAÍZ)

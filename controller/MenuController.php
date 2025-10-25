@@ -18,6 +18,7 @@ class MenuController{
 
         if (isset($_SESSION["nombreDeUsuario"])) {
             $data["nombreDeUsuario"] = $_SESSION["nombreDeUsuario"];
+            $data["puntaje"] = "1250";
         }
 
         $this->renderer->render("menu", $data);
