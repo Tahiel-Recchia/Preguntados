@@ -10,12 +10,15 @@ class CategoriaModel
     }
 
     public function getCategorias(){
-        $sql = $this->conexion->query("SELECT * FROM categoria");
+        $sql = "SELECT * FROM categoria";
         $stmt = $this->conexion->prepare($sql);
         $stmt->execute();
         $resultado = $stmt->get_result();
-        $fila = $resultado->fetch_assoc();
+        $filas = [];
+        while ($fila = $resultado->fetch_assoc()) {
+            $filas[] = $fila;
+        }
         $stmt->close();
-        return $fila;
+        return $filas;
     }
 }

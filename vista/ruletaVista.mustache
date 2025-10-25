@@ -1,19 +1,24 @@
-<main>
-<h1>Ruleta de categorías</h1>
+<main data-categorias="{{categorias_json}}" id="main" class="w-full p-8 flex flex-col items-center gap-8 text-[#E2E4F3]">
 
-<button id="girar">Girar</button>
-<p id="resultado"></p>
+    <h1 class="text-4xl font-bold text-center text-white mb-6">Ruleta de Categorías</h1>
+
+    <div class="relative w-80 h-80 md:w-96 md:h-96">
+
+        <canvas id="ruletaCanvas" width="384" height="384" class="w-full h-full"></canvas>
+
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-0 h-0
+            border-l-[15px] border-l-transparent
+            border-r-[15px] border-r-transparent
+            border-t-[30px] border-t-[#000] z-10"></div>
+    </div>
+
+    <p id="resultado" class="text-3xl font-semibold text-center mt-6 p-4 rounded-lg bg-[#2c2f56] border border-[#BC6BE8] min-w-[300px] min-h-[50px] flex items-center justify-center">
+    </p>
+
+    <button id="girar" class="py-3 px-8 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] text-center text-xl mt-8">
+        GIRAR RULETA
+    </button>
+
 </main>
 
-<script>
-    let categorias = {{#categorias}}{
-        "id": {{id}},
-        "nombre": {{descripcion}}
-    }
-    {{/categorias}};
-
-    document.getElementById('girar').addEventListener('click',() => {
-        let categoria = categorias[Math.floor(Math.random() * categorias.length)];
-        document.getElementById('resultado').innerHTML = 'Categoria ' + categoria.nombre;
-    });
-</script>
+<script src="/public/Javascript/SpinningRouletteWheel.js"></script>

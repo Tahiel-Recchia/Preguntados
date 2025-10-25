@@ -14,8 +14,9 @@ class RuletaController
         $this->model = $model;
     }
 
-    public function ruleta(){
-        $categorias = $this->model->obtenerCategorias();
-        $this->renderer->render("ruleta", ['categorias' => $categorias]);
+    public function base(){
+        $categoriasArray = $this->model->getCategorias();
+        $data['categorias_json'] = json_encode($categoriasArray);
+        $this->renderer->render("ruleta", $data);
     }
 }
