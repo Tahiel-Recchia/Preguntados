@@ -25,17 +25,17 @@
             <!-- Question -->
 
             <p class="text-white text-center text-lg font-medium pb-[42px]">
-                Parrafo de la pregunta
+                {{pregunta}}
             </p>
         </div>
 
         <!-- Options Grid -->
         <div class="grid grid-cols-2 gap-[20px] w-2/3 self-center">
 
-            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">Respuesta 1</button>
-            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">Respuesta 2</button>
-            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg border-2 border-green-400 hover:bg-gray-200 transition">Respuesta 3</button>
-            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">Respuesta 4</button>
+            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">{{opcion_uno}}</button>
+            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">{{opcion_dos}}</button>
+            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg border-2 border-green-400 hover:bg-gray-200 transition">{{opcion_tres}}</button>
+            <button class="w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition">{{opcion_correcta}}</button>
 
         </div>
 

@@ -13,12 +13,12 @@ class PreguntasController
         $this->model = $model;
     }
 
-    public function mostarPregunta(){
-        $categoriaId = isset($_POST['categoria']) ? $_POST['categoria'] : null;
+    public function mostrarPregunta(){
+        $categoriaId = 1;
         if($categoriaId == null){
             header('Location: /menu');
         }
         $pregunta = $this->model->obtenerPorCategoria($categoriaId);
-        $this->renderer->renderPregunta($pregunta, ['pregunta' => $pregunta]);
+        $this->renderer->render("preguntas", $pregunta);
     }
 }

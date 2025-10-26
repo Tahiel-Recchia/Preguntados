@@ -15,6 +15,8 @@ const centroY = canvas.height / 2;
 
 const colores = categorias.map(categoria => categoria.color);
 
+console.log(categorias);
+
 let anguloActual = 0;
 let estaGirando = false;
 
@@ -156,9 +158,27 @@ function animarGiroConEasing(anguloDestino, duracion, ganador) {
         } else {
             anguloActual = anguloDestino;
             estaGirando = false;
-            botonGirar.disabled = false;
+            botonGirar.disabled = true;
             pResultado.textContent = ganador.descripcion;
             anguloActual = anguloActual % (2 * Math.PI);
+
+            const categoriaId = ganador.id;
+            const formData = new FormData();
+            formData.append('categoria', categoriaId);
+            fetch('/preguntas/mostrarpregunta', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    if (!response.redirected) {
+                        window.location.href = '/preguntas/mostrarpregunta';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al enviar la categoría:', error);
+                    pResultado.textContent = 'Error al ir a preguntas.';
+                    botonGirar.disabled = false;
+                });
         }
     }
     requestAnimationFrame(frame);
@@ -177,7 +197,6 @@ cargarImagenes().then(() => {
     dibujarRuleta();
     botonGirar.disabled = true;
 });
-
 
 botonGirar.addEventListener('click', iniciarGiro);
 botonGirar.disabled = true;
