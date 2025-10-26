@@ -168,11 +168,10 @@ function animarGiroConEasing(anguloDestino, duracion, ganador) {
             fetch('/preguntas/mostrarpregunta', {
                 method: 'POST',
                 body: formData,
+                credentials: 'include',
             })
-                .then(response => {
-                    if (!response.redirected) {
-                        window.location.href = '/preguntas/mostrarpregunta';
-                    }
+                .then(() => {
+                    window.location.href = `/preguntas/mostrarpregunta?categoria=${categoriaId}`;
                 })
                 .catch(error => {
                     console.error('Error al enviar la categoría:', error);
