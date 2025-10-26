@@ -21,27 +21,27 @@
 
         <!-- Links de Escritorio -->
         <div class="hidden lg:flex lg:gap-x-12">
-            {{#nombreDeUsuario}}
+            {{#sesion}}
                 <!-- Links si está logueado -->
                 <a href="/menu" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Menu</a>
                 <a href="/historial" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Historial</a>
                 <a href="/ranking" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Ranking</a>
                 <a href="/perfil" class="text-sm/6 font-semibold text-white hover:text-[#E65895] transition-colors">{{nombreDeUsuario}}</a>
-            {{/nombreDeUsuario}}
-            {{^nombreDeUsuario}}
+            {{/sesion}}
+            {{^sesion}}
                 <!-- Links si NO está logueado -->
-            {{/nombreDeUsuario}}
+            {{/sesion}}
         </div>
 
         <!-- Login/Logout Escritorio -->
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-            {{#nombreDeUsuario}}
+            {{#sesion}}
                 <a href="/login/logout" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Cerrar Sesión <span aria-hidden="true">&rarr;</span></a>
-            {{/nombreDeUsuario}}
-            {{^nombreDeUsuario}}
+            {{/sesion}}
+            {{^sesion}}
                 <a href="/login" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Iniciar Sesión</a>
                 <a href="/register" class="ml-6 text-sm/6 font-semibold text-white py-2 px-4 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] hover:opacity-90 transition-opacity">Registrarse</a>
-            {{/nombreDeUsuario}}
+            {{/sesion}}
         </div>
     </nav>
 

@@ -14,8 +14,10 @@ class PerfilController
     }
 
     public function base(){
-        $idUsuario = $_SESSION["user_id"];
-        $datos = $this->model->getDatosUsuario($idUsuario);
+        if (isset($_SESSION["nombreDeUsuario"])) {
+            $datos["sesion"] = $this->model->getDatosUsuario($_SESSION["user_id"]);
+        }
+        $datos['usuario'] = isset($_GET['id']) ? $this->model->getDatosUsuario($_GET['id']) : $this->model->getDatosUsuario($_SESSION["user_id"]);
         $this->renderer->render("perfil", $datos);
     }
 
