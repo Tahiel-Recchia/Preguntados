@@ -36,6 +36,8 @@ class LoginController
         if (is_array($result)) {
             $_SESSION["user_id"] = $result['user_id'];
             $_SESSION["nombreDeUsuario"] = $result['nombreDeUsuario'];
+            // NUEVO: guardar rol
+            $_SESSION["role"] = isset($result['role']) ? $result['role'] : 'player';
 
             session_write_close();
             header("Location: /menu");
