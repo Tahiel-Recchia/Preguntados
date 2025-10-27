@@ -168,7 +168,7 @@ function animarGiroConEasing(anguloDestino, duracion, ganador) {
             fetch('/preguntas/mostrarpregunta', {
                 method: 'POST',
                 body: formData,
-                credentials: 'include',
+                credentials: 'include'
             })
                 .then(() => {
                     window.location.href = `/preguntas/mostrarpregunta?categoria=${categoriaId}`;

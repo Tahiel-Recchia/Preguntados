@@ -20,7 +20,6 @@ class MenuController{
     public function base()
     {
         $data = [];
-
         if (isset($_SESSION["nombreDeUsuario"])) {
             $data["sesion"] = $this->perfil->getDatosUsuario($_SESSION["user_id"]);
         }
