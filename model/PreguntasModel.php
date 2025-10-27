@@ -9,24 +9,129 @@ class PreguntasModel
         $this->conexion = $conexion;
     }
 
-    public function obtenerPorCategoria($categoriaId)
+    public function obtenerPorCategoria($categoriaId, $idsExcluidos = [])
     {
-        $sql = "SELECT * FROM pregunta WHERE categoria_id = ?";
-        $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("i", $categoriaId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $fila = $result->fetch_assoc();
-        $stmt->close();
+        $sql_pregunta = "SELECT p.id, p.descripcion, c.descripcion AS categoria_nombre
+                     FROM pregunta p
+                     JOIN categoria c ON p.id_categoria = ?
+                     WHERE p.aprobada = 1";
 
-        return [
-            "pregunta" => $fila["descripcion"],
-            "categoria" => $fila["categoria_id"],
-            "opcion_correcta" => $fila["opcion_correcta"],
-            "opcion_uno" => $fila["opcion1"],
-            "opcion_dos" => $fila["opcion2"],
-            "opcion_tres" => $fila["opcion3"],
-            "opcion_cuatro" => $fila["opcion4"],
+        if (!empty($idsExcluidos)) {
+            // Creamos placeholders (?,?,?) para los IDs a excluir
+            $placeholders = implode(',', array_fill(0, count($idsExcluidos), '?'));
+            $sql_pregunta .= " AND p.id NOT IN ($placeholders)";
+        }
+        $sql_pregunta .= " ORDER BY RAND() LIMIT 1";
+
+        $stmt_pregunta = $this->conexion->prepare($sql_pregunta);
+        $tipos = "i";
+        $params = [$categoriaId];
+
+        if (!empty($idsExcluidos)) {
+            foreach ($idsExcluidos as $id) {
+                $tipos .= "i";
+                $params[] = $id;
+            }
+        }
+        $stmt_pregunta->bind_param($tipos, ...$params);
+        $stmt_pregunta->execute();
+        $resultado_pregunta = $stmt_pregunta->get_result();
+
+        if ($resultado_pregunta->num_rows === 0) {
+            return null;
+        }
+
+        $pregunta = $resultado_pregunta->fetch_assoc();
+        $id_pregunta = $pregunta['id'];
+        $stmt_pregunta->close();
+
+
+        $sql_opciones = "SELECT descripcion, es_correcta
+                     FROM respuesta
+                     WHERE id_pregunta = ?";
+
+        $stmt_opciones = $this->conexion->prepare($sql_opciones);
+        $stmt_opciones->bind_param("i", $id_pregunta);
+        $stmt_opciones->execute();
+        $resultado_opciones = $stmt_opciones->get_result();
+        $opciones = $resultado_opciones->fetch_all(MYSQLI_ASSOC);
+        $stmt_opciones->close();
+
+        shuffle($opciones);
+
+
+        $datos_para_la_vista = [
+            "pregunta"  => $pregunta["descripcion"],
+            "categoria" => $pregunta["categoria_nombre"],
+            "id_pregunta" => $pregunta["id"],
+            "opciones"  => $opciones
         ];
+
+        return $datos_para_la_vista;
+    }
+
+    public function getRespuestaCorrecta($idPregunta){
+        $pregunta = $this->obtenerPorId($idPregunta);
+        $opciones = $pregunta['opciones'];
+        $respuestaCorrecta = "";
+        foreach ($opciones as $opcion) {
+            if ($opcion['es_correcta'] == 1) {
+                $respuestaCorrecta = $opcion['descripcion'];
+                break;
+            }
+        }
+        return $respuestaCorrecta;
+    }
+
+    public function verificarRespuesta($idPregunta, $opcionDelUsuario){
+        $respuestaCorrecta = $this->getRespuestaCorrecta($idPregunta);
+        if($opcionDelUsuario === $respuestaCorrecta){
+            return true;
+        }
+        return false;
+    }
+
+    public function obtenerPorId($idPreguntaBuscada) {
+        $sql_pregunta = "SELECT id, descripcion
+                    FROM pregunta
+                     WHERE aprobada = 1 AND id = ?
+                     ORDER BY RAND() 
+                     LIMIT 1";
+
+        $stmt_pregunta = $this->conexion->prepare($sql_pregunta);
+        $stmt_pregunta->bind_param("i", $idPreguntaBuscada);
+        $stmt_pregunta->execute();
+        $resultado_pregunta = $stmt_pregunta->get_result();
+
+        if ($resultado_pregunta->num_rows === 0) {
+            return null;
+        }
+
+        $pregunta = $resultado_pregunta->fetch_assoc();
+        $id_pregunta = $pregunta['id'];
+        $stmt_pregunta->close();
+
+
+        $sql_opciones = "SELECT descripcion, es_correcta
+                     FROM respuesta
+                     WHERE id_pregunta = ?";
+
+        $stmt_opciones = $this->conexion->prepare($sql_opciones);
+        $stmt_opciones->bind_param("i", $id_pregunta);
+        $stmt_opciones->execute();
+        $resultado_opciones = $stmt_opciones->get_result();
+        $opciones = $resultado_opciones->fetch_all(MYSQLI_ASSOC);
+        $stmt_opciones->close();
+
+        shuffle($opciones);
+
+
+        $datos_para_la_vista = [
+            "pregunta"  => $pregunta["descripcion"],
+            "id_pregunta" => $pregunta["id"],
+            "opciones"  => $opciones
+        ];
+
+        return $datos_para_la_vista;
     }
 }
