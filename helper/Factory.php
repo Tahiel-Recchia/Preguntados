@@ -16,6 +16,8 @@ include_once("model/BuscarPartidaModel.php");
 include_once("controller/BuscarPartidaController.php");
 include_once("model/CategoriaModel.php");
 include_once("controller/RuletaController.php");
+include_once("model/PanelEditorModel.php");
+include_once("controller/PanelEditorController.php");
 
 class Factory
 {
@@ -46,7 +48,8 @@ class Factory
         $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
         $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
         $this->objetos["ruletacontroller"] = new RuletaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["categoriamodel"]);
-
+        $this->objetos["paneleditormodel"] = new PanelEditorModel($this->objetos["database"]);
+        $this->objetos["paneleditorcontroller"] = new PanelEditorController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["paneleditormodel"]);
     }
 
 

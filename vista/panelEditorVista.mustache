@@ -1,0 +1,137 @@
+<main class="w-full p-8 flex flex-col gap-8 text-[#E2E4F3]">
+
+  <h1 class="text-3xl font-bold border-b-2 border-[#2c2f56] pb-3">Panel del Editor</h1>
+
+  <!-- ===== BOTÓN DESPLEGAR FORMULARIO ===== -->
+  <button 
+    onclick="toggleFormulario()" 
+    class="w-fit py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition flex items-center gap-2">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
+      <path fill-rule="evenodd" d="M12 2.25a9.75 9.75 0 1 0 9.75 9.75A9.76 9.76 0 0 0 12 2.25Zm0 18a8.25 8.25 0 1 1 8.25-8.25A8.26 8.26 0 0 1 12 20.25ZM12.75 7.5a.75.75 0 0 0-1.5 0v4.5H7.5a.75.75 0 0 0 0 1.5h3.75v3.75a.75.75 0 0 0 1.5 0V13.5H16.5a.75.75 0 0 0 0-1.5h-3.75Z" clip-rule="evenodd"/>
+    </svg>
+    Agregar Nueva Pregunta
+  </button>
+
+  <!-- ===== FORMULARIO NUEVA PREGUNTA ===== -->
+  <section id="formulario" class="bg-[#2c2f56] rounded-xl p-6 shadow-xl hidden transition-all duration-300">
+    <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
+        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75S6.615 21.75 12 21.75 21.75 17.385 21.75 12 17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+      </svg>
+      Nueva Pregunta
+    </h2>
+
+    <form action="/paneleditor/guardar" method="POST" class="flex flex-col gap-4">
+      <div>
+        <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+        <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-[#BC6BE8]"></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+          <select name="categoria_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+            <option value="">Seleccionar...</option>
+            <option value="1">Geografía</option>
+            <option value="2">Historia</option>
+            <option value="3">Ciencia</option>
+            <option value="4">Deportes</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+          <select name="dificultad_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+            <option value="">Seleccionar...</option>
+            <option value="1">Fácil</option>
+            <option value="2">Media</option>
+            <option value="3">Difícil</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ===== RESPUESTAS ===== -->
+      <div class="mt-2">
+        <h3 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h3>
+        <div class="flex flex-col gap-2">
+          <div>
+            <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+            <input type="text" name="respuesta_correcta" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+            <input type="text" name="respuesta_incorrecta1" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+            <input type="text" name="respuesta_incorrecta2" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+            <input type="text" name="respuesta_incorrecta3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="mt-4 py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition">
+        Guardar Pregunta
+      </button>
+    </form>
+  </section>
+
+  <!-- ===== LISTADO DE PREGUNTAS EXISTENTES ===== -->
+  <section>
+    <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
+        <path fill-rule="evenodd" d="M4.5 2.25a.75.75 0 0 0 0 1.5v16.5a.75.75 0 0 0 0 1.5h15a.75.75 0 0 0 0-1.5V3.75a.75.75 0 0 0 0-1.5h-15ZM6 6.75h12v1.5H6v-1.5Zm0 4.5h12v1.5H6v-1.5Zm0 4.5h12v1.5H6v-1.5Z" clip-rule="evenodd" />
+      </svg>
+      Listado de Preguntas
+    </h2>
+
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-[#2c2f56] text-[#E2E4F3]">
+            <th class="p-3 text-left">ID</th>
+            <th class="p-3 text-left">Descripción</th>
+            <th class="p-3 text-left">Categoría</th>
+            <th class="p-3 text-left">Dificultad</th>
+            <th class="p-3 text-center">Aprobada</th>
+            <th class="p-3 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-300">
+  {{#preguntas}}
+  <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
+    <td class="p-3">{{id}}</td>
+    <td class="p-3">{{descripcion}}</td>
+    <td class="p-3">{{categoria}}</td>
+    <td class="p-3">{{dificultad}}</td>
+    <td class="p-3 text-center">
+      {{#aprobada}}
+        <span class="text-green-400 font-semibold">Sí</span>
+      {{/aprobada}}
+      {{^aprobada}}
+        <span class="text-red-400 font-semibold">No</span>
+      {{/aprobada}}
+    </td>
+    <td class="p-3 flex justify-center gap-2">
+      <a href="/editor/editar/{{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
+      <form action="/editor/eliminar/{{id}}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta pregunta?')">
+        <button type="submit" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
+      </form>
+    </td>
+  </tr>
+  {{/preguntas}}
+</tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  function toggleFormulario() {
+    const form = document.getElementById("formulario");
+    form.classList.toggle("hidden");
+  }
+</script>
