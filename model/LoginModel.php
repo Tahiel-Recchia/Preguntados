@@ -1,4 +1,4 @@
-<?php
+<?php // model/LoginModel.php
 class LoginModel {
     private $conexion;
 
