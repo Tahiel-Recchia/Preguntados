@@ -16,7 +16,8 @@ class RuletaController
 
     public function base(){
         $categoriasArray = $this->model->getCategorias();
-        $data['categorias_json'] = json_encode($categoriasArray);
+        $data["categorias_json"] =  json_encode($categoriasArray);
+        $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
         $this->renderer->render("ruleta", $data);
     }
 }

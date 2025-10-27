@@ -16,6 +16,7 @@ include_once("model/BuscarPartidaModel.php");
 include_once("controller/BuscarPartidaController.php");
 include_once("model/CategoriaModel.php");
 include_once("controller/RuletaController.php");
+include_once ("model/RankingModel.php");
 
 class Factory
 {
@@ -32,10 +33,10 @@ class Factory
             $this->config["database"]
         );
         $this->objetos["renderer"] = new Renderer("vista", "vista/partial");
-        $this->objetos["router"] = new Router($this, 'registercontroller', 'base');
+        $this->objetos["router"] = new Router($this, 'menucontroller', 'base');
         $this->objetos["loginmodel"] = new LoginModel($this->objetos["database"]);
         $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["loginmodel"]);
-        $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"]);
+        $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
         $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
         $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
         $this->objetos["perfilmodel"] = new PerfilModel($this->objetos["database"]);
@@ -47,6 +48,7 @@ class Factory
         $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
         $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
         $this->objetos["ruletacontroller"] = new RuletaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["categoriamodel"]);
+        $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"]);
 
     }
 

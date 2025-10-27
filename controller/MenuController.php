@@ -4,23 +4,26 @@ class MenuController{
 
     private $conexion;
     private $renderer;
+    private $model;
 
-    public function __construct($conexion, $renderer)
+    private $perfil;
+
+    public function __construct($conexion, $renderer, $ranking, $perfil)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
+        $this->model = $ranking;
+        $this->perfil = $perfil;
     }
 
 
     public function base()
     {
         $data = [];
-
         if (isset($_SESSION["nombreDeUsuario"])) {
-            $data["nombreDeUsuario"] = $_SESSION["nombreDeUsuario"];
-            $data["puntaje"] = "1250";
+            $data["sesion"] = $this->perfil->getDatosUsuario($_SESSION["user_id"]);
         }
-
+        $data["ranking"] = $this->model->getRankingLimitado(5);
         $this->renderer->render("menu", $data);
     }
 }
