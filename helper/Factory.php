@@ -42,6 +42,8 @@ class Factory
         $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"]);
         $this->objetos["categoriamodel"] = new CategoriaModel($this->objetos["database"]);
         $this->objetos["preguntasmodel"] = new PreguntasModel($this->objetos["database"]);
+        $this->objetos["editormodel"] = new EditorModel($this->objetos["database"]);
+        $this->objetos["editorcontroller"] = new EditorController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["editormodel"]);
         $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"]);
         $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
         $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);

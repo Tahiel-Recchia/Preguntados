@@ -1,4 +1,5 @@
 <?php
+<?php
 class LoginModel {
     private $conexion;
 
@@ -7,7 +8,13 @@ class LoginModel {
     }
 
     public function login($user, $password_plano){
-        $sql = "SELECT * FROM usuario WHERE nombreDeUsuario = ?";
+        // 🔹 Incluimos el rol en la consulta con JOIN
+        $sql = "
+            SELECT u.*, r.descripcion AS rol_nombre 
+            FROM usuario u 
+            LEFT JOIN rol r ON u.rol_id = r.id
+            WHERE u.nombreDeUsuario = ?
+        ";
 
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $user);
@@ -28,12 +35,16 @@ class LoginModel {
             return "Usuario no verificado";
         }
 
+        // ✅ Ahora devolvemos también el rol
         return [
             'user_id' => $fila["id"],
-            'nombreDeUsuario' => $user
+            'nombreDeUsuario' => $fila["nombreDeUsuario"],
+            'role' => strtolower($fila["rol_nombre"]) // ej: 'admin', 'editor', 'jugador'
         ];
     }
-
-
-
 }
+
+     /*   return [
+            'user_id' => $fila["id"],
+            'nombreDeUsuario' => $user
+        ];*/
