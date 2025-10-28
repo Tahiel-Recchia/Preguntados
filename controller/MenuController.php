@@ -22,6 +22,8 @@ class MenuController{
         $data = [];
         if (isset($_SESSION["nombreDeUsuario"])) {
             $data["sesion"] = $this->perfil->getDatosUsuario($_SESSION["user_id"]);
+        }else{
+            header("location: login");
         }
         $data["ranking"] = $this->model->getRankingLimitado(5);
         $this->renderer->render("menu", $data);

@@ -34,7 +34,7 @@ function cargarImagenes() {
 
         categorias.forEach(categoria => {
             const img = new Image();
-            img.src = categoria.imagen;
+            img.src = categoria.images;
             img.onload = () => {
                 imagenesCargadas[categoria.descripcion] = img;
                 imagenesCargadasCount++;
@@ -43,7 +43,7 @@ function cargarImagenes() {
                 }
             };
             img.onerror = () => {
-                console.error(`Error al cargar la imagen: ${categoria.imagen}`);
+                console.error(`Error al cargar la imagen: ${categoria.images}`);
                 // Aca podemos poner un placeholder cualquier cosa
                 imagenesCargadas[categoria.descripcion] = null; // si falla la imagen se pone null por ahora
                 imagenesCargadasCount++;
