@@ -115,8 +115,9 @@
       {{/aprobada}}
     </td>
     <td class="p-3 flex justify-center gap-2">
-      <a href="/editor/editar/{{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
-      <form action="/editor/eliminar/{{id}}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta pregunta?')">
+      <a href="/editorpregunta/editar?id={{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
+      <form action="/panelEditor/eliminar/" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta pregunta?')">
+        <input type="hidden" name="id" value="{{id}}">
         <button type="submit" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
       </form>
     </td>

@@ -1,0 +1,73 @@
+<main class="w-full p-8 flex flex-col gap-8 text-[#E2E4F3]">
+
+  <h1 class="text-3xl font-bold border-b-2 border-[#2c2f56] pb-3">
+    Editar Pregunta #{{pregunta.id}}
+  </h1>
+
+  <form action="/panelEditor/actualizar" method="POST" class="flex flex-col gap-4 bg-[#2c2f56] p-6 rounded-xl">
+    <input type="hidden" name="id" value="{{pregunta.id}}">
+    <div>
+      <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+      <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">{{pregunta.descripcion}}</textarea>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+        <select name="categoria_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <option value="1" {{#pregunta.categoria_id_1}}selected{{/pregunta.categoria_id_1}}>Geografía</option>
+          <option value="2" {{#pregunta.categoria_id_2}}selected{{/pregunta.categoria_id_2}}>Historia</option>
+          <option value="3" {{#pregunta.categoria_id_3}}selected{{/pregunta.categoria_id_3}}>Ciencia</option>
+          <option value="4" {{#pregunta.categoria_id_4}}selected{{/pregunta.categoria_id_4}}>Deportes</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+        <select name="dificultad_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <option value="1" {{#pregunta.dificultad_id_1}}selected{{/pregunta.dificultad_id_1}}>Fácil</option>
+          <option value="2" {{#pregunta.dificultad_id_2}}selected{{/pregunta.dificultad_id_2}}>Media</option>
+          <option value="3" {{#pregunta.dificultad_id_3}}selected{{/pregunta.dificultad_id_3}}>Difícil</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ===== RESPUESTAS ===== -->
+    <div class="mt-2">
+      <h3 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h3>
+      <div class="flex flex-col gap-2">
+        <div>
+          <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+          <input type="text" name="respuesta_correcta" value="{{rtaCorrecta.descripcion}}"
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+          <input type="text" name="respuesta_incorrecta1" value="{{rtaIncorrectas.0.descripcion}}"
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+          <input type="text" name="respuesta_incorrecta2" value="{{rtaIncorrectas.1.descripcion}}"
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+          <input type="text" name="respuesta_incorrecta3" value="{{rtaIncorrectas.2.descripcion}}"
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+      </div>
+    </div>
+
+
+    <div class="flex items-center gap-2 mt-2">
+      <input type="checkbox" name="aprobada" id="aprobada" {{#pregunta.aprobada}}checked{{/pregunta.aprobada}}>
+      <label for="aprobada" class="text-gray-300">Aprobada</label>
+    </div>
+
+    <button type="submit" class="mt-4 py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90">
+      Guardar Cambios
+    </button>
+
+  </form>
+</main>

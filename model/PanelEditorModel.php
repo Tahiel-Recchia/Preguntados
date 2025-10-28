@@ -72,27 +72,53 @@ class PanelEditorModel
 
     public function getPreguntaById($id)
     {
-        $query = "SELECT * FROM pregunta WHERE id = $id";
-        $resultado = $this->conexion->query($query);
+        $stmt = $this->conexion->prepare("SELECT * FROM pregunta WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
         return $resultado->fetch_assoc();
     }
 
-    public function updatePregunta($id, $descripcion, $categoria_id, $dificultad_id, $aprobada)
+    public function updatePreguntaConRespuestas($id, $descripcion, $categoria_id, $dificultad_id, $aprobada, $respCorrecta, $resp1, $resp2, $resp3)
     {
-        $descripcion = $this->conexion->real_escape_string($descripcion);
-        $query = "UPDATE pregunta
-              SET descripcion = '$descripcion',
-                  categoria_id = $categoria_id,
-                  dificultad_id = $dificultad_id,
-                  aprobada = $aprobada
-              WHERE id = $id";
-        $this->conexion->query($query);
+        $stmt = $this->conexion->prepare("
+        UPDATE pregunta 
+        SET descripcion = ?, categoria_id = ?, dificultad_id = ?, aprobada = ?
+        WHERE id = ?
+    ");
+        $stmt->bind_param("siiii", $descripcion, $categoria_id, $dificultad_id, $aprobada, $id);
+        $stmt->execute();
+
+        // reemplazar respuestas
+        $this->conexion->query("DELETE FROM respuesta WHERE pregunta_id = $id");
+
+        $respuestas = [
+            ['texto' => $respCorrecta, 'esCorrecta' => 1],
+            ['texto' => $resp1, 'esCorrecta' => 0],
+            ['texto' => $resp2, 'esCorrecta' => 0],
+            ['texto' => $resp3, 'esCorrecta' => 0]
+        ];
+
+        $stmtResp = $this->conexion->prepare("
+        INSERT INTO respuesta (pregunta_id, descripcion, esCorrecta)
+        VALUES (?, ?, ?)
+    ");
+
+        foreach ($respuestas as $r) {
+            $stmtResp->bind_param("isi", $id, $r['texto'], $r['esCorrecta']);
+            $stmtResp->execute();
+        }
+        $stmtResp->close();
     }
 
     public function deletePregunta($id)
     {
-        $query = "DELETE FROM pregunta WHERE id = $id";
-        $this->conexion->query($query);
+        $stmt = $this->conexion->prepare("DELETE FROM pregunta WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $filasAfectadas = $stmt->affected_rows;
+        $stmt->close();
+        return $filasAfectadas > 0;
     }
 
 }

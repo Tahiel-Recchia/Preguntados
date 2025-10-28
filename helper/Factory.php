@@ -18,6 +18,8 @@ include_once("model/CategoriaModel.php");
 include_once("controller/RuletaController.php");
 include_once("model/PanelEditorModel.php");
 include_once("controller/PanelEditorController.php");
+include_once("controller/EditorPreguntaController.php");
+include_once("model/EditorPreguntaModel.php");
 
 class Factory
 {
@@ -50,6 +52,9 @@ class Factory
         $this->objetos["ruletacontroller"] = new RuletaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["categoriamodel"]);
         $this->objetos["paneleditormodel"] = new PanelEditorModel($this->objetos["database"]);
         $this->objetos["paneleditorcontroller"] = new PanelEditorController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["paneleditormodel"]);
+        $this->objetos["editorpreguntamodel"] = new EditorPreguntaModel($this->objetos["database"]);
+        $this->objetos["editorpreguntacontroller"] = new EditorPreguntaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["editorpreguntamodel"]);
+    
     }
 
 
