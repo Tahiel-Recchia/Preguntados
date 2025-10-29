@@ -17,6 +17,7 @@ include_once("controller/BuscarPartidaController.php");
 include_once("model/CategoriaModel.php");
 include_once("controller/RuletaController.php");
 include_once ("model/RankingModel.php");
+include_once ("controller/RankingController.php");
 
 class Factory
 {
@@ -36,7 +37,6 @@ class Factory
         $this->objetos["router"] = new Router($this, 'menucontroller', 'base');
         $this->objetos["loginmodel"] = new LoginModel($this->objetos["database"]);
         $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["loginmodel"]);
-        $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
         $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
         $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
         $this->objetos["perfilmodel"] = new PerfilModel($this->objetos["database"]);
@@ -46,6 +46,8 @@ class Factory
         $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"]);
         $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
         $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
+        $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
+        $this->objetos["rankingcontroller"] = new RankingController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"]);
         $this->objetos["ruletacontroller"] = new RuletaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["categoriamodel"]);
         $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"]);
 
