@@ -4,7 +4,7 @@
     <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <!-- Logo -->
         <div class="flex lg:flex-1">
-            <a href="/" class="-m-1.5 p-1.5">
+            <a href="/menu" class="-m-1.5 p-1.5">
                 <span class="sr-only">Preguntados</span>
                 <img src="https://about.preguntados.com/resources/images/cards/games/TC1_Icon.svg" alt="Logo Preguntados" class="h-8 w-auto" />
             </a>
@@ -72,21 +72,21 @@
                 <div class="mt-6 flow-root">
                     <div class="-my-6 divide-y divide-white/10">
                         <div class="space-y-2 py-6">
-                            {{#nombreDeUsuario}}
+                            {{#sesion}}
                                 <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Menu</a>
                                 <a href="/historial" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Historial</a>
                                 <a href="/ranking" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Ranking</a>
                                 <a href="/perfil" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">{{nombreDeUsuario}}</a>
-                            {{/nombreDeUsuario}}
+                            {{/sesion}}
                         </div>
                         <div class="py-6">
-                            {{#nombreDeUsuario}}
+                            {{#sesion}}
                                 <a href="/login/logout" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Cerrar Sesión</a>
-                            {{/nombreDeUsuario}}
-                            {{^nombreDeUsuario}}
+                            {{/sesion}}
+                            {{^sesion}}
                                 <a href="/login" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Iniciar Sesión</a>
                                 <a href="/register" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Registrarse</a>
-                            {{/nombreDeUsuario}}
+                            {{/sesion}}
                         </div>
                     </div>
                 </div>
