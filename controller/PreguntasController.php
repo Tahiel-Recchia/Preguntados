@@ -68,13 +68,7 @@ class PreguntasController
             }
 
 
-            $respuestaCorrecta = "";
-            foreach ($data['opciones'] as $opcion) {
-                if ($opcion['es_correcta'] == 1) {
-                    $respuestaCorrecta = $opcion['descripcion'];
-                    break;
-                }
-            }
+            $respuestaCorrecta = $this->model->getRespuestaCorrecta($data['id_pregunta']);
 
             $_SESSION['respuesta_correcta_actual'] = $respuestaCorrecta;
             $_SESSION['id_pregunta_actual'] = $data['id_pregunta'];
