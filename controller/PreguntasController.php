@@ -51,6 +51,7 @@ class PreguntasController
             }
             $data['opciones'] = $opcionesProcesadas;
             $data['modo_resultado'] = true;
+            $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
 
             $this->renderer->render("preguntas", $data);
 
@@ -77,6 +78,7 @@ class PreguntasController
 
             $_SESSION['respuesta_correcta_actual'] = $respuestaCorrecta;
             $_SESSION['id_pregunta_actual'] = $data['id_pregunta'];
+            $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
 
             $this->renderer->render("preguntas", $data);
         }
