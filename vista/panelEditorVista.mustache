@@ -114,13 +114,10 @@
         <span class="text-red-400 font-semibold">No</span>
       {{/aprobada}}
     </td>
-    <td class="p-3 flex justify-center gap-2">
-      <a href="/editorpregunta/editar?id={{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
-      <form action="/panelEditor/eliminar/" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta pregunta?')">
-        <input type="hidden" name="id" value="{{id}}">
-        <button type="submit" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
-      </form>
-    </td>
+            <td class="p-3 flex justify-center gap-2">
+              <button onclick="abrirModalEditarInline({{id}})" data-action="editar" data-id="{{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</button>
+              <button onclick="abrirModalEliminarInline({{id}})" data-action="eliminar" data-id="{{id}}" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
+            </td>
   </tr>
   {{/preguntas}}
 </tbody>
@@ -131,8 +128,269 @@
 </main>
 
 <script>
+  // Función para mostrar/ocultar el formulario de nueva pregunta
   function toggleFormulario() {
     const form = document.getElementById("formulario");
     form.classList.toggle("hidden");
   }
 </script>
+
+<!-- Modal de edición de pregunta -->
+<div id="modalEditar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg">
+    <h3 class="text-xl font-semibold mb-3">Editar Pregunta</h3>
+    <form id="formEditar" class="flex flex-col gap-4">
+      <input type="hidden" id="pregunta_id" name="id">
+      
+      <div>
+        <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+        <textarea id="edit_descripcion" name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-[#BC6BE8]"></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+          <select id="edit_categoria_id" name="categoria_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+            <option value="1">Geografía</option>
+            <option value="2">Historia</option>
+            <option value="3">Ciencia</option>
+            <option value="4">Deportes</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+          <select id="edit_dificultad_id" name="dificultad_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+            <option value="1">Fácil</option>
+            <option value="2">Media</option>
+            <option value="3">Difícil</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
+        <div class="flex flex-col gap-2">
+          <div>
+            <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+            <input type="text" id="edit_respuesta_correcta" name="respuesta_correcta" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+            <input type="text" id="edit_respuesta_incorrecta1" name="respuesta_incorrecta1" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+            <input type="text" id="edit_respuesta_incorrecta2" name="respuesta_incorrecta2" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+            <input type="text" id="edit_respuesta_incorrecta3" name="respuesta_incorrecta3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button type="button" onclick="cerrarModalEditar()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-[#BC6BE8] rounded-lg hover:opacity-80">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de eliminación -->
+<div id="modalEliminar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-md text-white shadow-lg">
+    <h3 class="text-xl font-semibold mb-3">¿Estás seguro?</h3>
+    <p class="text-sm text-gray-300 mb-5">Esta acción eliminará permanentemente la pregunta seleccionada.</p>
+    <div class="flex justify-end gap-3">
+      <button onclick="cerrarModalEliminar()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+      <button onclick="eliminarPregunta()" class="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Variables para los modales
+  let preguntaAEliminarId = null;
+  const modalEliminar = document.getElementById('modalEliminar');
+  const modalEditar = document.getElementById('modalEditar');
+  const formEditar = document.getElementById('formEditar');
+
+  // === FUNCIONES PARA ELIMINAR ===
+  function abrirModalEliminar(id) {
+    preguntaAEliminarId = id;
+    modalEliminar.classList.remove('hidden');
+    modalEliminar.classList.add('flex');
+  }
+
+  function cerrarModalEliminar() {
+    modalEliminar.classList.remove('flex');
+    modalEliminar.classList.add('hidden');
+    preguntaAEliminarId = null;
+  }
+
+  function eliminarPregunta() {
+    if (preguntaAEliminarId) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/paneleditor/eliminar';
+      
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'id';
+      input.value = preguntaAEliminarId;
+      
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+    }
+    cerrarModalEliminar();
+  }
+
+  // === FUNCIONES PARA EDITAR ===
+  async function abrirModalEditar(id) {
+    try {
+      console.log('abrirModalEditar called, id=', id);
+      // Obtener datos de la pregunta
+      const response = await fetch(`/paneleditor/obtenerPregunta?id=${id}`);
+      const data = await response.json();
+      
+      // Llenar el formulario con los datos
+      document.getElementById('pregunta_id').value = data.pregunta.id;
+      document.getElementById('edit_descripcion').value = data.pregunta.descripcion;
+      document.getElementById('edit_categoria_id').value = data.pregunta.categoria_id;
+      document.getElementById('edit_dificultad_id').value = data.pregunta.dificultad_id;
+      
+      // Llenar respuestas
+      const respuestaCorrecta = data.respuestas.find(r => r.esCorrecta === 1);
+      const respuestasIncorrectas = data.respuestas.filter(r => r.esCorrecta === 0);
+      
+      document.getElementById('edit_respuesta_correcta').value = respuestaCorrecta.descripcion;
+      document.getElementById('edit_respuesta_incorrecta1').value = respuestasIncorrectas[0].descripcion;
+      document.getElementById('edit_respuesta_incorrecta2').value = respuestasIncorrectas[1].descripcion;
+      document.getElementById('edit_respuesta_incorrecta3').value = respuestasIncorrectas[2].descripcion;
+      
+      // Mostrar modal
+      modalEditar.classList.remove('hidden');
+      modalEditar.classList.add('flex');
+    } catch (error) {
+      console.error('Error al cargar la pregunta:', error);
+    }
+  }
+
+  function cerrarModalEditar() {
+    modalEditar.classList.remove('flex');
+    modalEditar.classList.add('hidden');
+    formEditar.reset();
+  }
+
+  // Manejar el envío del formulario de edición
+  formEditar.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    try {
+      const formData = new FormData(formEditar);
+      const response = await fetch('/paneleditor/actualizar', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        window.location.reload(); // Recargar para ver los cambios
+      } else {
+        console.error('Error al actualizar la pregunta');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  });
+</script>
+
+<script>
+  // Delegación de eventos para botones Editar / Eliminar (funciona aunque haya inline handlers rotos)
+  document.addEventListener('click', function (e) {
+    const editarBtn = e.target.closest('button[data-action="editar"]');
+    if (editarBtn) {
+      e.preventDefault();
+      const id = editarBtn.dataset.id;
+      // llamar a la función existente
+      try {
+        abrirModalEditar(id);
+      } catch (err) {
+        console.error('abrirModalEditar no definida o falló:', err);
+      }
+      return;
+    }
+
+    const eliminarBtn = e.target.closest('button[data-action="eliminar"]');
+    if (eliminarBtn) {
+      e.preventDefault();
+      const id = eliminarBtn.dataset.id;
+      try {
+        abrirModalEliminar(id);
+      } catch (err) {
+        console.error('abrirModalEliminar no definida o falló:', err);
+      }
+      return;
+    }
+  });
+</script>
+
+<script>
+  // Wrappers inline seguros para forzar ejecución y mostrar errores si fallan
+  function abrirModalEditarInline(id) {
+    console.log('abrirModalEditarInline called, id=', id);
+    try {
+      if (typeof abrirModalEditar === 'function') {
+        abrirModalEditar(id);
+      } else {
+        console.error('abrirModalEditar no está definida');
+        alert('Error: función abrirModalEditar no definida (ver consola).');
+      }
+    } catch (err) {
+      console.error('Error en abrirModalEditarInline:', err);
+      alert('Error al abrir el editor. Revisa la consola para más detalles.');
+    }
+  }
+
+  function abrirModalEliminarInline(id) {
+    console.log('abrirModalEliminarInline called, id=', id);
+    try {
+      if (typeof abrirModalEliminar === 'function') {
+        abrirModalEliminar(id);
+      } else {
+        console.error('abrirModalEliminar no está definida');
+        alert('Error: función abrirModalEliminar no definida (ver consola).');
+      }
+    } catch (err) {
+      console.error('Error en abrirModalEliminarInline:', err);
+      alert('Error al abrir el modal de eliminación. Revisa la consola para más detalles.');
+    }
+  }
+
+  // Registrar errores globales para ayudar a depurar problemas JS que bloqueen la página
+  window.addEventListener('error', function (event) {
+    console.error('Uncaught error:', event.error || event.message, event);
+  });
+  window.addEventListener('unhandledrejection', function (event) {
+    console.error('Unhandled rejection:', event.reason);
+  });
+</script>
+
+<!-- DEBUG: registrar clicks y estado de funciones para ayudar a depurar -->
+<script>
+  document.addEventListener('click', function (e) {
+    try {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      console.log('[DEBUG] botón clickeado:', btn.textContent.trim(), 'data-action=', btn.dataset.action, 'data-id=', btn.dataset.id);
+      // comprobar si las funciones están definidas
+      console.log('[DEBUG] abrirModalEditar definida?', typeof abrirModalEditar === 'function');
+      console.log('[DEBUG] abrirModalEliminar definida?', typeof abrirModalEliminar === 'function');
+    } catch (err) {
+      console.error('[DEBUG] error en listener debug:', err);
+    }
+  }, { capture: true });
+</script>
+
+

@@ -11,16 +11,44 @@ class PanelEditorModel
 
     public function obtenerPreguntas()
     {
-        $query = "SELECT p.id, p.descripcion, p.aprobada, 
+        $query = "SELECT p.id, p.descripcion, p.aprobada, p.categoria_id, p.dificultad_id,
                      c.descripcion AS categoria, 
                      d.descripcion AS dificultad
               FROM pregunta p
               LEFT JOIN categoria c ON p.categoria_id = c.id
               LEFT JOIN dificultad d ON p.dificultad_id = d.id";
 
-        $resultado = $this->conexion->query($query); // devuelve array ya
+        $resultado = $this->conexion->query($query);
+        return $resultado;
+    }
 
-        return $resultado; // ya es un array, no necesitas fetch_assoc()
+    public function obtenerPreguntaConRespuestas($id)
+    {
+        // Obtener la pregunta
+        $query = "SELECT p.*, c.descripcion AS categoria_nombre, d.descripcion AS dificultad_nombre
+                 FROM pregunta p
+                 LEFT JOIN categoria c ON p.categoria_id = c.id
+                 LEFT JOIN dificultad d ON p.dificultad_id = d.id
+                 WHERE p.id = ?";
+        
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $pregunta = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        // Obtener las respuestas
+        $query = "SELECT * FROM respuesta WHERE pregunta_id = ? ORDER BY esCorrecta DESC";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $respuestas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return [
+            'pregunta' => $pregunta,
+            'respuestas' => $respuestas
+        ];
     }
 
     public function insertarPregunta(
