@@ -9,11 +9,7 @@
     <div class="bg-[#343964] py-[62px] rounded-2xl w-full justify-center flex flex-col">
 
         {{#mensaje_resultado}}
-            <p class="text-center text-lg font-medium pb-[42px]
-                {{#es_correcto}}text-green-400{{/es_correcto}}
-                {{#es_incorrecto}}text-red-400{{/es_incorrecto}}">
-                {{mensaje_resultado}}
-            </p>
+            <p class="text-center text-lg font-medium pb-[42px] text-green-400">{{mensaje_resultado}}</p>
         {{/mensaje_resultado}}
 
         {{^mensaje_resultado}}
@@ -44,24 +40,16 @@
 
                     {{#es_la_correcta}}
                         bg-green-600 border-2 border-green-300  {{/es_la_correcta}}
-
-                    {{#es_la_seleccionada_incorrecta}}
-                        bg-red-600 border-2 border-red-300    {{/es_la_seleccionada_incorrecta}}
-
                     {{^es_la_correcta}}
-                        {{^es_la_seleccionada_incorrecta}}
-                            bg-gray-700 opacity-60           {{/es_la_seleccionada_incorrecta}}
-                    {{/es_la_correcta}}
-                ">
+                            bg-gray-700 opacity-60
+                    {{/es_la_correcta}}">
                     {{descripcion}}
                 </div>
             {{/opciones}}
         </div>
 
         <div class="w-2/3 self-center mt-5">
-            {{#es_la_seleccionada_incorrecta}}<form action="/menu/base" method="GET">{{/es_la_seleccionada_incorrecta}}
-            {{^es_la_seleccionada_incorrecta}}<form action="/ruleta/base" method="GET">{{/es_la_seleccionada_incorrecta}}
-
+            <form action="/ruleta/base" method="GET">
                 <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
                     Siguiente Pregunta
                 </button>

@@ -18,9 +18,11 @@ class PreguntasController
     public function base()
     {
         if (isset($_SESSION['idPartida'])) {
+            $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
             $this->jugarPartida();
         } else {
             $_SESSION['idPartida'] = $this->partida->iniciarPartida();
+            $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
             $this->jugarPartida();
         }
     }
@@ -66,38 +68,17 @@ class PreguntasController
         $respuestaUsuario = $_POST['respuesta_usuario'];
         $respuestaCorrecta = $_SESSION['respuesta_correcta_actual'] ?? '';
         $idPreguntaAnterior = $_SESSION['id_pregunta_actual'] ?? 0;
-
-
         $data = $this->model->obtenerPorId($idPreguntaAnterior);
-
-        // Verificar la respuesta
+        $data = $this->procesarOpciones($data, $respuestaCorrecta, $respuestaUsuario);
         $esValida = $this->model->verificarRespuesta($idPreguntaAnterior, $respuestaUsuario);
         if ($esValida) {
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
-            //Acá hay que poner el código para sumar los puntos
+            $this->renderer->render("preguntas", $data);
         } else {
-            $data['mensaje_resultado'] = "¡Incorrecto!";
-            $data['es_incorrecto'] = true;
-            $this->partida->terminarPartida($_SESSION['idPartida'], 1000);
-            unset($_SESSION['idPartida']);
-
+            $this->terminarPartida();
+            $this->renderer->render("preguntaErronea", $data);
         }
-
-
-        $opcionesProcesadas = [];
-        foreach ($data['opciones'] as $opcion) {
-            $esLaRespuestaCorrecta = ($opcion['descripcion'] == $respuestaCorrecta);
-            $esLaRespuestaDelUsuario = ($opcion['descripcion'] == $respuestaUsuario);
-            $opcion['es_la_correcta'] = $esLaRespuestaCorrecta;
-            $opcion['es_la_seleccionada_incorrecta'] = ($esLaRespuestaDelUsuario && !$esLaRespuestaCorrecta);
-            $opcionesProcesadas[] = $opcion;
-        }
-        $data['opciones'] = $opcionesProcesadas;
-        $data['modo_resultado'] = true;
-        $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
-
-        $this->renderer->render("preguntas", $data);
     }
 
     public function cargarPregunta()
@@ -115,9 +96,39 @@ class PreguntasController
 
         $_SESSION['respuesta_correcta_actual'] = $respuestaCorrecta;
         $_SESSION['id_pregunta_actual'] = $data['id_pregunta'];
-        $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
-
         $this->renderer->render("preguntas", $data);
+    }
+
+    public function terminarPartida(){
+        $this->partida->terminarPartida($_SESSION['idPartida'], 1000);
+        unset($_SESSION['idPartida']);
+    }
+
+    public function tiempoAgotado(){
+        $this->terminarPartida();
+        $data['tiempoAgotado'] = "¡Te quedaste sin tiempo!";
+        $this->renderer->render("preguntaErronea", $data);
+    }
+
+    public function procesarOpciones($data, $respuestaCorrecta, $respuestaUsuario) {
+
+        $opciones = $data['opciones'];
+        $opcionesProcesadas = [];
+
+        foreach ($opciones as $opcion) {
+            $esLaCorrecta = ($opcion['descripcion'] == $respuestaCorrecta);
+            $esLaSeleccionada = ($opcion['descripcion'] == $respuestaUsuario);
+
+            $opcion['es_la_correcta'] = $esLaCorrecta;
+            $opcion['es_la_seleccionada_incorrecta'] = ($esLaSeleccionada && !$esLaCorrecta);
+            $opcion['es_otra_incorrecta'] = (!$esLaCorrecta && !$esLaSeleccionada);
+
+            $opcionesProcesadas[] = $opcion;
+        }
+        $data['opciones'] = $opcionesProcesadas;
+        $data['modo_resultado'] = true;
+
+        return $data;
     }
 
 }

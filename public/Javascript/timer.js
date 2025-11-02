@@ -8,6 +8,6 @@ const cuentaRegresiva = setInterval(() => {
     if (tiempo <= 0) {
     clearInterval(cuentaRegresiva);
     // Tiempo agotado → redirigir al controlador de timeout
-    window.location.href = "/preguntas/timeout?idPregunta={{id}}";
+    window.location.href = "/preguntas/tiempoAgotado";
     }
 }, 1000);
