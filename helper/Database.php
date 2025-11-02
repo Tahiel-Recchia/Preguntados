@@ -32,4 +32,9 @@ class Database
         }
         return $stmt;
     }
+
+    public function lastInsertId(){
+        return $this->conexion->insert_id;
+    }
+
 }
