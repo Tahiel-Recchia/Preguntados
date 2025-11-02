@@ -14,10 +14,20 @@ class PerfilController
     }
 
     public function base(){
+        $datos = [];
         if (isset($_SESSION["nombreDeUsuario"])) {
             $datos["sesion"] = $this->model->getDatosUsuario($_SESSION["user_id"]);
         }
-        $datos['usuario'] = isset($_GET['id']) ? $this->model->getDatosUsuario($_GET['id']) : $this->model->getDatosUsuario($_SESSION["user_id"]);
+
+        $usuarioId = isset($_GET['id']) ? $_GET['id'] : ($_SESSION["user_id"] ?? null);
+        $datos['usuario'] = $usuarioId ? $this->model->getDatosUsuario($usuarioId) : null;
+
+        // Marcar si el usuario es editor (rol_id == 2)
+        $datos['isEditor'] = false;
+        if (!empty($datos['usuario']) && isset($datos['usuario']['rol_id'])) {
+            $datos['isEditor'] = ($datos['usuario']['rol_id'] == 2);
+        }
+
         $this->renderer->render("perfil", $datos);
     }
 

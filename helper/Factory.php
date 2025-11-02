@@ -9,6 +9,7 @@ include_once("controller/RegisterController.php");
 include_once("model/RegisterModel.php");
 include_once("model/LoginModel.php");
 include_once("model/PreguntasModel.php");
+include_once("model/RankingModel.php");
 include_once("vendor/autoload.php");
 include_once("controller/PerfilController.php");
 include_once("model/PerfilModel.php");
@@ -40,10 +41,13 @@ class Factory
         $this->objetos["loginmodel"] = new LoginModel($this->objetos["database"]);
         $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["loginmodel"]);
         $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
+    // PerfilModel necesario para MenuController; crear antes de instanciar menucontroller
+    $this->objetos["perfilmodel"] = new PerfilModel($this->objetos["database"]);
+    // Instanciar MenuController (controlador por defecto)
+    $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"]);
         $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
         $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
-        $this->objetos["perfilmodel"] = new PerfilModel($this->objetos["database"]);
-        $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"]);
+    $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"]);
        // editor model y controller
         $this->objetos["categoriamodel"] = new CategoriaModel($this->objetos["database"]);
         $this->objetos["preguntasmodel"] = new PreguntasModel($this->objetos["database"]);

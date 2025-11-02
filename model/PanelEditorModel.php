@@ -11,25 +11,33 @@ class PanelEditorModel
 
     public function obtenerPreguntas()
     {
-        $query = "SELECT p.id, p.descripcion, p.aprobada, p.categoria_id, p.dificultad_id,
+        // Detectar nombres de columna en la tabla 'pregunta' (puede ser id_categoria o categoria_id según migraciones)
+        $cols = $this->detectPreguntaColumns();
+        $catCol = $cols['categoria'];
+        $difCol = $cols['dificultad'];
+
+        $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
                      c.descripcion AS categoria, 
                      d.descripcion AS dificultad
               FROM pregunta p
-              LEFT JOIN categoria c ON p.id_categoria = c.id
-              LEFT JOIN dificultad d ON p.id_dificultad = d.id";
+              LEFT JOIN categoria c ON p." . $catCol . " = c.id
+              LEFT JOIN dificultad d ON p." . $difCol . " = d.id";
 
-        $resultado = $this->conexion->query($query);
-        return $resultado;
+        return $this->conexion->query($query);
     }
 
     public function obtenerPreguntaConRespuestas($id)
     {
         // Obtener la pregunta
-        $query = "SELECT p.*, c.descripcion AS categoria_nombre, d.descripcion AS dificultad_nombre
-                 FROM pregunta p
-                 LEFT JOIN categoria c ON p.categoria_id = c.id
-                 LEFT JOIN dificultad d ON p.dificultad_id = d.id
-                 WHERE p.id = ?";
+    $cols = $this->detectPreguntaColumns();
+    $catCol = $cols['categoria'];
+    $difCol = $cols['dificultad'];
+
+    $query = "SELECT p.*, c.descripcion AS categoria_nombre, d.descripcion AS dificultad_nombre
+         FROM pregunta p
+         LEFT JOIN categoria c ON p." . $catCol . " = c.id
+         LEFT JOIN dificultad d ON p." . $difCol . " = d.id
+         WHERE p.id = ?";
         
         $stmt = $this->conexion->prepare($query);
         $stmt->bind_param("i", $id);
@@ -38,7 +46,7 @@ class PanelEditorModel
         $stmt->close();
 
         // Obtener las respuestas
-        $query = "SELECT * FROM respuesta WHERE pregunta_id = ? ORDER BY esCorrecta DESC";
+    $query = "SELECT * FROM respuesta WHERE id_pregunta = ? ORDER BY es_correcta DESC";
         $stmt = $this->conexion->prepare($query);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -61,8 +69,12 @@ class PanelEditorModel
         $respuesta_incorrecta3
     ) {
         // === INSERTAR PREGUNTA ===
+        $cols = $this->detectPreguntaColumns();
+        $catCol = $cols['categoria'];
+        $difCol = $cols['dificultad'];
+
         $stmt = $this->conexion->prepare(
-            "INSERT INTO pregunta (descripcion, aprobada, id_categoria, id_dificultad) 
+            "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", " . $difCol . ") 
         VALUES (?, 1, ?, ?)"
         );
         $stmt->bind_param("sii", $descripcion, $id_categoria, $id_dificultad);
@@ -109,9 +121,13 @@ class PanelEditorModel
 
     public function updatePreguntaConRespuestas($id, $descripcion, $id_categoria, $id_dificultad, $aprobada, $respCorrecta, $resp1, $resp2, $resp3)
     {
-        $stmt = $this->conexion->prepare("
+        $cols = $this->detectPreguntaColumns();
+        $catCol = $cols['categoria'];
+        $difCol = $cols['dificultad'];
+
+        $stmt = $this->conexion->prepare("\
         UPDATE pregunta 
-        SET descripcion = ?, id_categoria = ?, id_dificultad = ?, aprobada = ?
+        SET descripcion = ?, " . $catCol . " = ?, " . $difCol . " = ?, aprobada = ?
         WHERE id = ?
     ");
         $stmt->bind_param("siiii", $descripcion, $id_categoria, $id_dificultad, $aprobada, $id);
@@ -147,6 +163,32 @@ class PanelEditorModel
         $filasAfectadas = $stmt->affected_rows;
         $stmt->close();
         return $filasAfectadas > 0;
+    }
+
+    /**
+     * Detecta los nombres reales de las columnas de categoría/dificultad en la tabla 'pregunta'
+     * Devuelve un array con keys 'categoria' y 'dificultad' que contienen el nombre de la columna.
+     */
+    private function detectPreguntaColumns()
+    {
+        $default = ['categoria' => 'id_categoria', 'dificultad' => 'id_dificultad'];
+        try {
+            $cols = $this->conexion->query("SHOW COLUMNS FROM pregunta");
+        } catch (Exception $e) {
+            // Si falla, devolvemos valores por defecto
+            return $default;
+        }
+
+        if (empty($cols) || !is_array($cols)) {
+            return $default;
+        }
+
+        $fields = array_column($cols, 'Field');
+
+        $categoria = in_array('id_categoria', $fields) ? 'id_categoria' : (in_array('categoria_id', $fields) ? 'categoria_id' : 'id_categoria');
+        $dificultad = in_array('id_dificultad', $fields) ? 'id_dificultad' : (in_array('dificultad_id', $fields) ? 'dificultad_id' : 'id_dificultad');
+
+        return ['categoria' => $categoria, 'dificultad' => $dificultad];
     }
 
 }

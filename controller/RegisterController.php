@@ -72,7 +72,8 @@ class RegisterController
     {
         // Imagen por defecto
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-            return "imagenes/placeholder.png";
+            // Ruta pública al placeholder
+            return "/public/placeholder.png";
         }
 
         // Tamaño máximo 2MB
@@ -96,13 +97,14 @@ class RegisterController
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
         $nuevoNombre = uniqid('pf_', true) . '.' . strtolower($extension);
 
-        // Ruta destino
+        // Ruta destino en el servidor
         $destino = __DIR__ . "/../imagenes/perfiles/" . $nuevoNombre;
         if (!move_uploaded_file($file['tmp_name'], $destino)) {
             throw new \Exception("Error al subir la imagen.");
         }
 
-        return "imagenes/perfiles/" . $nuevoNombre;
+        // Devolver ruta pública (con slash para evitar rutas relativas inesperadas)
+        return "/imagenes/perfiles/" . $nuevoNombre;
     }
 
 }

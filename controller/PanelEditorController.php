@@ -95,4 +95,33 @@ class PanelEditorController
         header("Location: /paneleditor");
         exit;
     }
+
+    // Devuelve una pregunta con sus respuestas en JSON (para el modal de edición)
+    public function obtenerPregunta()
+    {
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Falta id']);
+            exit;
+        }
+
+        $data = $this->model->obtenerPreguntaConRespuestas($id);
+
+        // Normalizar nombre de campo de la respuesta para JS (esCorrecta)
+        if (!empty($data['respuestas']) && is_array($data['respuestas'])) {
+            foreach ($data['respuestas'] as &$r) {
+                if (isset($r['es_correcta'])) {
+                    $r['esCorrecta'] = (int)$r['es_correcta'];
+                } elseif (isset($r['esCorrecta'])) {
+                    $r['esCorrecta'] = (int)$r['esCorrecta'];
+                }
+            }
+            unset($r);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
 }

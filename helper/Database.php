@@ -15,12 +15,26 @@ class Database
 
     public function query($sql)
     {
-        $result = $this->conexion->query($sql);
-
-        if ($result->num_rows > 0) {
-            return $result->fetch_all(MYSQLI_ASSOC);
+        try {
+            $result = $this->conexion->query($sql);
+        } catch (mysqli_sql_exception $e) {
+            error_log("Database query error: " . $e->getMessage() . " -- SQL: " . $sql);
+            throw new Exception("Database query error: " . $e->getMessage() . " -- SQL: " . $sql);
         }
-        return null;
+
+        if ($result === false) {
+            $err = $this->conexion->error;
+            error_log("Database query error: " . $err . " -- SQL: " . $sql);
+            throw new Exception("Database query error: " . $err . " -- SQL: " . $sql);
+        }
+
+        if ($result instanceof mysqli_result) {
+            if ($result->num_rows > 0) {
+                return $result->fetch_all(MYSQLI_ASSOC);
+            }
+            return [];
+        }
+        return $result;
     }
 
 
