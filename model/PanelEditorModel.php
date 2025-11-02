@@ -15,8 +15,8 @@ class PanelEditorModel
                      c.descripcion AS categoria, 
                      d.descripcion AS dificultad
               FROM pregunta p
-              LEFT JOIN categoria c ON p.categoria_id = c.id
-              LEFT JOIN dificultad d ON p.dificultad_id = d.id";
+              LEFT JOIN categoria c ON p.id_categoria = c.id
+              LEFT JOIN dificultad d ON p.id_dificultad = d.id";
 
         $resultado = $this->conexion->query($query);
         return $resultado;
@@ -53,8 +53,8 @@ class PanelEditorModel
 
     public function insertarPregunta(
         $descripcion,
-        $categoria_id,
-        $dificultad_id,
+        $id_categoria,
+        $id_dificultad,
         $respuesta_correcta,
         $respuesta_incorrecta1,
         $respuesta_incorrecta2,
@@ -62,36 +62,36 @@ class PanelEditorModel
     ) {
         // === INSERTAR PREGUNTA ===
         $stmt = $this->conexion->prepare(
-            "INSERT INTO pregunta (descripcion, aprobada, categoria_id, dificultad_id) 
+            "INSERT INTO pregunta (descripcion, aprobada, id_categoria, id_dificultad) 
         VALUES (?, 1, ?, ?)"
         );
-        $stmt->bind_param("sii", $descripcion, $categoria_id, $dificultad_id);
+        $stmt->bind_param("sii", $descripcion, $id_categoria, $id_dificultad);
         $stmt->execute();
 
         // Obtener el ID de la última pregunta insertada
-        $pregunta_id = $stmt->insert_id;
+        $id_pregunta = $stmt->insert_id;
         $stmt->close();
 
         // === INSERTAR RESPUESTAS ===
         $stmtResp = $this->conexion->prepare(
-            "INSERT INTO respuesta (descripcion, esCorrecta, pregunta_id) VALUES (?, ?, ?)"
+            "INSERT INTO respuesta (descripcion, es_correcta, id_pregunta) VALUES (?, ?, ?)"
         );
 
         // Respuesta correcta
-        $esCorrecta = 1;
-        $stmtResp->bind_param("sii", $respuesta_correcta, $esCorrecta, $pregunta_id);
+        $es_correcta = 1;
+        $stmtResp->bind_param("sii", $respuesta_correcta, $es_correcta, $id_pregunta);
         $stmtResp->execute();
 
         // Respuestas incorrectas
-        $esCorrecta = 0;
+        $es_orrecta = 0;
 
-        $stmtResp->bind_param("sii", $respuesta_incorrecta1, $esCorrecta, $pregunta_id);
+        $stmtResp->bind_param("sii", $respuesta_incorrecta1, $es_correcta, $id_pregunta);
         $stmtResp->execute();
 
-        $stmtResp->bind_param("sii", $respuesta_incorrecta2, $esCorrecta, $pregunta_id);
+        $stmtResp->bind_param("sii", $respuesta_incorrecta2, $es_correcta, $id_pregunta);
         $stmtResp->execute();
 
-        $stmtResp->bind_param("sii", $respuesta_incorrecta3, $esCorrecta, $pregunta_id);
+        $stmtResp->bind_param("sii", $respuesta_incorrecta3, $es_correcta, $id_pregunta);
         $stmtResp->execute();
 
         $stmtResp->close();
@@ -107,33 +107,33 @@ class PanelEditorModel
         return $resultado->fetch_assoc();
     }
 
-    public function updatePreguntaConRespuestas($id, $descripcion, $categoria_id, $dificultad_id, $aprobada, $respCorrecta, $resp1, $resp2, $resp3)
+    public function updatePreguntaConRespuestas($id, $descripcion, $id_categoria, $id_dificultad, $aprobada, $respCorrecta, $resp1, $resp2, $resp3)
     {
         $stmt = $this->conexion->prepare("
         UPDATE pregunta 
-        SET descripcion = ?, categoria_id = ?, dificultad_id = ?, aprobada = ?
+        SET descripcion = ?, id_categoria = ?, id_dificultad = ?, aprobada = ?
         WHERE id = ?
     ");
-        $stmt->bind_param("siiii", $descripcion, $categoria_id, $dificultad_id, $aprobada, $id);
+        $stmt->bind_param("siiii", $descripcion, $id_categoria, $id_dificultad, $aprobada, $id);
         $stmt->execute();
 
         // reemplazar respuestas
-        $this->conexion->query("DELETE FROM respuesta WHERE pregunta_id = $id");
+        $this->conexion->query("DELETE FROM respuesta WHERE id_pregunta = $id");
 
         $respuestas = [
-            ['texto' => $respCorrecta, 'esCorrecta' => 1],
-            ['texto' => $resp1, 'esCorrecta' => 0],
-            ['texto' => $resp2, 'esCorrecta' => 0],
-            ['texto' => $resp3, 'esCorrecta' => 0]
+            ['texto' => $respCorrecta, 'es_correcta' => 1],
+            ['texto' => $resp1, 'es_correcta' => 0],
+            ['texto' => $resp2, 'es_correcta' => 0],
+            ['texto' => $resp3, 'es_correcta' => 0]
         ];
 
         $stmtResp = $this->conexion->prepare("
-        INSERT INTO respuesta (pregunta_id, descripcion, esCorrecta)
+        INSERT INTO respuesta (id_pregunta, descripcion, es_correcta)
         VALUES (?, ?, ?)
     ");
 
         foreach ($respuestas as $r) {
-            $stmtResp->bind_param("isi", $id, $r['texto'], $r['esCorrecta']);
+            $stmtResp->bind_param("isi", $id, $r['texto'], $r['es_correcta']);
             $stmtResp->execute();
         }
         $stmtResp->close();

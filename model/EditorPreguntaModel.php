@@ -19,7 +19,7 @@ class EditorPreguntaModel
     }
     public function obtenerRespuestasPorPregunta($id)
     {
-        $stmt = $this->conexion->prepare("SELECT * FROM respuesta WHERE pregunta_id = ?");
+        $stmt = $this->conexion->prepare("SELECT * FROM respuesta WHERE id_pregunta = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $resultado = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -30,7 +30,7 @@ class EditorPreguntaModel
         ];
 
         foreach ($resultado as $r) {
-            if ($r['esCorrecta'] == 1) {
+            if ($r['es_correcta'] == 1) {
                 $respuestas['correcta'] = $r;
             } else {
                 $respuestas['incorrectas'][] = $r;
