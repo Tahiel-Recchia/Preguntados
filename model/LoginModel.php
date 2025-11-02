@@ -8,6 +8,7 @@ class LoginModel {
 
     public function login($user, $password_plano){
         $sql = "SELECT * FROM usuario WHERE nombreDeUsuario = ?";
+
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $user);
         $stmt->execute();
