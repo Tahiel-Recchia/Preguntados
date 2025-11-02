@@ -12,9 +12,18 @@ class PanelEditorController
         $this->renderer = $renderer;
         $this->model = $model;
     }
-
+    private function requireEditor()
+    {
+        if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], ['editor', 'admin'])) {
+            header('HTTP/1.1 403 Forbidden');
+            // puedes redirigir a menú con mensaje
+            header('Location: /register');
+            exit;
+        }
+    }
     public function base()
     {
+        $this->requireEditor();
         // Si hay sesión, cargamos datos del usuario
         $data = [];
         if (isset($_SESSION["nombreDeUsuario"])) {
@@ -30,6 +39,7 @@ class PanelEditorController
     // === Crear nueva pregunta ===
     public function guardar()
     {
+        $this->requireEditor();
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $descripcion = $_POST["descripcion"];
             $id_categoria = $_POST["id_categoria"];
@@ -60,6 +70,7 @@ class PanelEditorController
     // === Eliminar pregunta ===
     public function eliminar()
     {
+        $this->requireEditor();
         $id = $_POST["id"] ?? null;
         if ($id) {
             $this->model->deletePregunta($id);
@@ -70,6 +81,7 @@ class PanelEditorController
 
     public function actualizar()
     {
+        $this->requireEditor();
         $id = $_POST["id"];
         $descripcion = $_POST["descripcion"];
         $id_categoria = $_POST["id_categoria"];

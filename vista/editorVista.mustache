@@ -1,50 +1,50 @@
 
-{{> headerVista}}
-{{> navbarVista}}
+{! {{> headerVista}}
+{! {{> navbarVista}}
 
-<div class="container mx-auto px-6 py-8">
+{! <div class="container mx-auto px-6 py-8">
 
-  <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Panel de Revisión de Reportes</h1>
+{!   <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Panel de Revisión de Reportes</h1>
 
-  {{#reportes}}
-    <div class="bg-white shadow-lg rounded-2xl p-6 mb-6 border border-gray-200">
-      <h2 class="text-xl font-semibold mb-2 text-gray-700">Reporte #{{id}}</h2>
-      <p class="text-gray-600 mb-4"><strong>Descripción del reporte:</strong> {{descripcion}}</p>
+{!   {{#reportes}}
+{!     <div class="bg-white shadow-lg rounded-2xl p-6 mb-6 border border-gray-200">
+{!       <h2 class="text-xl font-semibold mb-2 text-gray-700">Reporte #{{id}}</h2>
+{!       <p class="text-gray-600 mb-4"><strong>Descripción del reporte:</strong> {{descripcion}}</p>
 
-      <div class="bg-gray-50 rounded-lg p-4 mb-4">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Pregunta reportada:</h3>
-        <p class="text-gray-700 mb-3">{{pregunta_descripcion}}</p>
-        <ul class="list-disc pl-6 text-gray-600">
-          <li>{{opcion1}}</li>
-          <li>{{opcion2}}</li>
-          <li>{{opcion3}}</li>
-          <li>{{opcion4}}</li>
-        </ul>
-        <p class="mt-3 text-sm text-green-700"><strong>Opción correcta:</strong> {{opcion_correcta}}</p>
-      </div>
+{!       <div class="bg-gray-50 rounded-lg p-4 mb-4">
+{!         <h3 class="text-lg font-semibold text-gray-800 mb-2">Pregunta reportada:</h3>
+{!         <p class="text-gray-700 mb-3">{{pregunta_descripcion}}</p>
+{!         <ul class="list-disc pl-6 text-gray-600">
+{!           <li>{{opcion1}}</li>
+{!           <li>{{opcion2}}</li>
+{!           <li>{{opcion3}}</li>
+{!           <li>{{opcion4}}</li>
+{!         </ul>
+{!         <p class="mt-3 text-sm text-green-700"><strong>Opción correcta:</strong> {{opcion_correcta}}</p>
+{!       </div>
 
-      <div class="flex justify-end gap-3">
-        <form method="POST" action="/editor/aceptarReporte">
-          <input type="hidden" name="reporte_id" value="{{id}}">
-          <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl transition-all">
-            ✅ Aceptar reporte
-          </button>
-        </form>
+{!       <div class="flex justify-end gap-3">
+{!         <form method="POST" action="/editor/aceptarReporte">
+{!           <input type="hidden" name="reporte_id" value="{{id}}">
+{!           <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl transition-all">
+{!             ✅ Aceptar reporte
+{!           </button>
+{!         </form>
 
-        <form method="POST" action="/editor/rechazarReporte">
-          <input type="hidden" name="reporte_id" value="{{id}}">
-          <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition-all">
-            ❌ Rechazar reporte
-          </button>
-        </form>
-      </div>
-    </div>
-  {{/reportes}}
+{!         <form method="POST" action="/editor/rechazarReporte">
+{!           <input type="hidden" name="reporte_id" value="{{id}}">
+{!           <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition-all">
+{!             ❌ Rechazar reporte
+{!           </button>
+{!         </form>
+{!       </div>
+{!     </div>
+{!   {{/reportes}}
 
-  {{^reportes}}
-    <p class="text-center text-gray-600">No hay reportes pendientes para revisar.</p>
-  {{/reportes}}
+{!   {{^reportes}}
+{!     <p class="text-center text-gray-600">No hay reportes pendientes para revisar.</p>
+{!   {{/reportes}}
 
-</div>
+{! </div>
 
-{{> footerVista}}
+{! {{> footerVista}}

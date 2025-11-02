@@ -1,4 +1,4 @@
-<?php
+ <!-- <?php ?>
 class EditorController {
     private $conexion;
     private $renderer;
@@ -159,4 +159,4 @@ class EditorController {
             $this->renderer->render('editor/suggestions', ['error' => $e->getMessage()]);
         }
     }
-}
+} -->

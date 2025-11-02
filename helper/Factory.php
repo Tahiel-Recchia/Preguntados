@@ -20,6 +20,7 @@ include_once("model/PanelEditorModel.php");
 include_once("controller/PanelEditorController.php");
 include_once("controller/EditorPreguntaController.php");
 include_once("model/EditorPreguntaModel.php");
+//include_once("model/RankingModel.php");
 
 class Factory
 {
@@ -39,7 +40,7 @@ class Factory
         $this->objetos["router"] = new Router($this, 'menucontroller', 'base');
         $this->objetos["loginmodel"] = new LoginModel($this->objetos["database"]);
         $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["loginmodel"]);
-        $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
+        //$this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
         $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
         $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
         $this->objetos["perfilmodel"] = new PerfilModel($this->objetos["database"]);
