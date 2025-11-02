@@ -32,8 +32,8 @@ class PanelEditorController
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $descripcion = $_POST["descripcion"];
-            $categoria_id = $_POST["categoria_id"];
-            $dificultad_id = $_POST["dificultad_id"];
+            $id_categoria = $_POST["id_categoria"];
+            $id_dificultad = $_POST["id_dificultad"];
             $respuesta_correcta = $_POST["respuesta_correcta"];
             $respuesta_incorrecta1 = $_POST["respuesta_incorrecta1"];
             $respuesta_incorrecta2 = $_POST["respuesta_incorrecta2"];
@@ -41,8 +41,8 @@ class PanelEditorController
 
             $this->model->insertarPregunta(
                 $descripcion,
-                $categoria_id,
-                $dificultad_id,
+                $id_categoria,
+                $id_dificultad,
                 $respuesta_correcta,
                 $respuesta_incorrecta1,
                 $respuesta_incorrecta2,
@@ -72,8 +72,8 @@ class PanelEditorController
     {
         $id = $_POST["id"];
         $descripcion = $_POST["descripcion"];
-        $categoria_id = $_POST["categoria_id"];
-        $dificultad_id = $_POST["dificultad_id"];
+        $id_categoria = $_POST["id_categoria"];
+        $id_dificultad = $_POST["id_dificultad"];
         $aprobada = isset($_POST["aprobada"]) ? 1 : 0;
         $respuesta_correcta = $_POST["respuesta_correcta"];
         $respuesta_incorrecta1 = $_POST["respuesta_incorrecta1"];
@@ -83,8 +83,8 @@ class PanelEditorController
         $this->model->updatePreguntaConRespuestas(
             $id,
             $descripcion,
-            $categoria_id,
-            $dificultad_id,
+            $id_categoria,
+            $id_dificultad,
             $aprobada,
             $respuesta_correcta,
             $respuesta_incorrecta1,

@@ -16,11 +16,8 @@ class EditorPreguntaController
     public function base()
     {
         $preguntaId = $_GET['id'] ?? null;
-        echo "ID recibido: " . $preguntaId;
         $pregunta = $this->model->obtenerPreguntaPorId($preguntaId);
         $respuestas = $this->model->obtenerRespuestasPorPregunta($preguntaId);
-        
-        echo '$respuestas';
         
         $this->renderer->render('editorPregunta', [
             'pregunta' => $pregunta,
