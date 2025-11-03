@@ -141,7 +141,7 @@ class PanelEditorModel
         $catCol = $cols['categoria'];
         $difCol = $cols['dificultad'];
 
-        $stmt = $this->conexion->prepare("\
+        $stmt = $this->conexion->prepare("
         UPDATE pregunta 
         SET descripcion = ?, " . $catCol . " = ?, " . $difCol . " = ?, aprobada = ?
         WHERE id = ?

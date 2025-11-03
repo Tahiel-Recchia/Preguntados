@@ -21,7 +21,7 @@
       Nueva Pregunta
     </h2>
 
-  <form action="/index.php?controller=paneleditor&method=guardar" method="POST" class="flex flex-col gap-4">
+  <form action="/paneleditor/guardar" method="POST" class="flex flex-col gap-4">
       <div>
         <label class="block text-sm mb-1 text-gray-300">Descripción</label>
         <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-[#BC6BE8]"></textarea>
@@ -76,6 +76,7 @@
         Guardar Pregunta
       </button>
     </form>
+  
   </section>
 
   <!-- ===== LISTADO DE PREGUNTAS EXISTENTES ===== -->
@@ -115,8 +116,8 @@
       {{/aprobada}}
     </td>
             <td class="p-3 flex justify-center gap-2">
-              <button onclick="abrirModalEditarInline({{id}})" data-action="editar" data-id="{{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</button>
-              <button onclick="abrirModalEliminarInline({{id}})" data-action="eliminar" data-id="{{id}}" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
+<a href="/editorpregunta/editar?id={{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>             
+<button onclick="abrirModalEliminarInline({{id}})" data-action="eliminar" data-id="{{id}}" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
             </td>
   </tr>
   {{/preguntas}}
@@ -309,18 +310,6 @@
 <script>
   // Delegación de eventos para botones Editar / Eliminar (funciona aunque haya inline handlers rotos)
   document.addEventListener('click', function (e) {
-    const editarBtn = e.target.closest('button[data-action="editar"]');
-    if (editarBtn) {
-      e.preventDefault();
-      const id = editarBtn.dataset.id;
-      // llamar a la función existente
-      try {
-        abrirModalEditar(id);
-      } catch (err) {
-        console.error('abrirModalEditar no definida o falló:', err);
-      }
-      return;
-    }
 
     const eliminarBtn = e.target.closest('button[data-action="eliminar"]');
     if (eliminarBtn) {
@@ -338,20 +327,6 @@
 
 <script>
   // Wrappers inline seguros para forzar ejecución y mostrar errores si fallan
-  function abrirModalEditarInline(id) {
-    console.log('abrirModalEditarInline called, id=', id);
-    try {
-      if (typeof abrirModalEditar === 'function') {
-        abrirModalEditar(id);
-      } else {
-        console.error('abrirModalEditar no está definida');
-        alert('Error: función abrirModalEditar no definida (ver consola).');
-      }
-    } catch (err) {
-      console.error('Error en abrirModalEditarInline:', err);
-      alert('Error al abrir el editor. Revisa la consola para más detalles.');
-    }
-  }
 
   function abrirModalEliminarInline(id) {
     console.log('abrirModalEliminarInline called, id=', id);
