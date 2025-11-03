@@ -61,6 +61,7 @@ class LoginController
         if (is_array($result)) {
             $_SESSION["user_id"] = $result['user_id'];
             $_SESSION["nombreDeUsuario"] = $result['nombreDeUsuario'];
+            $_SESSION["rol"] = $result['rol'] ?? 'usuario';
 
             // Guardar fotoDePerfil en sesión para que la navbar y vistas puedan mostrarla
             $foto = $this->model->getFotoByUsername($result['nombreDeUsuario']);

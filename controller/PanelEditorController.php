@@ -14,7 +14,7 @@ class PanelEditorController
     }
     private function requireEditor()
     {
-        if (!isset($_SESSION['role']) || !in_array($_SESSION['rol'], ['editor', 'admin'])) {
+        if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [2, 3])) {
             header('HTTP/1.1 403 Forbidden');
             // puedes redirigir a menú con mensaje
             header('Location: /menu');
@@ -65,7 +65,7 @@ class PanelEditorController
     // === Eliminar pregunta ===
     public function eliminar()
     {
-        // $this->requireEditor();
+        $this->requireEditor();
         $id = $_POST["id"] ?? null;
         if ($id) {
             $this->model->deletePregunta($id);

@@ -111,7 +111,7 @@ class PanelEditorModel
         $stmtResp->execute();
 
         // Respuestas incorrectas
-        $es_orrecta = 0;
+        $es_correcta = 0;
 
         $stmtResp->bind_param("sii", $respuesta_incorrecta1, $es_correcta, $id_pregunta);
         $stmtResp->execute();
