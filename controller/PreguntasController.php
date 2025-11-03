@@ -44,6 +44,7 @@ class PreguntasController
     {
         $categoriaId = $_POST['categoria'] ?? $_GET['categoria'] ?? null;
 
+
         if ($categoriaId == null) {
             return null;
         }
@@ -71,6 +72,11 @@ class PreguntasController
         $data = $this->model->obtenerPorId($idPreguntaAnterior);
         $data = $this->procesarOpciones($data, $respuestaCorrecta, $respuestaUsuario);
         $esValida = $this->model->verificarRespuesta($idPreguntaAnterior, $respuestaUsuario);
+        $_SESSION['horaRespuesta'] = $this->model->getHoraEnvio();
+        if(!$this->partida->verificarTiempo($_SESSION['horaEnvio'], $_SESSION['horaRespuesta'])){
+            $this->tiempoAgotado();
+            return;
+        }
         if ($esValida) {
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
@@ -87,13 +93,16 @@ class PreguntasController
         if ($data == null) {
             //Si no hay más preguntas manda al menú, habría que hacer algo más lindo que solo mandar al menú
             unset($_SESSION['preguntasVistas']);
+            unset($_SESSION['respuesta_correcta_actual']);
+            unset( $_SESSION['id_pregunta_actual']);
             header('Location: /menu');
             exit;
         }
 
 
         $respuestaCorrecta = $this->model->getRespuestaCorrecta($data['id_pregunta']);
-
+        $horaEnvio = $this->model->getHoraEnvio();
+        $_SESSION['horaEnvio'] = $horaEnvio;
         $_SESSION['respuesta_correcta_actual'] = $respuestaCorrecta;
         $_SESSION['id_pregunta_actual'] = $data['id_pregunta'];
         $this->renderer->render("preguntas", $data);
@@ -102,6 +111,9 @@ class PreguntasController
     public function terminarPartida(){
         $this->partida->terminarPartida($_SESSION['idPartida'], 1000);
         unset($_SESSION['idPartida']);
+        unset($_SESSION['preguntasVistas']);
+        unset($_SESSION['respuesta_correcta_actual']);
+        unset( $_SESSION['id_pregunta_actual']);
     }
 
     public function tiempoAgotado(){

@@ -156,4 +156,9 @@ class PreguntasModel
         }
         return 'respuesta';
     }
+
+    public function getHoraEnvio(){
+        return new DateTime();
+
+    }
 }

@@ -27,4 +27,14 @@ class PartidaModel {
         $stmt->execute();
         $stmt->close();
     }
+
+    public function verificarTiempo($horaEnvio, $horaRespuesta){
+        $segundosEnvio = $horaEnvio->getTimestamp();
+        $segundosRespuesta   = $horaRespuesta->getTimestamp();
+        $diferenciaSegundos = $segundosRespuesta - $segundosEnvio;
+        if ($diferenciaSegundos > 10){
+            return false;
+        }
+        return true;
+    }
 }
