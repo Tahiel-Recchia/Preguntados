@@ -34,6 +34,24 @@ class LoginModel {
         ];
     }
 
+    /**
+     * Obtener foto de perfil por nombre de usuario (para preview en login)
+     */
+    public function getFotoByUsername($user){
+        $sql = "SELECT fotoDePerfil FROM usuario WHERE nombreDeUsuario = ? LIMIT 1";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("s", $user);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        $fila = $resultado->fetch_assoc();
+        $stmt->close();
+
+        if ($fila && !empty($fila['fotoDePerfil'])) {
+            return $fila['fotoDePerfil'];
+        }
+        return null;
+    }
+
 
 
 }

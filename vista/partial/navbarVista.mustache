@@ -34,9 +34,13 @@
         </div>
 
         <!-- Login/Logout Escritorio -->
-        <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+        <div class="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
             {{#sesion}}
-                <a href="/login/logout" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Cerrar Sesión <span aria-hidden="true">&rarr;</span></a>
+                <!-- Mostrar avatar + nombre que enlaza al perfil en vez de botones Iniciar/Cerrar sesión -->
+                <a href="/index.php?controller=perfil&method=base&id={{sesion.id}}" class="flex items-center gap-3 text-white hover:opacity-90 transition">
+                    <img src="{{sesion.fotoDePerfil}}" onerror="this.src='/public/placeholder.png'" alt="Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-[#BC6BE8]">
+                    <span class="font-semibold">{{sesion.nombreDeUsuario}}</span>
+                </a>
             {{/sesion}}
             {{^sesion}}
                 <a href="/login" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Iniciar Sesión</a>

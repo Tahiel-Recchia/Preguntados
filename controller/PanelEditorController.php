@@ -19,6 +19,25 @@ class PanelEditorController
         $data = [];
         if (isset($_SESSION["nombreDeUsuario"])) {
             $data["nombreDeUsuario"] = $_SESSION["nombreDeUsuario"];
+            // Cargar datos de sesión completos (foto, puntaje, etc.) para que la navbar muestre avatar
+            if (isset($_SESSION["user_id"])) {
+                // Usar PerfilModel temporalmente para obtener los datos
+                if (!class_exists('PerfilModel')) {
+                    include_once(__DIR__ . '/../model/PerfilModel.php');
+                }
+                $perfilModel = new PerfilModel($this->conexion);
+                $data['sesion'] = $perfilModel->getDatosUsuario($_SESSION['user_id']);
+                // Normalizar fotoDePerfil
+                if (!empty($data['sesion']['fotoDePerfil'])) {
+                    $foto = $data['sesion']['fotoDePerfil'];
+                    if (strpos($foto, '/') !== 0 && stripos($foto, 'http') !== 0) {
+                        $foto = '/' . ltrim($foto, '/');
+                    }
+                    $data['sesion']['fotoDePerfil'] = $foto;
+                } else {
+                    $data['sesion']['fotoDePerfil'] = '/public/placeholder.png';
+                }
+            }
         }
 
         // Podés traer info adicional del modelo

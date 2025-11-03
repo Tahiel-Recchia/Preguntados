@@ -45,6 +45,22 @@ class PanelEditorModel
         $pregunta = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
+        // Normalizar nombres de columnas para la vista/JS: siempre devolver categoria_id y dificultad_id
+        if ($pregunta) {
+            // Las posibles columnas detectadas por detectPreguntaColumns pueden ser 'id_categoria' o 'categoria_id'
+            $cols = $this->detectPreguntaColumns();
+            $catCol = $cols['categoria'];
+            $difCol = $cols['dificultad'];
+
+            // Mapear al formato esperado por el frontend
+            if (isset($pregunta[$catCol]) && !isset($pregunta['categoria_id'])) {
+                $pregunta['categoria_id'] = $pregunta[$catCol];
+            }
+            if (isset($pregunta[$difCol]) && !isset($pregunta['dificultad_id'])) {
+                $pregunta['dificultad_id'] = $pregunta[$difCol];
+            }
+        }
+
         // Obtener las respuestas
     $query = "SELECT * FROM respuesta WHERE id_pregunta = ? ORDER BY es_correcta DESC";
         $stmt = $this->conexion->prepare($query);

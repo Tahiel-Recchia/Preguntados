@@ -8,7 +8,7 @@ class PerfilModel {
     }
 
     public function getDatosUsuario($idUsuario){
-    $sql = "SELECT nombreDeUsuario, fechaNac, fotoDePerfil, sexo, direccion, puntajeAcumulado, rol_id FROM usuario WHERE id = ?";
+    $sql = "SELECT id, nombreDeUsuario, fechaNac, fotoDePerfil, sexo, direccion, puntajeAcumulado, rol_id FROM usuario WHERE id = ?";
     $stmt = $this->conexion->prepare($sql);
     $stmt->bind_param("i", $idUsuario);
     $stmt->execute();
