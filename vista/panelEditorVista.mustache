@@ -21,7 +21,7 @@
       Nueva Pregunta
     </h2>
 
-  <form action="/paneleditor/guardar" method="POST" class="flex flex-col gap-4">
+  <form action="/index.php?controller=paneleditor&method=guardar" method="POST" class="flex flex-col gap-4">
       <div>
         <label class="block text-sm mb-1 text-gray-300">Descripción</label>
         <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-[#BC6BE8]"></textarea>
@@ -116,7 +116,7 @@
       {{/aprobada}}
     </td>
             <td class="p-3 flex justify-center gap-2">
-<a href="/editorpregunta/editar?id={{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>             
+<a href="/index.php?controller=editorpregunta&method=editar&id={{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>             
 <button onclick="abrirModalEliminarInline({{id}})" data-action="eliminar" data-id="{{id}}" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
             </td>
   </tr>

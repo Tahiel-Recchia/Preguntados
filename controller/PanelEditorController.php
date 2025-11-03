@@ -16,8 +16,8 @@ class PanelEditorController
     {
         if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [2, 3])) {
             header('HTTP/1.1 403 Forbidden');
-            // puedes redirigir a menú con mensaje
-            header('Location: /menu');
+            // redirigir a menú usando URL explícita para entornos sin .htaccess
+            header('Location: /index.php?controller=menu');
             exit;
         }
     }
@@ -25,6 +25,15 @@ class PanelEditorController
     {
         $this->requireEditor();
         $data = [];
+        // Proveer datos de sesión a la vista para que el navbar tenga la misma estructura que en otras pantallas
+        if (isset($_SESSION['user_id'])) {
+            $data['sesion'] = [
+                'id' => $_SESSION['user_id'],
+                'nombreDeUsuario' => $_SESSION['nombreDeUsuario'] ?? null,
+                'fotoDePerfil' => $_SESSION['fotoDePerfil'] ?? '/public/placeholder.png',
+                'rol' => $_SESSION['rol'] ?? null
+            ];
+        }
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         // Podés traer info adicional del modelo
         $data["preguntas"] = $this->model->obtenerPreguntas();
@@ -54,7 +63,7 @@ class PanelEditorController
                 $respuesta_incorrecta3
             );
 
-            header("Location: /paneleditor");
+            header("Location: /index.php?controller=paneleditor");
             exit;
         }
 
@@ -70,7 +79,7 @@ class PanelEditorController
         if ($id) {
             $this->model->deletePregunta($id);
         }
-        header("Location: /paneleditor");
+        header("Location: /index.php?controller=paneleditor");
         exit;
     }
 
@@ -99,7 +108,7 @@ class PanelEditorController
             $respuesta_incorrecta3
         );
 
-        header("Location: /paneleditor");
+        header("Location: /index.php?controller=paneleditor");
         exit;
     }
 

@@ -42,7 +42,8 @@ class Database
     {
         $stmt = $this->conexion->prepare($sql);
         if (!$stmt) {
-            die("Error en prepare: " . $this->conexion->error);
+            // Lanzar excepción para que el código llamador pueda manejar el error en lugar de terminar el proceso
+            throw new Exception("Error en prepare: " . $this->conexion->error . " -- SQL: " . $sql);
         }
         return $stmt;
     }

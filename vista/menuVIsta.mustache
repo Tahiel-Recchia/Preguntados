@@ -26,14 +26,14 @@
             <div class="w-full flex flex-col items-center mt-8 space-y-4">
 
                 <!-- Req #2: Botón Crear Partida -->
-                <a href="/buscarpartida/jugarpartida" class="w-full py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2 text-center">
+                <a href="/index.php?controller=buscarpartida&method=jugarpartida" class="w-full py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2 text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                         <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
                     </svg>
                     Crear Nueva Partida
                 </a>
                 <!-- Req #3: Botón Ver Ranking -->
-                <a href="/ranking" class="w-full py-3 rounded-lg bg-[#2c2f56] text-white font-semibold hover:bg-[#3f4477] active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2 text-center">
+                <a href="/index.php?controller=ranking" class="w-full py-3 rounded-lg bg-[#2c2f56] text-white font-semibold hover:bg-[#3f4477] active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2 text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                         <path fill-rule="evenodd" d="M4.5 2.25a.75.75 0 0 0 0 1.5v16.5a.75.75 0 0 0 0 1.5h15a.75.75 0 0 0 0-1.5V3.75a.75.75 0 0 0 0-1.5h-15ZM9 6.75a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-1.5 0V7.5A.75.75 0 0 1 9 6.75Zm3.75.75a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V7.5Zm3-1.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-1.5 0V7.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                     </svg>
@@ -42,7 +42,7 @@
 
                 {{#isEditor}}
                 <!-- Botón Panel Editor (solo visible para editores) -->
-                <a href="/paneleditor" class="w-full py-3 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2 text-center">
+                <a href="/index.php?controller=paneleditor" class="w-full py-3 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2 text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                         <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
                     </svg>

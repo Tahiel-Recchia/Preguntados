@@ -46,9 +46,8 @@ class PreguntasModel
         $stmt_pregunta->close();
 
 
-        $sql_opciones = "SELECT descripcion, es_correcta
-                     FROM respuesta
-                     WHERE id_pregunta = ?";
+    $tablaResp = $this->detectRespuestasTable();
+    $sql_opciones = "SELECT descripcion, es_correcta FROM " . $tablaResp . " WHERE id_pregunta = ?";
 
         $stmt_opciones = $this->conexion->prepare($sql_opciones);
         $stmt_opciones->bind_param("i", $id_pregunta);
@@ -112,9 +111,8 @@ class PreguntasModel
         $stmt_pregunta->close();
 
 
-        $sql_opciones = "SELECT descripcion, es_correcta
-                     FROM respuesta
-                     WHERE id_pregunta = ?";
+    $tablaResp = $this->detectRespuestasTable();
+    $sql_opciones = "SELECT descripcion, es_correcta FROM " . $tablaResp . " WHERE id_pregunta = ?";
 
         $stmt_opciones = $this->conexion->prepare($sql_opciones);
         $stmt_opciones->bind_param("i", $id_pregunta);
@@ -133,5 +131,29 @@ class PreguntasModel
         ];
 
         return $datos_para_la_vista;
+    }
+
+    /**
+     * Detecta el nombre de la tabla de respuestas: 'respuesta' o 'respuestas'
+     */
+    private function detectRespuestasTable()
+    {
+        try {
+            $res = $this->conexion->query("SHOW TABLES LIKE 'respuesta'");
+        } catch (Exception $e) {
+            $res = [];
+        }
+        if (!empty($res)) {
+            return 'respuesta';
+        }
+        try {
+            $res2 = $this->conexion->query("SHOW TABLES LIKE 'respuestas'");
+        } catch (Exception $e) {
+            $res2 = [];
+        }
+        if (!empty($res2)) {
+            return 'respuestas';
+        }
+        return 'respuesta';
     }
 }
