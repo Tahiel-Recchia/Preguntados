@@ -21,7 +21,7 @@
       Nueva Pregunta
     </h2>
 
-    <form action="/paneleditor/guardar" method="POST" class="flex flex-col gap-4">
+  <form action="/index.php?controller=paneleditor&method=guardar" method="POST" class="flex flex-col gap-4">
       <div>
         <label class="block text-sm mb-1 text-gray-300">Descripción</label>
         <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-[#BC6BE8]"></textarea>
@@ -233,7 +233,7 @@
     if (preguntaAEliminarId) {
       const form = document.createElement('form');
       form.method = 'POST';
-      form.action = '/paneleditor/eliminar';
+  form.action = '/index.php?controller=paneleditor&method=eliminar';
       
       const input = document.createElement('input');
       input.type = 'hidden';
@@ -252,7 +252,7 @@
     try {
       console.log('abrirModalEditar called, id=', id);
       // Obtener datos de la pregunta
-      const response = await fetch(`/paneleditor/obtenerPregunta?id=${id}`);
+  const response = await fetch(`/index.php?controller=paneleditor&method=obtenerPregunta&id=${id}`);
       const data = await response.json();
       
       // Llenar el formulario con los datos
@@ -290,7 +290,7 @@
     
     try {
       const formData = new FormData(formEditar);
-      const response = await fetch('/paneleditor/actualizar', {
+  const response = await fetch('/index.php?controller=paneleditor&method=actualizar', {
         method: 'POST',
         body: formData
       });
