@@ -23,11 +23,11 @@
         <div class="hidden lg:flex lg:gap-x-12">
             {{#sesion}}
                 <!-- Links si está logueado -->
-                <a href="/index.php?controller=menu" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Menu</a>
-                <a href="/index.php?controller=historial" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Historial</a>
-                <a href="/index.php?controller=ranking" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Ranking</a>
+                <a href="/menu" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Menu</a>
+                <a href="/historial" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Historial</a>
+                <a href="/ranking" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Ranking</a>
                 <!-- Mostrar Salir después de Categoria (en rojo) -->
-                <a href="/index.php?controller=login&method=logout" class="text-sm/6 font-semibold text-red-500 hover:text-red-400 transition-colors">Salir</a>
+                <a href="/login/logout" class="text-sm/6 font-semibold text-red-500 hover:text-red-400 transition-colors">Salir</a>
             {{/sesion}}
             {{^sesion}}
                 <!-- Links si NO está logueado -->
@@ -38,7 +38,7 @@
         <div class="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
             {{#sesion}}
                 <!-- Mostrar avatar + nombre que enlaza al perfil (a la derecha) -->
-                <a href="/index.php?controller=perfil&method=base&id={{sesion.id}}" class="flex items-center gap-3 text-white hover:opacity-90 transition">
+                <a href="/perfil/base/{{sesion.id}}" class="flex items-center gap-3 text-white hover:opacity-90 transition">
                     <img src="{{sesion.fotoDePerfil}}" onerror="this.src='/public/placeholder.png'" alt="Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-[#BC6BE8]">
                     <span class="font-semibold">{{sesion.nombreDeUsuario}}</span>
                 </a>
@@ -78,15 +78,15 @@
                     <div class="-my-6 divide-y divide-white/10">
                         <div class="space-y-2 py-6">
                             {{#sesion}}
-                                <a href="/index.php?controller=menu" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Menu</a>
-                                <a href="/index.php?controller=historial" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Historial</a>
-                                <a href="/index.php?controller=ranking" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Ranking</a>
-                                <a href="/index.php?controller=perfil&method=base&id={{sesion.id}}" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">{{sesion.nombreDeUsuario}}</a>
+                                <a href="/menu" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Menu</a>
+                                <a href="/historial" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Historial</a>
+                                <a href="/ranking" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Ranking</a>
+                                <a href="/perfil/base/{{sesion.id}}" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">{{sesion.nombreDeUsuario}}</a>
                             {{/sesion}}
                         </div>
                         <div class="py-6">
                             {{#sesion}}
-                                <a href="/index.php?controller=login&method=logout" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Salir</a>
+                                <a href="/login/logout" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Salir</a>
                             {{/sesion}}
                             {{^sesion}}
                                 <a href="/login" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-[#2c2f56] transition-colors">Iniciar Sesión</a>

@@ -77,6 +77,8 @@ class PreguntasController
             $this->tiempoAgotado();
             return;
         }
+        unset($_SESSION['horaEnvio']);
+        unset($_SESSION['horaRespuesta']);
         if ($esValida) {
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
