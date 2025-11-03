@@ -21,6 +21,9 @@ include_once("model/PanelEditorModel.php");
 include_once("controller/PanelEditorController.php");
 include_once("controller/EditorPreguntaController.php");
 include_once("model/EditorPreguntaModel.php");
+include_once ("model/RankingModel.php");
+include_once ("controller/RankingController.php");
+include_once("model/PartidaModel.php");
 
 class Factory
 {
@@ -51,9 +54,12 @@ class Factory
        // editor model y controller
         $this->objetos["categoriamodel"] = new CategoriaModel($this->objetos["database"]);
         $this->objetos["preguntasmodel"] = new PreguntasModel($this->objetos["database"]);
-        $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"]);
+        $this->objetos["partidamodel"] = new PartidaModel($this->objetos["database"]);
+        $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"], $this->objetos["partidamodel"]);
         $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
         $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
+        $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
+        $this->objetos["rankingcontroller"] = new RankingController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"]);
         $this->objetos["ruletacontroller"] = new RuletaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["categoriamodel"]);
         $this->objetos["paneleditormodel"] = new PanelEditorModel($this->objetos["database"]);
         $this->objetos["paneleditorcontroller"] = new PanelEditorController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["paneleditormodel"]);

@@ -61,21 +61,12 @@
             <!-- Contenedor del historial -->
             <div class="space-y-4">
                 {{#ranking}}
-                    <!--
-                      Req #5: El item completo es un link.
-                      He asumido que la URL del perfil se basa en el 'nombreDeUsuario'.
-                      Añadido 'block' para que el <a> ocupe todo el espacio.
-                    -->
                     <a href="/perfil/base/{{id}}"
                        class="bg-[#2c2f56] rounded-lg p-4 flex items-center justify-between transition hover:bg-[#3f4477] block">
 
-                        <!-- Lado Izquierdo: Rango + Imagen + Nombre -->
+                        <!--  Rango + Imagen + Nombre -->
                         <div class="flex items-center gap-4">
 
-                            <!--
-                          Req #1: Número del Ranking.
-                          ¡IMPORTANTE! Asumo que tu Controlador ahora provee una variable {{posicion}}.
-                        -->
                             <span class="w-10 text-center text-2xl font-bold text-gray-400">{{posicion}}.</span>
                        <img src="{{fotoPerfil}}"
                            onerror="this.src='/public/placeholder.png'"
@@ -90,7 +81,6 @@
 
                         <!-- Lado Derecho: Puntaje -->
                         <div class="text-right">
-                            <!-- Req #2: Puntaje -->
                             <p class="font-bold text-lg text-green-400">{{puntajeAcumulado}} Pts</p>
                         </div>
                     </a>
