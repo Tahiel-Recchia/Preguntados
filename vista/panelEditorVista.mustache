@@ -30,7 +30,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm mb-1 text-gray-300">Categoría</label>
-          <select name="categoria_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
             <option value="">Seleccionar...</option>
             <option value="1">Geografía</option>
             <option value="2">Historia</option>
@@ -40,7 +40,7 @@
         </div>
         <div>
           <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-          <select name="dificultad_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <select name="id_dificultad" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
             <option value="">Seleccionar...</option>
             <option value="1">Fácil</option>
             <option value="2">Media</option>
@@ -150,7 +150,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm mb-1 text-gray-300">Categoría</label>
-          <select id="edit_categoria_id" name="categoria_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <select id="edit_id_categoria" name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
             <option value="1">Geografía</option>
             <option value="2">Historia</option>
             <option value="3">Ciencia</option>
@@ -159,7 +159,7 @@
         </div>
         <div>
           <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-          <select id="edit_dificultad_id" name="dificultad_id" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <select id="edit_id_dificultad" name="id_dificultad" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
             <option value="1">Fácil</option>
             <option value="2">Media</option>
             <option value="3">Difícil</option>
@@ -258,12 +258,12 @@
       // Llenar el formulario con los datos
       document.getElementById('pregunta_id').value = data.pregunta.id;
       document.getElementById('edit_descripcion').value = data.pregunta.descripcion;
-      document.getElementById('edit_categoria_id').value = data.pregunta.categoria_id;
-      document.getElementById('edit_dificultad_id').value = data.pregunta.dificultad_id;
+      document.getElementById('edit_id_categoria').value = data.pregunta.id_categoria;
+      document.getElementById('edit_id_dificultad').value = data.pregunta.id_dificultad;
       
       // Llenar respuestas
-      const respuestaCorrecta = data.respuestas.find(r => r.esCorrecta === 1);
-      const respuestasIncorrectas = data.respuestas.filter(r => r.esCorrecta === 0);
+      const respuestaCorrecta = data.respuestas.find(r => r.es_correcta === 1);
+      const respuestasIncorrectas = data.respuestas.filter(r => r.es_correcta === 0);
       
       document.getElementById('edit_respuesta_correcta').value = respuestaCorrecta.descripcion;
       document.getElementById('edit_respuesta_incorrecta1').value = respuestasIncorrectas[0].descripcion;

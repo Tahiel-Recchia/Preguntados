@@ -29,16 +29,16 @@ class PanelEditorModel
     public function obtenerPreguntaConRespuestas($id)
     {
         // Obtener la pregunta
-    $cols = $this->detectPreguntaColumns();
-    $catCol = $cols['categoria'];
-    $difCol = $cols['dificultad'];
+        $cols = $this->detectPreguntaColumns();
+        $catCol = $cols['categoria'];
+        $difCol = $cols['dificultad'];
 
-    $query = "SELECT p.*, c.descripcion AS categoria_nombre, d.descripcion AS dificultad_nombre
+        $query = "SELECT p.*, c.descripcion AS categoria_nombre, d.descripcion AS dificultad_nombre
          FROM pregunta p
          LEFT JOIN categoria c ON p." . $catCol . " = c.id
          LEFT JOIN dificultad d ON p." . $difCol . " = d.id
          WHERE p.id = ?";
-        
+
         $stmt = $this->conexion->prepare($query);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -46,7 +46,7 @@ class PanelEditorModel
         $stmt->close();
 
         // Obtener las respuestas
-    $query = "SELECT * FROM respuesta WHERE id_pregunta = ? ORDER BY es_correcta DESC";
+        $query = "SELECT * FROM respuesta WHERE id_pregunta = ? ORDER BY es_correcta DESC";
         $stmt = $this->conexion->prepare($query);
         $stmt->bind_param("i", $id);
         $stmt->execute();

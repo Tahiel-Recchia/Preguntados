@@ -1,4 +1,4 @@
-<?php
+<!-- <?php?>
 class EditorModel {
     private $db;
 
@@ -157,4 +157,4 @@ class EditorModel {
         $stmt->close();
         return true;
     }
-}
+} -->
