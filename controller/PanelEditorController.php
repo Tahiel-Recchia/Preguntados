@@ -23,7 +23,7 @@ class PanelEditorController
     }
     public function base()
     {
-        
+        $this->requireEditor();
         $data = [];
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         // Podés traer info adicional del modelo
@@ -76,7 +76,7 @@ class PanelEditorController
 
     public function actualizar()
     {
-        // $this->requireEditor();
+        $this->requireEditor();
         $id = $_POST["id"];
         $descripcion = $_POST["descripcion"];
         $id_categoria = $_POST["id_categoria"];
