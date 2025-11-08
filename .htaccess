@@ -1,22 +1,13 @@
 RewriteEngine On
-
-# Indicar la carpeta de tu proyecto (AHORA ES LA RAÍZ)
 RewriteBase /
 
-# 1) NO reescribir las URLs que empiecen con /public/
+
 RewriteCond %{REQUEST_URI} ^/public/ [NC]
 RewriteRule ^ - [L]
 
-# 2) Si el archivo o directorio existe, no reescribir (CSS, JS, imágenes, etc.)
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
-
-# 3) Reglas para controller / method / id (3 segmentos)
 RewriteRule ^([^/]+)/([^/]+)/([^/]+)/?$ index.php?controller=$1&method=$2&id=$3 [L,QSA]
-
-# 4) Reglas para controller / method (2 segmentos)
 RewriteRule ^([^/]+)/([^/]+)/?$ index.php?controller=$1&method=$2 [L,QSA]
-
-# 5) Regla para solo controller (1 segmento)
 RewriteRule ^([^/]+)/?$ index.php?controller=$1 [L,QSA]

@@ -37,13 +37,26 @@ class LoginModel {
         // ✅ Ahora devolvemos también el rol
         return [
             'user_id' => $fila["id"],
-            'nombreDeUsuario' => $fila["nombreDeUsuario"],
-            'role' => strtolower($fila["rol_nombre"]) // ej: 'admin', 'editor', 'jugador'
+            'nombreDeUsuario' => $user,
+            'rol' => $fila["rol_id"]
         ];
     }
-}
 
-     /*   return [
-            'user_id' => $fila["id"],
-            'nombreDeUsuario' => $user
-        ];*/
+    /**
+     * Obtener foto de perfil por nombre de usuario (para preview en login)
+     */
+    public function getFotoByUsername($user){
+        $sql = "SELECT fotoDePerfil FROM usuario WHERE nombreDeUsuario = ? LIMIT 1";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("s", $user);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        $fila = $resultado->fetch_assoc();
+        $stmt->close();
+
+        if ($fila && !empty($fila['fotoDePerfil'])) {
+            return $fila['fotoDePerfil'];
+        }
+        return null;
+    }
+}

@@ -26,6 +26,31 @@ class LoginController
 
     }
 
+    /**
+     * Endpoint para obtener fotoDePerfil por nombre de usuario (devuelve JSON)
+     */
+    public function obtenerUsuario()
+    {
+        $username = $_GET['username'] ?? null;
+        header('Content-Type: application/json');
+        if (!$username) {
+            echo json_encode(['error' => 'Falta username']);
+            exit;
+        }
+
+        $foto = $this->model->getFotoByUsername($username);
+        if ($foto) {
+            // Normalizar ruta: prefijar '/' si hace falta
+            if (strpos($foto, '/') !== 0 && stripos($foto, 'http') !== 0) {
+                $foto = '/' . ltrim($foto, '/');
+            }
+            echo json_encode(['fotoDePerfil' => $foto]);
+        } else {
+            echo json_encode(['fotoDePerfil' => '/public/placeholder.png']);
+        }
+        exit;
+    }
+
 
     public function login(){
         $user = $_POST["username"];
@@ -36,8 +61,18 @@ class LoginController
         if (is_array($result)) {
             $_SESSION["user_id"] = $result['user_id'];
             $_SESSION["nombreDeUsuario"] = $result['nombreDeUsuario'];
-            // NUEVO: guardar rol
-            $_SESSION["role"] = isset($result['role']) ? $result['role'] : 'player';
+            $_SESSION["rol"] = $result['rol'] ?? 'usuario';
+
+            // Guardar fotoDePerfil en sesión para que la navbar y vistas puedan mostrarla
+            $foto = $this->model->getFotoByUsername($result['nombreDeUsuario']);
+            if ($foto) {
+                if (strpos($foto, '/') !== 0 && stripos($foto, 'http') !== 0) {
+                    $foto = '/' . ltrim($foto, '/');
+                }
+                $_SESSION['fotoDePerfil'] = $foto;
+            } else {
+                $_SESSION['fotoDePerfil'] = '/public/placeholder.png';
+            }
 
             session_write_close();
             header("Location: /menu");

@@ -22,6 +22,8 @@ class RegisterModel
 
         $passwordHash = $this->generatePasswordHash($userData["password"]);
         $tokenData = $this->generateToken();
+        // Asegurar rol por defecto (1 = jugador)
+        $userData['role'] = isset($userData['role']) ? (int)$userData['role'] : 1;
         $this->insertUserIntoDatabase($userData, $tokenData, $passwordHash);
     }
 
@@ -42,9 +44,10 @@ class RegisterModel
 
     private function insertUserIntoDatabase($userData, $tokenData, $passwordHash)
     {
+        // Insertar con rol_id (por defecto 1 = jugador)
         $sql = "INSERT INTO usuario 
-        (nombreCompleto, nombreDeUsuario, mail, contrasenia, fechaNac, sexo, direccion, token, fotoDePerfil)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (nombreCompleto, nombreDeUsuario, mail, contrasenia, fechaNac, sexo, direccion, token, rol_id, fotoDePerfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $this->conexion->prepare($sql);
 
@@ -52,8 +55,11 @@ class RegisterModel
             throw new \Exception("Error al preparar la consulta: " . $this->conexion->error);
         }
 
+        $rol = (int)$userData['role'];
+        $foto = isset($userData['profilePic']) ? $userData['profilePic'] : '/public/placeholder.png';
+
         $stmt->bind_param(
-            "sssssssss",
+            "ssssssssss",
             $userData["name"],
             $userData["username"],
             $userData["email"],
@@ -62,7 +68,8 @@ class RegisterModel
             $userData["gender"],
             $userData["address"],
             $tokenData["token"],
-            $userData["profilePic"]
+            $rol,
+            $foto
         );
 
         if (!$stmt->execute()) {

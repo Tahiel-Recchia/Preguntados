@@ -1,0 +1,46 @@
+<main class="flex flex-col h-[60%] w-1/2 mx-auto">
+    <div class="flex justify-between items-center max-w-[1024px] pb-[40px]">
+        <h1 class="text-white text-xl font-bold">Preguntados</h1>
+        <div class="text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] rounded-3xl px-[16px] py-[8px] font-semibold">🏆 2/10 Puntos</div>
+    </div>
+
+
+    {{#tiempoAgotado}}
+    <div class="bg-[#343964] py-[62px] rounded-2xl w-full justify-center flex flex-col">
+        <p class="text-center text-lg font-medium pb-[42px] text-red-400">{{tiempoAgotado}}</p>
+
+    </div>
+    {{/tiempoAgotado}}
+    {{^tiempoAgotado}}
+        <div class="bg-[#343964] py-[62px] rounded-2xl w-full justify-center flex flex-col">
+            <p class="text-center text-lg font-medium pb-[42px] text-red-400">¡Incorrecto!</p>
+        </div>
+    <div class="grid grid-cols-2 gap-[20px] w-2/3 self-center">
+        {{#opciones}}
+            <div class="w-full py-[20px] text-center text-white font-semibold rounded-lg
+
+            {{#es_correcta}}
+                bg-green-600 border-2 border-green-300
+            {{/es_correcta}}
+
+                {{#es_la_seleccionada_incorrecta}}
+                bg-red-600 border-2 border-red-300
+            {{/es_la_seleccionada_incorrecta}}
+
+                {{#es_otra_incorrecta}}
+                bg-gray-700 opacity-60
+            {{/es_otra_incorrecta}}
+        ">
+                {{descripcion}}
+            </div>
+        {{/opciones}}
+    </div>
+    {{/tiempoAgotado}}
+        <div class="w-2/3 self-center mt-5">
+            <form action="/menu/base" method="GET">
+            <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
+                Ir al menú
+            </button>
+        </form>
+        </div>
+</main>

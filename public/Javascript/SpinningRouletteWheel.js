@@ -15,6 +15,8 @@ const centroY = canvas.height / 2;
 
 const colores = categorias.map(categoria => categoria.color);
 
+console.log(categorias);
+
 let anguloActual = 0;
 let estaGirando = false;
 
@@ -41,7 +43,7 @@ function cargarImagenes() {
                 }
             };
             img.onerror = () => {
-                console.error(`Error al cargar la imagen: ${categoria.imagen}`);
+                console.error(`Error al cargar la imagen: ${categoria.images}`);
                 // Aca podemos poner un placeholder cualquier cosa
                 imagenesCargadas[categoria.descripcion] = null; // si falla la imagen se pone null por ahora
                 imagenesCargadasCount++;
@@ -156,9 +158,26 @@ function animarGiroConEasing(anguloDestino, duracion, ganador) {
         } else {
             anguloActual = anguloDestino;
             estaGirando = false;
-            botonGirar.disabled = false;
+            botonGirar.disabled = true;
             pResultado.textContent = ganador.descripcion;
             anguloActual = anguloActual % (2 * Math.PI);
+
+            const categoriaId = ganador.id;
+            const formData = new FormData();
+            formData.append('categoria', categoriaId);
+            fetch('/preguntas/mostrarpregunta', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            })
+                .then(() => {
+                    window.location.href = `/preguntas/mostrarpregunta?categoria=${categoriaId}`;
+                })
+                .catch(error => {
+                    console.error('Error al enviar la categoría:', error);
+                    pResultado.textContent = 'Error al ir a preguntas.';
+                    botonGirar.disabled = false;
+                });
         }
     }
     requestAnimationFrame(frame);
@@ -177,7 +196,6 @@ cargarImagenes().then(() => {
     dibujarRuleta();
     botonGirar.disabled = true;
 });
-
 
 botonGirar.addEventListener('click', iniciarGiro);
 botonGirar.disabled = true;

@@ -19,11 +19,20 @@ class Router
 
     public function executeController($controllerName, $methodName)
     {
+        // Obtener instancia del controlador solicitada (si viene nulo, usar el controlador por defecto)
         $controller = $this->getController($controllerName);
         if ($controller === null) {
-            $this->executeMethod($this->defaultController, $this->defaultMethod);
+            // Obtener la instancia del controlador por defecto desde la factory
+            // (usamos create() directamente porque $this->defaultController ya contiene la clave completa)
+            $controller = $this->factory->create($this->defaultController);
+            // Si aún así no existe, no hay nada que ejecutar
+            if ($controller === null) {
+                return;
+            }
+            $this->executeMethod($controller, $this->defaultMethod);
             exit;
         }
+
         $this->executeMethod($controller, $methodName);
     }
 
