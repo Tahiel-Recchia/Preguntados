@@ -312,4 +312,65 @@ class PanelEditorModel
         return 'respuesta';
     }
 
+    // ===== Métodos para reportes =====
+public function obtenerReportesPendientes()
+{
+    // Devolvemos un array asociativo con info básica del reporte y la pregunta
+    $query = "SELECT r.id, r.id_pregunta, r.descripcion AS reporte_descripcion, r.creado_en, p.descripcion AS pregunta_descripcion
+              FROM reportes r
+              LEFT JOIN pregunta p ON r.id_pregunta = p.id
+              WHERE r.estado = 'pendiente'
+              ORDER BY r.creado_en DESC";
+    $res = $this->conexion->query($query);
+    if ($res === false) {
+        error_log("Error obtenerReportesPendientes: " . $this->conexion->error);
+        return [];
+    }
+    // Si $res es mysqli_result, fetch_all
+    return $res->fetch_all(MYSQLI_ASSOC);
+}
+
+public function obtenerReportePorId($id)
+{
+    $stmt = $this->conexion->prepare(
+        "SELECT r.*, p.descripcion AS pregunta_descripcion
+         FROM reportes r
+         LEFT JOIN pregunta p ON r.id_pregunta = p.id
+         WHERE r.id = ? LIMIT 1"
+    );
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $data = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$data) return null;
+
+    // Obtener respuestas de la pregunta para mostrar
+    $tablaResp = $this->detectRespuestasTable();
+    $stmt2 = $this->conexion->prepare("SELECT * FROM " . $tablaResp . " WHERE id_pregunta = ? ORDER BY es_correcta DESC");
+    $stmt2->bind_param("i", $data['id_pregunta']);
+    $stmt2->execute();
+    $respuestas = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt2->close();
+
+    $data['respuestas'] = $respuestas;
+    return $data;
+}
+
+public function marcarReporte($id, $estado)
+{
+    $allowed = ['aceptado', 'rechazado'];
+    if (!in_array($estado, $allowed)) return false;
+
+    $stmt = $this->conexion->prepare("UPDATE reportes SET estado = ?, actualizado_en = NOW() WHERE id = ?");
+    $stmt->bind_param("si", $estado, $id);
+    $ok = $stmt->execute();
+    if ($stmt->errno) {
+        error_log("Error marcarReporte (id={$id}): " . $stmt->error);
+    }
+    $stmt->close();
+    return $ok;
+}
+
+
 }

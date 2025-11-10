@@ -179,6 +179,7 @@
 <div class="flex justify-center gap-4 mt-6">
   <button id="btn-preguntas" class="px-4 py-2 bg-[#BC6BE8] rounded-lg text-white hover:opacity-80 transition">Ver Preguntas</button>
   <button id="btn-reportes" class="px-4 py-2 bg-[#E05F5F] rounded-lg text-white hover:opacity-80 transition">Ver Reportes</button>
+  <button id="btn-sugerencias" class="px-4 py-2 bg-[#E05F5F] rounded-lg text-white hover:opacity-80 transition">Ver Sugerencias</button>
 </div>
 
 </main>
@@ -191,6 +192,10 @@
   document.getElementById('btn-reportes').addEventListener('click', () => {
     document.getElementById('seccion-reportes').classList.remove('hidden');
     document.getElementById('seccion-preguntas').classList.add('hidden');
+  });
+  document.getElementById('btn-sugerencias').addEventListener('click', () => {
+    document.getElementById('seccion-sugerencias').classList.remove('hidden');
+    document.getElementById('seccion-sugerencias').classList.add('hidden');
   });
 </script>
 

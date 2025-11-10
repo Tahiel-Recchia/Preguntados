@@ -39,6 +39,7 @@ class PanelEditorController
         $data["preguntas"] = $this->model->obtenerPreguntas();
         $this->renderer->render('panelEditor', $data); // crear vista
     }
+    
 
     // === Crear nueva pregunta ===
     public function guardar()
