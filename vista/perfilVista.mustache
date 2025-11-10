@@ -44,18 +44,91 @@
                 </svg>
                 Compartir Perfil
             </button>
+
+            {{#qrPerfil}}
+                <div class="mt-6 flex flex-col items-center bg-[#2c2f56] p-4 rounded-lg">
+                <p class="mb-2 text-sm opacity-80">Escanea para ver mi perfil</p>
+                <img src="{{qrPerfil}}" alt="QR Perfil" class="w-32 h-32" />
+                </div>
+            {{/qrPerfil}}
         </aside>
 
         <!--COLUMNA DERECHA  -->
         <section class="md:col-span-2">
             <h2 class="text-2xl font-bold mb-6 border-b-2 border-[#2c2f56] pb-2">Ubicación</h2>
-            <span class="font-semibold text-white">{{direccion}}</span>
-            <div id="map" data-direccion="{{direccion}}" class="w-full h-[250px] rounded-lg border border-gray-600"></div>
+            <form id="formUbicacion" method="POST" action="/perfil/actualizarUbicacion" class="space-y-3">
+                <input type="text" id="addressInput" name="direccion"
+                value="{{direccion}}"
+                class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3]
+                focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition"
+                placeholder="Ej: Argentina, Buenos Aires" required>
+
+                <div id="map" data-direccion="{{direccion}}" class="w-full h-[250px] rounded-lg border border-gray-600"></div>
+
+                <p class="text-xs opacity-70 mt-1">Haz clic en el mapa para seleccionar una nueva ubicación</p>
+
+                <button type="submit"
+                class="py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8]
+                text-white font-semibold hover:opacity-90 active:opacity-80 transition w-full">
+                Guardar ubicación
+                </button>
+            </form>
         </section>
+
 
             {{/usuario}}
     </div>
 </main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="/public/javascript/profileMap.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const mapElement = document.getElementById("map");
+  const addressInput = document.getElementById("addressInput");
+  const direccion = mapElement.dataset.direccion;
 
+  const map = L.map("map").setView([-34.6037, -58.3816], 4); // vista por defecto
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+  }).addTo(map);
+
+  let marker;
+
+  // Si hay dirección actual, intentar geocodificarla (buscar coordenadas)
+  if (direccion) {
+    try {
+      const response = await fetch(`/helper/geocode.php?direccion=${encodeURIComponent(direccion)}`);
+      if (response.ok) {
+        const { lat, lon } = await response.json();
+        marker = L.marker([lat, lon]).addTo(map);
+        map.setView([lat, lon], 10);
+      }
+    } catch (e) {
+      console.error("No se pudo geocodificar dirección:", e);
+    }
+  }
+
+  // Al hacer clic, actualizar marcador y campo
+  map.on("click", async (e) => {
+    const { lat, lng } = e.latlng;
+
+    if (marker) marker.remove();
+    marker = L.marker([lat, lng]).addTo(map);
+
+    try {
+      const response = await fetch(`/helper/nominatim.php?lat=${lat}&lon=${lng}`);
+      const data = await response.json();
+
+      const address = data.address || {};
+      const city = address.city || address.town || address.village || address.state || '';
+      const country = address.country || '';
+      const fullAddress = country && city ? `${country}, ${city}` : (country || city || 'Ubicación desconocida');
+
+      addressInput.value = fullAddress;
+    } catch (error) {
+      console.error("Error al obtener ubicación:", error);
+    }
+  });
+});
+
+</script>
