@@ -102,7 +102,7 @@ class PreguntasController
         if($_SESSION['preguntas_totales'] > 0){
             $_SESSION['ratio'] = $_SESSION['preguntas_correctas'] / $_SESSION['preguntas_totales']; ;
         }
-        $this->perfil->actualizarRatio($idUsuario, $_SESSION['ratio']);
+        $this->perfil->actualizarRatio($idUsuario, $esValida);
     }
 
     public function cargarPregunta()

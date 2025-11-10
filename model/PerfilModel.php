@@ -29,9 +29,11 @@ class PerfilModel {
         $correctas = $resultado['preguntas_correctas'];
         $totales = $resultado['preguntas_totales'];
 
-        $totales++;
         if ($esCorrecta) {
+            $totales++;
             $correctas++;
+        }else{
+            $totales++;
         }
 
         $ratio = $correctas / $totales;

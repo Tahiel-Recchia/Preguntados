@@ -20,6 +20,9 @@ class MenuController{
     public function base()
     {
         $data = [];
+        if(!isset($_SESSION["nombreDeUsuario"])){
+            header("Location: /login");
+        }
         if (isset($_SESSION["nombreDeUsuario"])) {
             $data["sesion"] = $this->perfil->getDatosUsuario($_SESSION["user_id"]);
             // Indicar a la vista si el usuario es editor (rol_id == 2)
