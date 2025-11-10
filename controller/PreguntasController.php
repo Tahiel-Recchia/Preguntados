@@ -6,25 +6,33 @@ class PreguntasController
     private $renderer;
     private $model;
     private $partida;
+    private $perfil;
 
-    public function __construct($conexion, $renderer, $model, $partida)
+
+    public function __construct($conexion, $renderer, $model, $partida, $perfil)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
         $this->partida = $partida;
+        $this->perfil = $perfil;
     }
 
     public function base()
     {
-        if (isset($_SESSION['idPartida'])) {
-            $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
-            $this->jugarPartida();
-        } else {
+        if (!isset($_SESSION['idPartida'])) {
             $_SESSION['idPartida'] = $this->partida->iniciarPartida();
-            $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
-            $this->jugarPartida();
         }
+
+        if(!isset($_SESSION["preguntas_totales"])){
+            $_SESSION["preguntas_totales"] = 0;
+        }
+        if(!isset($_SESSION["preguntas_correctas"])){
+            $_SESSION["preguntas_correctas"] = 0;
+        }
+
+        $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
+        $this->jugarPartida();
     }
 
     public function jugarPartida()
@@ -42,8 +50,7 @@ class PreguntasController
 
     public function obtenerPregunta()
     {
-        $categoriaId = $_POST['categoria'] ?? $_GET['categoria'] ?? null;
-
+        $categoriaId = $_POST['categoria'] ?? $_GET['categoria'] ?? ($_SESSION['categoria_actual'] ?? null);
 
         if ($categoriaId == null) {
             return null;
@@ -53,8 +60,8 @@ class PreguntasController
         }
         $idsExcluidos = $_SESSION['preguntasVistas'];
 
-
-        $pregunta = $this->model->obtenerPorCategoria($categoriaId, $idsExcluidos);
+        $nivelUsuario = $_SESSION['ratio'];
+        $pregunta = $this->model->obtenerPorCategoria($categoriaId, $idsExcluidos, $nivelUsuario);
 
         if ($pregunta) {
             $_SESSION['preguntasVistas'][] = $pregunta['id_pregunta'];
@@ -69,6 +76,7 @@ class PreguntasController
         $respuestaUsuario = $_POST['respuesta_usuario'];
         $respuestaCorrecta = $_SESSION['respuesta_correcta_actual'] ?? '';
         $idPreguntaAnterior = $_SESSION['id_pregunta_actual'] ?? 0;
+        $idUsuario = $_SESSION['user_id'];
         $data = $this->model->obtenerPorId($idPreguntaAnterior);
         $data = $this->procesarOpciones($data, $respuestaCorrecta, $respuestaUsuario);
         $esValida = $this->model->verificarRespuesta($idPreguntaAnterior, $respuestaUsuario);
@@ -87,6 +95,15 @@ class PreguntasController
             $this->terminarPartida();
             $this->renderer->render("preguntaErronea", $data);
         }
+        if($esValida){
+            $_SESSION['preguntas_correctas']++;
+        }
+        $_SESSION['preguntas_totales']++;
+
+        if($_SESSION['preguntas_totales'] > 0){
+            $_SESSION['ratio'] = $_SESSION['preguntas_correctas'] / $_SESSION['preguntas_totales']; ;
+        }
+        $this->perfil->actualizarRatio($idUsuario, $_SESSION['ratio']);
     }
 
     public function cargarPregunta()
@@ -146,4 +163,3 @@ class PreguntasController
     }
 
 }
-

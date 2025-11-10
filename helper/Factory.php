@@ -55,7 +55,7 @@ class Factory
         $this->objetos["categoriamodel"] = new CategoriaModel($this->objetos["database"]);
         $this->objetos["preguntasmodel"] = new PreguntasModel($this->objetos["database"]);
         $this->objetos["partidamodel"] = new PartidaModel($this->objetos["database"]);
-        $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"], $this->objetos["partidamodel"]);
+        $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"], $this->objetos["partidamodel"], $this->objetos["perfilmodel"]);
         $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
         $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
         $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);

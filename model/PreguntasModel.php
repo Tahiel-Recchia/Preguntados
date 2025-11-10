@@ -9,12 +9,21 @@ class PreguntasModel
         $this->conexion = $conexion;
     }
 
-    public function obtenerPorCategoria($categoriaId, $idsExcluidos = [])
+    public function obtenerPorCategoria($categoriaId, $idsExcluidos = [], $nivelUsuario)
     {
+        if ($nivelUsuario <= 0.33) {
+            $dificultad = 1;
+        } elseif ($nivelUsuario <= 0.66) {
+            $dificultad = 2;
+        } else {
+            $dificultad = 3;
+        }
+
         $sql_pregunta = "SELECT p.id, p.descripcion, c.descripcion AS categoria_nombre
                      FROM pregunta p
                      JOIN categoria c ON p.id_categoria = ?
-                     WHERE p.aprobada = 1";
+                     WHERE p.aprobada = 1
+                     AND p.id_dificultad = ?";
 
         if (!empty($idsExcluidos)) {
             // Creamos placeholders (?,?,?) para los IDs a excluir
@@ -23,9 +32,9 @@ class PreguntasModel
         }
         $sql_pregunta .= " ORDER BY RAND() LIMIT 1";
 
-        $stmt_pregunta = $this->conexion->prepare($sql_pregunta);
-        $tipos = "i";
-        $params = [$categoriaId];
+        $stmt_pregunta = $this->conexion->prepare($sql_pregunta, $dificultad);
+        $tipos = "ii";
+        $params = [$categoriaId, $dificultad];
 
         if (!empty($idsExcluidos)) {
             foreach ($idsExcluidos as $id) {
@@ -45,9 +54,8 @@ class PreguntasModel
         $id_pregunta = $pregunta['id'];
         $stmt_pregunta->close();
 
-
-    $tablaResp = $this->detectRespuestasTable();
-    $sql_opciones = "SELECT descripcion, es_correcta FROM " . $tablaResp . " WHERE id_pregunta = ?";
+        $tablaResp = $this->detectRespuestasTable();
+        $sql_opciones = "SELECT descripcion, es_correcta FROM " . $tablaResp . " WHERE id_pregunta = ?";
 
         $stmt_opciones = $this->conexion->prepare($sql_opciones);
         $stmt_opciones->bind_param("i", $id_pregunta);

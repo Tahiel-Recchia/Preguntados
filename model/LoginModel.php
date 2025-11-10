@@ -31,7 +31,8 @@ class LoginModel {
         return [
             'user_id' => $fila["id"],
             'nombreDeUsuario' => $user,
-            'rol' => $fila["rol_id"]
+            'rol' => $fila["rol_id"],
+            'ratio' => $fila["ratio"]
         ];
     }
 
@@ -52,7 +53,4 @@ class LoginModel {
         }
         return null;
     }
-
-
-
 }
