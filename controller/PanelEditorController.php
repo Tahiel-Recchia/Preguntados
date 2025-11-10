@@ -140,4 +140,65 @@ class PanelEditorController
         echo json_encode($data);
         exit;
     }
+
+    public function verReportes()
+{
+    $this->requireEditor();
+
+    $sql = "SELECT 
+                r.id AS id_reporte, 
+                r.estado,
+                p.id AS id_pregunta, 
+                p.descripcion AS pregunta
+            FROM reporte r
+            JOIN pregunta p ON r.pregunta_id = p.id
+            WHERE r.estado = 'pendiente'";
+
+    $stmt = $this->conexion->prepare($sql);
+    $stmt->execute();
+    $reportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Agregar respuestas a cada pregunta reportada
+    foreach ($reportes as &$reporte) {
+        $sqlResp = "SELECT descripcion, es_correcta 
+                    FROM respuesta 
+                    WHERE id_pregunta = :id_pregunta";
+        $stmtResp = $this->conexion->prepare($sqlResp);
+        $stmtResp->execute([':id_pregunta' => $reporte['id_pregunta']]);
+        $reporte['respuestas'] = $stmtResp->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    $data = [
+        "reportes" => $reportes,
+        "nombreDeUsuario" => $_SESSION['nombreDeUsuario'] ?? null,
+    ];
+
+    $this->renderer->render('panelEditor', $data);
+}
+
+public function aceptarReporte()
+{
+    $this->requireEditor();
+    $id = $_POST['id_reporte'];
+
+    $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'aceptado' WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+
+    header("Location: /index.php?controller=paneleditor&method=verReportes");
+    exit;
+}
+
+public function rechazarReporte()
+{
+    $this->requireEditor();
+    $id = $_POST['id_reporte'];
+
+    $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'rechazado' WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+
+    header("Location: /index.php?controller=paneleditor&method=verReportes");
+    exit;
+}
+
+
 }
