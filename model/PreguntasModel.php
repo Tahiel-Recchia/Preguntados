@@ -21,27 +21,39 @@ class PreguntasModel
 
         $sql_pregunta = "SELECT p.id, p.descripcion, c.descripcion AS categoria_nombre
                      FROM pregunta p
-                     JOIN categoria c ON p.id_categoria = ?
-                     WHERE p.aprobada = 1
-                     AND p.id_dificultad = ?";
+                     JOIN categoria c ON p.id_categoria = c.id
+                     WHERE p.aprobada = 1 AND p.id_categoria = ?";
 
         if (!empty($idsExcluidos)) {
             // Creamos placeholders (?,?,?) para los IDs a excluir
             $placeholders = implode(',', array_fill(0, count($idsExcluidos), '?'));
             $sql_pregunta .= " AND p.id NOT IN ($placeholders)";
         }
+
+        $todasLasPreguntas = $this->contarPreguntasPorCategoria($categoriaId);
+        $totalVistas = count($idsExcluidos);
+
+        $todasLasPreguntasVistas = false;
+
+        if($totalVistas >= $todasLasPreguntas) {
+            $sql_pregunta .= " AND p.id_dificultad = ?";
+            $todasLasPreguntasVistas = true;
+        }
         $sql_pregunta .= " ORDER BY RAND() LIMIT 1";
 
-        $stmt_pregunta = $this->conexion->prepare($sql_pregunta, $dificultad);
-        $tipos = "ii";
-        $params = [$categoriaId, $dificultad];
+        $stmt_pregunta = $this->conexion->prepare($sql_pregunta);
+        $tipos = "i";
+        $params = [$categoriaId];
 
         if (!empty($idsExcluidos)) {
-            foreach ($idsExcluidos as $id) {
-                $tipos .= "i";
-                $params[] = $id;
-            }
+            $tipos .= str_repeat('i', count($idsExcluidos));
+            $params = array_merge($params, $idsExcluidos);
         }
+        if($todasLasPreguntasVistas){
+            $tipos .= "i";
+            $params[] = $dificultad;
+        }
+
         $stmt_pregunta->bind_param($tipos, ...$params);
         $stmt_pregunta->execute();
         $resultado_pregunta = $stmt_pregunta->get_result();
@@ -168,5 +180,16 @@ class PreguntasModel
     public function getHoraEnvio(){
         return new DateTime();
 
+    }
+
+    private function contarPreguntasPorCategoria($categoriaId)
+    {
+        $sql = "SELECT COUNT(*) as total FROM pregunta WHERE id_categoria = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $categoriaId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['total'];
     }
 }

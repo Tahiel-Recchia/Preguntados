@@ -51,15 +51,14 @@ class PreguntasController
     public function obtenerPregunta()
     {
         $categoriaId = $_POST['categoria'] ?? $_GET['categoria'] ?? ($_SESSION['categoria_actual'] ?? null);
-
         if ($categoriaId == null) {
             return null;
         }
         if (!isset($_SESSION['preguntasVistas']) || !is_array($_SESSION['preguntasVistas'])) {
             $_SESSION['preguntasVistas'] = [];
         }
-        $idsExcluidos = $_SESSION['preguntasVistas'];
 
+        $idsExcluidos = $_SESSION['preguntasVistas'];
         $nivelUsuario = $_SESSION['ratio'];
         $pregunta = $this->model->obtenerPorCategoria($categoriaId, $idsExcluidos, $nivelUsuario);
 
