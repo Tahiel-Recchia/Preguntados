@@ -1,13 +1,15 @@
 RewriteEngine On
 RewriteBase /
 
-
-RewriteCond %{REQUEST_URI} ^/public/ [NC]
-RewriteRule ^ - [L]
-
+# Si el archivo o carpeta existe, no reescribas
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
+
+# Rutas amigables
 RewriteRule ^([^/]+)/([^/]+)/([^/]+)/?$ index.php?controller=$1&method=$2&id=$3 [L,QSA]
 RewriteRule ^([^/]+)/([^/]+)/?$ index.php?controller=$1&method=$2 [L,QSA]
 RewriteRule ^([^/]+)/?$ index.php?controller=$1 [L,QSA]
+
+# Redirigir todas las demás solicitudes a index.php
+RewriteRule ^ index.php [L,QSA]

@@ -201,5 +201,45 @@ public function rechazarReporte()
     exit;
 }
 
+public function verSugerencia()
+{
+    $this->requireEditor();
+    $id = $_GET['id'] ?? null;
+    if (!$id) {
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Falta id']);
+        exit;
+    }
 
+    $data = $this->model->obtenerSugerenciaConRespuestas($id);
+
+    header('Content-Type: application/json');
+    echo json_encode($data);
+    exit;
+
+    }
+
+    public function aceptarSugerencia()
+    {
+        $this->requireEditor();
+        $id = $_POST['id_sugerencia'];
+
+        $stmt = $this->conexion->prepare("UPDATE sugerencia SET estado = 'aceptado' WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+
+        header("Location: /index.php?controller=paneleditor");
+        exit;
+    }
+
+    public function rechazarSugerencia()
+    {
+        $this->requireEditor();
+        $id = $_POST['id_sugerencia'];
+
+        $stmt = $this->conexion->prepare("UPDATE sugerencia SET estado = 'rechazado' WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+
+        header("Location: /index.php?controller=paneleditor");
+        exit;
+    }
 }
