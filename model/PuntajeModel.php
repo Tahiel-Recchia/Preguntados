@@ -11,14 +11,10 @@ class PuntajeModel
     }
 
     public function actualizarMejorPuntaje($idUsuario, $puntaje){
-        $sql = "UPDATE Usuario SET puntaje = ? WHERE id = ? AND ? > mejorPuntaje";
+        $sql = "UPDATE Usuario SET mejorPuntaje = ? WHERE id = ? AND ? > mejorPuntaje";
         $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("iii", $puntaje, $idUsuario);
+        $stmt->bind_param("iii", $puntaje, $idUsuario, $puntaje);
         $stmt->execute();
         $stmt->close();
-    }
-
-    public function sumarPuntos($puntajeActual){
-        return $puntajeActual += 30;
     }
 }

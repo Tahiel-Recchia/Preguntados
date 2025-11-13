@@ -74,7 +74,7 @@ class PreguntasController
 
     public function cargarRespuesta()
     {
-        $_SESSION['puntajeActual'] = $_SESSION['puntajeActual'] ?? 0;
+        $puntajeActual = $_SESSION['puntajeActual'] ?? 0;
         $respuestaUsuario = $_POST['respuesta_usuario'];
         $respuestaCorrecta = $_SESSION['respuesta_correcta_actual'] ?? '';
         $idPreguntaAnterior = $_SESSION['id_pregunta_actual'] ?? 0;
@@ -92,13 +92,17 @@ class PreguntasController
         if ($esValida) {
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
-            $_SESSION['puntajeActual'] = $this->puntaje->sumarPuntos($_SESSION['puntajeActual']);
+            $puntajeActual += 30;
+            $_SESSION['preguntas_correctas'] ++;
             $this->renderer->render("preguntas", $data);
         } else {
             $this->terminarPartida();
             $this->renderer->render("preguntaErronea", $data);
         }
-        $this->perfil->actualizarRatio($idUsuario, $esValida);
+        $_SESSION['preguntas_totales'] ++;
+        $ratio = $_SESSION['preguntas_correctas'] / $_SESSION['preguntas_totales'];
+        $this->puntaje->actualizarMejorPuntaje($idUsuario, $puntajeActual);
+        $this->perfil->actualizarRatio($_SESSION['preguntas_correctas'], $_SESSION['preguntas_totales'], $ratio, $idUsuario);
     }
 
     public function cargarPregunta()
@@ -112,8 +116,6 @@ class PreguntasController
             header('Location: /menu');
             exit;
         }
-
-
         $respuestaCorrecta = $this->model->getRespuestaCorrecta($data['id_pregunta']);
         $horaEnvio = $this->model->getHoraEnvio();
         $_SESSION['horaEnvio'] = $horaEnvio;
