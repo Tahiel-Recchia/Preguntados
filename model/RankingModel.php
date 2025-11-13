@@ -10,7 +10,7 @@ class RankingModel
 
     public function getRankingLimitado($limite){
         // Incluir fotoDePerfil renombrada a fotoPerfil para que la vista la consuma fácilmente
-        $sql = "SELECT id, nombreDeUsuario, puntajeAcumulado, fotoDePerfil AS fotoPerfil FROM usuario ORDER BY puntajeAcumulado DESC LIMIT ?";
+        $sql = "SELECT id, nombreDeUsuario, mejorPuntaje, fotoDePerfil AS fotoPerfil FROM usuario ORDER BY mejorPuntaje DESC LIMIT ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("i", $limite);
         $stmt->execute();

@@ -7,15 +7,17 @@ class PreguntasController
     private $model;
     private $partida;
     private $perfil;
+    private $puntaje;
 
 
-    public function __construct($conexion, $renderer, $model, $partida, $perfil)
+    public function __construct($conexion, $renderer, $model, $partida, $perfil, $puntaje)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
         $this->partida = $partida;
         $this->perfil = $perfil;
+        $this->puntaje = $puntaje;
     }
 
     public function base()
@@ -72,6 +74,7 @@ class PreguntasController
 
     public function cargarRespuesta()
     {
+        $_SESSION['puntajeActual'] = $_SESSION['puntajeActual'] ?? 0;
         $respuestaUsuario = $_POST['respuesta_usuario'];
         $respuestaCorrecta = $_SESSION['respuesta_correcta_actual'] ?? '';
         $idPreguntaAnterior = $_SESSION['id_pregunta_actual'] ?? 0;
@@ -89,18 +92,11 @@ class PreguntasController
         if ($esValida) {
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
+            $_SESSION['puntajeActual'] = $this->puntaje->sumarPuntos($_SESSION['puntajeActual']);
             $this->renderer->render("preguntas", $data);
         } else {
             $this->terminarPartida();
             $this->renderer->render("preguntaErronea", $data);
-        }
-        if($esValida){
-            $_SESSION['preguntas_correctas']++;
-        }
-        $_SESSION['preguntas_totales']++;
-
-        if($_SESSION['preguntas_totales'] > 0){
-            $_SESSION['ratio'] = $_SESSION['preguntas_correctas'] / $_SESSION['preguntas_totales']; ;
         }
         $this->perfil->actualizarRatio($idUsuario, $esValida);
     }
@@ -127,7 +123,7 @@ class PreguntasController
     }
 
     public function terminarPartida(){
-        $this->partida->terminarPartida($_SESSION['idPartida'], 1000);
+        $this->partida->terminarPartida($_SESSION['idPartida'], $_SESSION['puntajeActual']);
         unset($_SESSION['idPartida']);
         unset($_SESSION['preguntasVistas']);
         unset($_SESSION['respuesta_correcta_actual']);

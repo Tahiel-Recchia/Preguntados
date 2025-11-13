@@ -18,6 +18,10 @@ class RankingController
     }
 
     public function base(){
+        $this->mostrarRanking();
+    }
+
+    public function mostrarRanking(){
         $data = [];
         if (isset($_SESSION["nombreDeUsuario"])) {
             $data["sesion"] = $this->perfil->getDatosUsuario($_SESSION["user_id"]);

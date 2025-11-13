@@ -24,6 +24,7 @@ include_once("model/EditorPreguntaModel.php");
 include_once ("model/RankingModel.php");
 include_once ("controller/RankingController.php");
 include_once("model/PartidaModel.php");
+include_once("model/PuntajeModel.php");
 
 class Factory
 {
@@ -52,10 +53,11 @@ class Factory
         $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
         $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"]);
        // editor model y controller
+        $this->objetos["puntajemodel"] = new PuntajeModel($this->objetos["database"]);
         $this->objetos["categoriamodel"] = new CategoriaModel($this->objetos["database"]);
         $this->objetos["preguntasmodel"] = new PreguntasModel($this->objetos["database"]);
         $this->objetos["partidamodel"] = new PartidaModel($this->objetos["database"]);
-        $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"], $this->objetos["partidamodel"], $this->objetos["perfilmodel"]);
+        $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"], $this->objetos["partidamodel"], $this->objetos["perfilmodel"], $this->objetos["puntajemodel"]);
         $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
         $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
         $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
