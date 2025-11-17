@@ -312,21 +312,19 @@ class PanelEditorModel
         return 'respuesta';
     }
 
-    // ===== Métodos para reportes =====
+// ===== Métodos para reportes =====
 public function obtenerReportesPendientes()
 {
     // Devolvemos un array asociativo con info básica del reporte y la pregunta
-    $query = "SELECT r.id, r.id_pregunta, r.descripcion AS reporte_descripcion, r.creado_en, p.descripcion AS pregunta_descripcion
-              FROM reportes r
-              LEFT JOIN pregunta p ON r.id_pregunta = p.id
-              WHERE r.estado = 'pendiente'
-              ORDER BY r.creado_en DESC";
+    $query = "SELECT r.id AS id_reporte, p.descripcion AS pregunta
+              FROM reporte r
+              LEFT JOIN pregunta p ON r.pregunta_id = p.id";
     $res = $this->conexion->query($query);
-    if ($res === false) {
-        error_log("Error obtenerReportesPendientes: " . $this->conexion->error);
+    if ($res === false || !is_object($res)) {
+        $errorMsg = isset($this->conexion->error) ? $this->conexion->error : 'Error desconocido';
+        error_log("Error obtenerReportesPendientes: " . $errorMsg);
         return [];
     }
-    // Si $res es mysqli_result, fetch_all
     return $res->fetch_all(MYSQLI_ASSOC);
 }
 
@@ -334,8 +332,8 @@ public function obtenerReportePorId($id)
 {
     $stmt = $this->conexion->prepare(
         "SELECT r.*, p.descripcion AS pregunta_descripcion
-         FROM reportes r
-         LEFT JOIN pregunta p ON r.id_pregunta = p.id
+         FROM reporte r
+         LEFT JOIN pregunta p ON r.pregunta_id = p.id
          WHERE r.id = ? LIMIT 1"
     );
     $stmt->bind_param("i", $id);
@@ -348,7 +346,7 @@ public function obtenerReportePorId($id)
     // Obtener respuestas de la pregunta para mostrar
     $tablaResp = $this->detectRespuestasTable();
     $stmt2 = $this->conexion->prepare("SELECT * FROM " . $tablaResp . " WHERE id_pregunta = ? ORDER BY es_correcta DESC");
-    $stmt2->bind_param("i", $data['id_pregunta']);
+    $stmt2->bind_param("i", $data['pregunta_id']);
     $stmt2->execute();
     $respuestas = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt2->close();
@@ -362,7 +360,7 @@ public function marcarReporte($id, $estado)
     $allowed = ['aceptado', 'rechazado'];
     if (!in_array($estado, $allowed)) return false;
 
-    $stmt = $this->conexion->prepare("UPDATE reportes SET estado = ?, actualizado_en = NOW() WHERE id = ?");
+    $stmt = $this->conexion->prepare("UPDATE reporte SET estado = ?, actualizado_en = NOW() WHERE id = ?");
     $stmt->bind_param("si", $estado, $id);
     $ok = $stmt->execute();
     if ($stmt->errno) {
@@ -371,6 +369,43 @@ public function marcarReporte($id, $estado)
     $stmt->close();
     return $ok;
 }
+
+public function obtenerPreguntasSugeridas()
+{
+    $cols = $this->detectPreguntaColumns();
+    $catCol = $cols['categoria'];
+    $difCol = $cols['dificultad'];
+    $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
+                 c.descripcion AS categoria, d.descripcion AS dificultad
+          FROM pregunta p
+          LEFT JOIN categoria c ON p." . $catCol . " = c.id
+          LEFT JOIN dificultad d ON p." . $difCol . " = d.id
+          WHERE p.aprobada = 2";
+    $result = $this->conexion->query($query);
+    if ($result === false || !is_object($result)) {
+        error_log("Error en obtenerPreguntasSugeridas: " . $this->conexion->error);
+        return [];
+    }
+    $sugerencias = $result->fetch_all(MYSQLI_ASSOC);
+    error_log("Sugerencias obtenidas: " . print_r($sugerencias, true));
+    return $sugerencias;
+}
+
+    public function aceptarSugerencia($id)
+    {
+        $stmt = $this->conexion->prepare("UPDATE pregunta SET aprobada = 1 WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    public function rechazarSugerencia($id)
+    {
+        $stmt = $this->conexion->prepare("UPDATE pregunta SET aprobada = 3 WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+    }
 
 
 }

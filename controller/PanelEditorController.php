@@ -25,7 +25,6 @@ class PanelEditorController
     {
         $this->requireEditor();
         $data = [];
-        // Proveer datos de sesión a la vista para que el navbar tenga la misma estructura que en otras pantallas
         if (isset($_SESSION['user_id'])) {
             $data['sesion'] = [
                 'id' => $_SESSION['user_id'],
@@ -35,9 +34,12 @@ class PanelEditorController
             ];
         }
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
-        // Podés traer info adicional del modelo
         $data["preguntas"] = $this->model->obtenerPreguntas();
-        $this->renderer->render('panelEditor', $data); // crear vista
+        $sugs = $this->model->obtenerPreguntasSugeridas();
+        $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
+        $reportes = $this->model->obtenerReportesPendientes();
+        $data['reportes'] = is_array($reportes) ? array_values($reportes) : [];
+        $this->renderer->render('panelEditor', $data);
     }
     
 
@@ -143,39 +145,16 @@ class PanelEditorController
     }
 
     public function verReportes()
-{
-    $this->requireEditor();
-
-    $sql = "SELECT 
-                r.id AS id_reporte, 
-                r.estado,
-                p.id AS id_pregunta, 
-                p.descripcion AS pregunta
-            FROM reporte r
-            JOIN pregunta p ON r.pregunta_id = p.id
-            WHERE r.estado = 'pendiente'";
-
-    $stmt = $this->conexion->prepare($sql);
-    $stmt->execute();
-    $reportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Agregar respuestas a cada pregunta reportada
-    foreach ($reportes as &$reporte) {
-        $sqlResp = "SELECT descripcion, es_correcta 
-                    FROM respuesta 
-                    WHERE id_pregunta = :id_pregunta";
-        $stmtResp = $this->conexion->prepare($sqlResp);
-        $stmtResp->execute([':id_pregunta' => $reporte['id_pregunta']]);
-        $reporte['respuestas'] = $stmtResp->fetchAll(PDO::FETCH_ASSOC);
+    {
+        $this->requireEditor();
+        $data = [];
+        $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
+        $data['reportes'] = is_array($this->model->obtenerReportesPendientes()) ? array_values($this->model->obtenerReportesPendientes()) : [];
+        $data['preguntas'] = is_array($this->model->obtenerPreguntas()) ? array_values($this->model->obtenerPreguntas()) : [];
+        $sugs = $this->model->obtenerPreguntasSugeridas();
+        $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
+        $this->renderer->render('panelEditor', $data);
     }
-
-    $data = [
-        "reportes" => $reportes,
-        "nombreDeUsuario" => $_SESSION['nombreDeUsuario'] ?? null,
-    ];
-
-    $this->renderer->render('panelEditor', $data);
-}
 
 public function aceptarReporte()
 {
@@ -201,45 +180,33 @@ public function rechazarReporte()
     exit;
 }
 
-public function verSugerencia()
+    public function verSugerencias()
+    {
+        $this->requireEditor();
+        $data = [];
+        $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
+        $sugs = $this->model->obtenerPreguntasSugeridas();
+        $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
+        $data['preguntas'] = is_array($this->model->obtenerPreguntas()) ? array_values($this->model->obtenerPreguntas()) : [];
+        $data['reportes'] = is_array($this->model->obtenerReportesPendientes()) ? array_values($this->model->obtenerReportesPendientes()) : [];
+        $this->renderer->render('panelEditor', $data);
+    }
+
+public function aceptarSugerencia()
 {
     $this->requireEditor();
-    $id = $_GET['id'] ?? null;
-    if (!$id) {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => 'Falta id']);
-        exit;
-    }
-
-    $data = $this->model->obtenerSugerenciaConRespuestas($id);
-
-    header('Content-Type: application/json');
-    echo json_encode($data);
+    $id = $_POST['id_sugerencia'];
+    $this->model->aceptarSugerencia($id);
+    header("Location: /index.php?controller=paneleditor&method=verSugerencias");
     exit;
+}
 
-    }
-
-    public function aceptarSugerencia()
-    {
-        $this->requireEditor();
-        $id = $_POST['id_sugerencia'];
-
-        $stmt = $this->conexion->prepare("UPDATE sugerencia SET estado = 'aceptado' WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-
-        header("Location: /index.php?controller=paneleditor");
-        exit;
-    }
-
-    public function rechazarSugerencia()
-    {
-        $this->requireEditor();
-        $id = $_POST['id_sugerencia'];
-
-        $stmt = $this->conexion->prepare("UPDATE sugerencia SET estado = 'rechazado' WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-
-        header("Location: /index.php?controller=paneleditor");
-        exit;
-    }
+public function rechazarSugerencia()
+{
+    $this->requireEditor();
+    $id = $_POST['id_sugerencia'];
+    $this->model->rechazarSugerencia($id);
+    header("Location: /index.php?controller=paneleditor&method=verSugerencias");
+    exit;
+}
 }
