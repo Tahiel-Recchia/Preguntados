@@ -1,7 +1,7 @@
 let tiempo = 10; // segundos
 const timer = document.getElementById('timer');
 const form = document.getElementById('respuestaForm');
-
+if(timer){
 const cuentaRegresiva = setInterval(() => {
     tiempo--;
     timer.textContent = tiempo;
@@ -11,3 +11,4 @@ const cuentaRegresiva = setInterval(() => {
     window.location.href = "/preguntas/tiempoAgotado";
     }
 }, 1000);
+}

@@ -3,9 +3,7 @@
         <h1 class="text-white text-xl font-bold">Preguntados</h1>
         <div class="text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] rounded-3xl px-[16px] py-[8px] font-semibold">🏆 2/10 Puntos</div>
     </div>
-    <div class="text-white p-6 rounded-lg flex-center justify-center space-x-4">
-        <p class="font-bold text-4x1 text-center">Tiempo restante: <span id="timer">10</span> segundos</p>
-    </div>
+
     <div class="bg-[#343964] py-[62px] rounded-2xl w-full justify-center flex flex-col">
 
         {{#mensaje_resultado}}
@@ -13,6 +11,9 @@
         {{/mensaje_resultado}}
 
         {{^mensaje_resultado}}
+            <div class="text-white p-6 rounded-lg flex-center justify-center space-x-4">
+                <p class="font-bold text-4x1 text-center">Tiempo restante: <span id="timer">10</span> segundos</p>
+            </div>
             <p class="text-white text-center text-lg font-medium pb-[42px]">
                 {{pregunta}}
             </p>
@@ -20,6 +21,7 @@
     </div>
 
     {{^modo_resultado}}
+
         <form class="grid grid-cols-2 gap-[20px] w-2/3 self-center" action="/preguntas/base" method="POST">
             {{#opciones}}
                 <button class="cursor-pointer w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition"
