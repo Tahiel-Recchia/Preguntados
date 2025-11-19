@@ -19,7 +19,7 @@ $url = "https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lon&format=jso
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_USERAGENT, "PreguntadosApp/1.0 (contact@example.com)");
+curl_setopt($ch, CURLOPT_USERAGENT, "PreguntadosApp/1.0 (tuccieliasluis@gmail.com)");
 
 // Desactivar verificación SSL (solo desarrollo local)
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
