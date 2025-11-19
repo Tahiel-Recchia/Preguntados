@@ -1,6 +1,5 @@
 {
     "require": {
-        "mustache/mustache": "^3.0",
-        "endroid/qr-code": "^4.6"
+        "mustache/mustache": "^3.0"
     }
 }

@@ -1,11 +1,9 @@
 <?php
 
-class PerfilModel
-{
+class PerfilModel {
     private $conexion;
 
-    public function __construct($conexion)
-    {
+    public function __construct($conexion){
         $this->conexion = $conexion;
     }
 
@@ -18,7 +16,7 @@ class PerfilModel
     $fila = $resultado->fetch_assoc();
     $stmt->close();
 
-        return $fila;
+    return $fila;
     }
 
     public function actualizarRatio($correctas, $totales, $ratio, $idUsuario){
@@ -27,13 +25,4 @@ class PerfilModel
         $stmtUpdate->bind_param("iidi", $correctas, $totales, $ratio, $idUsuario);
         $stmtUpdate->execute();
     }
-    public function actualizarDireccion($userId, $direccion)
-    {
-        $sql = "UPDATE usuario SET direccion = ? WHERE id = ?";
-        $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("si", $direccion, $userId);
-        $stmt->execute();
-        $stmt->close();
-    }
-
 }
