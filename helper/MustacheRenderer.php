@@ -14,6 +14,7 @@ class MustacheRenderer{
     }
 
     public function render($contentFile , $data = array() ){
+        $data["sesion"] = $_SESSION["nombreDeUsuario"];
         echo  $this->generateHtml(  $this->viewsFolder . '/' . $contentFile . "Vista.mustache" , $data);
     }
 

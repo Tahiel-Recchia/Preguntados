@@ -22,6 +22,7 @@ class MenuController{
         $data = [];
         if(!isset($_SESSION["nombreDeUsuario"])){
             header("Location: /login");
+            exit();
         }
         if (isset($_SESSION["nombreDeUsuario"])) {
             $data["sesion"] = $this->perfil->getDatosUsuario($_SESSION["user_id"]);
