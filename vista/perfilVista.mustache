@@ -94,20 +94,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let marker;
 
-  // Si hay dirección actual, intentar geocodificarla (buscar coordenadas)
-  if (direccion) {
-    try {
-      const response = await fetch(`/helper/geocode.php?direccion=${encodeURIComponent(direccion)}`);
-      if (response.ok) {
-        const { lat, lon } = await response.json();
-        marker = L.marker([lat, lon]).addTo(map);
-        map.setView([lat, lon], 10);
-      }
-    } catch (e) {
-      console.error("No se pudo geocodificar dirección:", e);
-    }
-  }
-
   // Al hacer clic, actualizar marcador y campo
   map.on("click", async (e) => {
     const { lat, lng } = e.latlng;
