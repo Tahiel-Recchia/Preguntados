@@ -36,11 +36,16 @@ if (curl_errno($ch)) {
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
+// Si Nominatim respondió algo inválido
 if ($httpCode !== 200 || !$response) {
-    echo json_encode(["error" => "Respuesta inválida de Nominatim"]);
+    echo json_encode([
+        "error" => "Respuesta inválida de Nominatim",
+        "http_code" => $httpCode,
+        "raw" => $response
+    ]);
     exit;
 }
 
-// Devolver respuesta JSON de Nominatim
+// 🔥 DEVOLVER SOLO EL JSON ORIGINAL (necesario para response.json())
 echo $response;
-?>
+exit;
