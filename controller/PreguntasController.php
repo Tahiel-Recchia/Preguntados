@@ -120,13 +120,13 @@ class PreguntasController
             $this->sumarPuntos();
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
+            $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntas", $data);
         } else {
             $this->terminarPartida();
+            $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
-
-        $this->actualizarEstadisticas($idUsuario);
     }
 
     public function sumarPuntos(){
@@ -142,6 +142,7 @@ class PreguntasController
 
     public function finalizarPorFaltaDePreguntas(){
         $this->limpiarSesionPreguntas();
+        $this->actualizarEstadisticas($_SESSION['user_id']);
         $this->terminarPartida();
         header('Location: /');
     }

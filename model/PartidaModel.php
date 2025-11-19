@@ -10,9 +10,9 @@ class PartidaModel {
         $fecha_inicio_obj = new DateTime();
         $horaInicio = $fecha_inicio_obj->format('Y-m-d H:i:s');
         $estado = "En curso";
-        $sql = "INSERT INTO Partida (horaInicio, estado) VALUES (?, ?)";
+        $sql = "INSERT INTO Partida (horaInicio, estado, id_usuario) VALUES (?, ?, ?)";
         $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("ss", $horaInicio, $estado);
+        $stmt->bind_param("ssi", $horaInicio, $estado, $_SESSION['user_id']);
         $stmt->execute();
         $stmt->close();
         return $this->conexion->lastInsertId();

@@ -43,7 +43,7 @@ function cargarImagenes() {
                 }
             };
             img.onerror = () => {
-                console.error(`Error al cargar la imagen: ${categoria.images}`);
+                console.error(`Error al cargar la imagen: ${categoria.imagen}`);
                 // Aca podemos poner un placeholder cualquier cosa
                 imagenesCargadas[categoria.descripcion] = null; // si falla la imagen se pone null por ahora
                 imagenesCargadasCount++;
