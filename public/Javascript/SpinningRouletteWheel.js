@@ -165,13 +165,13 @@ function animarGiroConEasing(anguloDestino, duracion, ganador) {
             const categoriaId = ganador.id;
             const formData = new FormData();
             formData.append('categoria', categoriaId);
-            fetch('/preguntas/mostrarpregunta', {
+            fetch('/preguntas/mostrarnuevapregunta', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include'
             })
                 .then(() => {
-                    window.location.href = `/preguntas/mostrarpregunta?categoria=${categoriaId}`;
+                    window.location.href = `/preguntas/obtenerpregunta?categoria=${categoriaId}`;
                 })
                 .catch(error => {
                     console.error('Error al enviar la categoría:', error);

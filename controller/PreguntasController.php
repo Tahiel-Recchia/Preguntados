@@ -28,15 +28,15 @@ class PreguntasController
         if(!isset($_SESSION["preguntas_correctas"])){
             $_SESSION["preguntas_correctas"] = 0;
         }
-        if(!isset($_SESSION["idPartida"])){
-            $this->inicializarPartida();
-        }
+        $this->inicializarPartida();
         $this->jugarPartida();
     }
 
     public function inicializarPartida(){
-            $_SESSION['idPartida'] = $this->partida->iniciarPartida();
+        if(!isset($_SESSION["idPartida"])){
             $_SESSION["puntajeActual"] = 0;
+            $_SESSION['idPartida'] = $this->partida->iniciarPartida();
+        }
     }
     public function jugarPartida()
     {
@@ -46,29 +46,24 @@ class PreguntasController
             //El usuario píde una pregunta nueva, TODAVÍA NO RESPONDIÓ
         } else {
             // 1. Obtenemos una pregunta nueva
-            $this->mostrarNuevaPregunta();
+            $this->mostrarPregunta();
         }
     }
 
-    public function mostrarNuevaPregunta()
+    public function mostrarPregunta()
     {
-        if(!isset($_SESSION['id_pregunta_actual'])){
-            $pregunta  = $this->obtenerPregunta();
-        } else {
-            $pregunta = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
-        }
+        $pregunta  = $this->obtenerPregunta();
 
         if (!$pregunta) {
             $this->finalizarPorFaltaDePreguntas();
             return;
         }
-        if(!isset($_SESSION['id_pregunta_actual'])){
-            $respuestaCorrecta = $this->model->getRespuestaCorrecta($pregunta['id_pregunta']);
-            $horaEnvio = $this->model->getHoraEnvio();
-            $_SESSION['horaEnvio'] = $horaEnvio;
-            $_SESSION['respuesta_correcta_actual'] = $respuestaCorrecta;
-            $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
-        }
+        $respuestaCorrecta = $this->model->getRespuestaCorrecta($pregunta['id_pregunta']);
+        $horaEnvio = $this->model->getHoraEnvio();
+        $_SESSION['horaEnvio'] = $horaEnvio;
+        $_SESSION['respuesta_correcta_actual'] = $respuestaCorrecta;
+        $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
+
         $this->renderer->render("preguntas", $pregunta);
     }
     public function obtenerPregunta()
@@ -91,7 +86,6 @@ class PreguntasController
         return $pregunta;
     }
 
-
     public function procesarRespuesta()
     {
         $idPregunta = $_SESSION['id_pregunta_actual'];
@@ -99,7 +93,6 @@ class PreguntasController
         $respuestaUsuario = $_POST['respuesta_usuario'];
 
         $respuestaCorrecta = $_SESSION['respuesta_correcta_actual'];
-        unset($_SESSION['respuesta_correcta_actual'], $_SESSION['id_pregunta_actual']);
 
         $horaRespuesta = $this->model->getHoraEnvio();
         $_SESSION['horaRespuesta'] = $horaRespuesta;
@@ -127,6 +120,7 @@ class PreguntasController
             $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
+        unset($_SESSION['respuesta_correcta_actual'], $_SESSION['id_pregunta_actual']);
     }
 
     public function sumarPuntos(){
