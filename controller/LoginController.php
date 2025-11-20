@@ -25,10 +25,6 @@ class LoginController
         }
 
     }
-
-    /**
-     * Endpoint para obtener fotoDePerfil por nombre de usuario (devuelve JSON)
-     */
     public function obtenerUsuario()
     {
         $username = $_GET['username'] ?? null;
@@ -40,7 +36,6 @@ class LoginController
 
         $foto = $this->model->getFotoByUsername($username);
         if ($foto) {
-            // Normalizar ruta: prefijar '/' si hace falta
             if (strpos($foto, '/') !== 0 && stripos($foto, 'http') !== 0) {
                 $foto = '/' . ltrim($foto, '/');
             }

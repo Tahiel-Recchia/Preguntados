@@ -25,6 +25,7 @@ include_once ("model/RankingModel.php");
 include_once ("controller/RankingController.php");
 include_once("model/PartidaModel.php");
 include_once("model/PuntajeModel.php");
+include_once("model/QrModel.php");
 
 class Factory
 {
@@ -51,7 +52,8 @@ class Factory
         $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"]);
         $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
         $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
-        $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"]);
+        $this->objetos["qrmodel"] = new QrModel();
+        $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"], $this->objetos["qrmodel"]);
        // editor model y controller
         $this->objetos["puntajemodel"] = new PuntajeModel($this->objetos["database"]);
         $this->objetos["categoriamodel"] = new CategoriaModel($this->objetos["database"]);

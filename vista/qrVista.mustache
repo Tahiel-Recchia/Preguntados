@@ -1,0 +1,29 @@
+<main class="w-full  p-8 flex items-center justify-center bg-[#1A1C3C] text-[#E2E4F3]">
+    <div class="flex flex-col items-center p-8 bg-[#2c2f56] rounded-lg shadow-xl max-w-sm w-full">
+
+        <h1 class="text-3xl font-bold text-center mb-4 text-white">¡Comparte tu Perfil!</h1>
+
+        {{#nombreDeUsuario}}
+            <p class="text-md text-center mb-6 opacity-80">
+                Escanea este código QR para que tus amigos encuentren el perfil de <span class="font-semibold text-[#E65895]">{{nombreDeUsuario}}</span>
+            </p>
+        {{/nombreDeUsuario}}
+        {{^nombreDeUsuario}}
+            <p class="text-md text-center mb-6 opacity-80">
+                Escanea este código QR para que tus amigos te encuentren.
+            </p>
+        {{/nombreDeUsuario}}
+
+        <div class="p-4 bg-white rounded-lg shadow-inner border-2 border-[#E65895]">
+            <img src="{{qrImageUrl}}" alt="Código QR de tu perfil" class="w-48 h-48 object-contain" />
+        </div>
+
+        <p class="text-sm mt-6 text-center opacity-70">
+            Simplemente abre la cámara de tu teléfono y escanea.
+        </p>
+
+        <a href="/" class="w-full mt-8 py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2">
+            Volver a mi Perfil
+        </a>
+    </div>
+</main>

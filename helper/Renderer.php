@@ -11,10 +11,15 @@ class Renderer{
                 'partials_loader' => new Mustache_Loader_FilesystemLoader( $partialsPath )
             ));
         $this->viewsPath = $viewsPath;
-        $this->partialsPath = $partialsPath; // Guardamos esto
+        $this->partialsPath = $partialsPath;
     }
 
     public function render($contentFile , $data = array() ){
+        if(isset($_SESSION['nombreDeUsuario'])) {
+            $data['sesion']['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'];
+            $data['sesion']['fotoDePerfil'] = $_SESSION['fotoDePerfil'];
+            $data['sesion']['id'] = $_SESSION['user_id'];
+        }
         $contentFilePath = $this->viewsPath . '/' . $contentFile . "Vista.mustache";
         echo $this->generateHtml($contentFilePath, $data);
     }

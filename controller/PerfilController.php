@@ -6,12 +6,14 @@ class PerfilController
     private $conexion;
     private $renderer;
     private $model;
+    private $qr;
 
-    public function __construct($conexion, $renderer, $model)
+    public function __construct($conexion, $renderer, $model, $qr)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
+        $this->qr = $qr;
     }
 
 
@@ -57,22 +59,9 @@ class PerfilController
             $datos['isEditor'] = ($datos['usuario']['rol_id'] == 2);
         }
 
-        // --- Generar QR del perfil ---
-        if (!empty($datos['usuario'])) {
-            // Detecta el dominio actual (funciona en localhost también)
-            $dominio = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
-            $perfilUrl = $dominio . "/perfil?id=" . $usuarioId;
-
-            // Crear QR
-            $qr = QrCode::create($perfilUrl);
-            $writer = new PngWriter();
-            $qrResult = $writer->write($qr);
-
-            // Pasar imagen base64 a la vista
-            $datos['qrPerfil'] = 'data:image/png;base64,' . base64_encode($qrResult->getString());
-        }
-
-        // --- Renderizar vista ---
+        
+   
+   
         $this->renderer->render("perfil", $datos);
     }
 
@@ -102,5 +91,11 @@ class PerfilController
 
         header("Location: /perfil");
         exit;
+    }
+
+    public function getQr(){
+        $datos['qrImageUrl'] = $this->qr->getQr($_GET['id']);
+        $datos['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'];
+        $this->renderer->render("qr", $datos);
     }
 }
