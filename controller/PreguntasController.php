@@ -184,4 +184,10 @@ class PreguntasController
         unset($_SESSION['respuesta_correcta_actual']);
         unset($_SESSION['id_pregunta_actual']);
     }
+
+    public function salir(){
+        $this->terminarPartida();
+        header('Location: /');
+        exit();
+    }
 }
