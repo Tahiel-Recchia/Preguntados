@@ -407,5 +407,100 @@ public function obtenerPreguntasSugeridas()
         $stmt->close();
     }
 
+    /**
+     * Inserta una sugerencia de pregunta (aprobada = 2) y sus respuestas asociadas
+     */
+    public function insertarSugerencia($descripcion, $id_categoria, $id_dificultad, $respuesta_correcta, $respuesta_incorrecta1, $respuesta_incorrecta2, $respuesta_incorrecta3)
+    {
+        $cols = $this->detectPreguntaColumns();
+        $catCol = $cols['categoria'];
+        $difCol = $cols['dificultad'];
+
+        try {
+            $stmt = $this->conexion->prepare(
+                "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", " . $difCol . ") VALUES (?, 2, ?, ?)"
+            );
+            $stmt->bind_param("sii", $descripcion, $id_categoria, $id_dificultad);
+            $stmt->execute();
+            $id_pregunta = $stmt->insert_id;
+            $stmt->close();
+        } catch (Exception $e) {
+            error_log("Error insertarSugerencia INSERT pregunta: " . $e->getMessage());
+            return false;
+        }
+
+        // Insertar respuestas
+        $tablaResp = $this->detectRespuestasTable();
+        $stmtResp = null;
+        try {
+            $stmtResp = $this->conexion->prepare("INSERT INTO " . $tablaResp . " (descripcion, es_correcta, id_pregunta) VALUES (?, ?, ?)");
+        } catch (Exception $e) {
+            error_log("Fallo prepare insertar respuestas sugerencia con tabla $tablaResp: " . $e->getMessage());
+            $alt = ($tablaResp === 'respuesta') ? 'respuestas' : 'respuesta';
+            try {
+                $stmtResp = $this->conexion->prepare("INSERT INTO " . $alt . " (descripcion, es_correcta, id_pregunta) VALUES (?, ?, ?)");
+                $tablaResp = $alt;
+            } catch (Exception $e2) {
+                error_log("Fallo prepare alternativo insertar respuestas sugerencia con tabla $alt: " . $e2->getMessage());
+                $stmtResp = null;
+            }
+        }
+
+        if ($stmtResp) {
+            $es_correcta = 1;
+            $stmtResp->bind_param("sii", $respuesta_correcta, $es_correcta, $id_pregunta);
+            $stmtResp->execute();
+
+            $es_correcta = 0;
+            $stmtResp->bind_param("sii", $respuesta_incorrecta1, $es_correcta, $id_pregunta);
+            $stmtResp->execute();
+            $stmtResp->bind_param("sii", $respuesta_incorrecta2, $es_correcta, $id_pregunta);
+            $stmtResp->execute();
+            $stmtResp->bind_param("sii", $respuesta_incorrecta3, $es_correcta, $id_pregunta);
+            $stmtResp->execute();
+            $stmtResp->close();
+        } else {
+            error_log('No se pudo preparar statement para insertar respuestas de sugerencia; omitiendo inserción.');
+        }
+
+        return $id_pregunta;
+    }
+
+    /**
+     * Inserta un reporte asociado a una pregunta.
+     * Intentará usar columna id_usuario si se proporciona, y fallará de forma segura si la tabla tiene diferente esquema.
+     */
+    public function insertarReporte($pregunta_id, $descripcion, $id_usuario = null)
+    {
+        // Intentar inserción con campos comunes
+        try {
+            if ($id_usuario !== null) {
+                $stmt = $this->conexion->prepare("INSERT INTO reporte (pregunta_id, descripcion, id_usuario, estado, creado_en) VALUES (?, ?, ?, 'pendiente', NOW())");
+                $stmt->bind_param("isi", $pregunta_id, $descripcion, $id_usuario);
+            } else {
+                $stmt = $this->conexion->prepare("INSERT INTO reporte (pregunta_id, descripcion, estado, creado_en) VALUES (?, ?, 'pendiente', NOW())");
+                $stmt->bind_param("is", $pregunta_id, $descripcion);
+            }
+            $ok = $stmt->execute();
+            $id = $stmt->insert_id;
+            $stmt->close();
+            return $ok ? $id : false;
+        } catch (Exception $e) {
+            // fallback a un INSERT minimal por si la tabla no tiene las columnas esperadas
+            error_log('insertarReporte fallo inserción completa: ' . $e->getMessage());
+            try {
+                $stmt2 = $this->conexion->prepare("INSERT INTO reporte (pregunta_id, descripcion) VALUES (?, ?)");
+                $stmt2->bind_param("is", $pregunta_id, $descripcion);
+                $ok2 = $stmt2->execute();
+                $id2 = $stmt2->insert_id;
+                $stmt2->close();
+                return $ok2 ? $id2 : false;
+            } catch (Exception $e2) {
+                error_log('insertarReporte fallback falló: ' . $e2->getMessage());
+                return false;
+            }
+        }
+    }
+
 
 }

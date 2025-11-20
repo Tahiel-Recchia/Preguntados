@@ -15,6 +15,11 @@ class RuletaController
     }
 
     public function base(){
+        // Bloquear acceso a la ruleta/juego para editores y administradores
+        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [2, 3])) {
+            header('Location: /index.php?controller=menu');
+            exit;
+        }
         $categoriasArray = $this->model->getCategorias();
         $data["categorias_json"] =  json_encode($categoriasArray);
         // Normalizar datos de sesión para que el navbar use la misma estructura en todas las vistas

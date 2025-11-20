@@ -17,6 +17,11 @@ class PreguntasController
 
     public function base()
     {
+        // Bloquear acceso al juego para editores y administradores
+        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [2, 3])) {
+            header('Location: /index.php?controller=menu');
+            exit;
+        }
         if (isset($_SESSION['idPartida'])) {
             $data['sesion']['nombreDeUsuario'] = $_SESSION["nombreDeUsuario"];
             $this->jugarPartida();

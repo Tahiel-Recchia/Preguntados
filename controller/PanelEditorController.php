@@ -14,7 +14,8 @@ class PanelEditorController
     }
     private function requireEditor()
     {
-        if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [2, 3])) {
+        // Solo rol 'editor' (id 2) puede acceder al panel editor
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] != 2) {
             header('HTTP/1.1 403 Forbidden');
             // redirigir a menú usando URL explícita para entornos sin .htaccess
             header('Location: /index.php?controller=menu');
@@ -209,4 +210,56 @@ public function rechazarSugerencia()
     header("Location: /index.php?controller=paneleditor&method=verSugerencias");
     exit;
 }
+
+    // Endpoint público para que un usuario sugiera una pregunta desde la UI de juego
+    public function guardarSugerencia()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+            exit;
+        }
+
+        $descripcion = $_POST['descripcion'] ?? '';
+        $id_categoria = $_POST['id_categoria'] ?? null;
+        $id_dificultad = $_POST['id_dificultad'] ?? null;
+        $respuesta_correcta = $_POST['respuesta_correcta'] ?? '';
+        $respuesta_incorrecta1 = $_POST['respuesta_incorrecta1'] ?? '';
+        $respuesta_incorrecta2 = $_POST['respuesta_incorrecta2'] ?? '';
+        $respuesta_incorrecta3 = $_POST['respuesta_incorrecta3'] ?? '';
+
+        // Validaciones mínimas
+        if (empty($descripcion) || empty($respuesta_correcta) || empty($respuesta_incorrecta1) || empty($respuesta_incorrecta2) || empty($respuesta_incorrecta3)) {
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+            exit;
+        }
+
+        $id = $this->model->insertarSugerencia($descripcion, $id_categoria, $id_dificultad, $respuesta_correcta, $respuesta_incorrecta1, $respuesta_incorrecta2, $respuesta_incorrecta3);
+
+        // redirigir de vuelta a la página anterior (juego)
+        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+        exit;
+    }
+
+    // Endpoint para reportar una pregunta (desde la UI de juego)
+    public function reportarPregunta()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+            exit;
+        }
+
+        $pregunta_id = $_POST['pregunta_id'] ?? null;
+        $descripcion = $_POST['descripcion'] ?? '';
+        $id_usuario = $_SESSION['user_id'] ?? null;
+
+        if (empty($pregunta_id) || empty($descripcion)) {
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+            exit;
+        }
+
+        $this->model->insertarReporte($pregunta_id, $descripcion, $id_usuario);
+
+        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+        exit;
+    }
 }
