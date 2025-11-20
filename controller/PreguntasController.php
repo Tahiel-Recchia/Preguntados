@@ -29,7 +29,6 @@ class PreguntasController
             $_SESSION["preguntas_correctas"] = 0;
         }
         if(!isset($_SESSION["idPartida"])) {
-            echo "Inicializar Partida";
             $this->inicializarPartida();
         }
         $this->jugarPartida();
@@ -68,7 +67,6 @@ class PreguntasController
         } else {
             $pregunta = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
         }
-        var_dump($_SESSION['puntajeActual']);
         $this->renderer->render("preguntas", $pregunta);
     }
     public function obtenerPregunta()
@@ -122,7 +120,6 @@ class PreguntasController
             $this->renderer->render("preguntas", $data);
         } else {
             $this->terminarPartida();
-            echo "terminarPartida esta entrando por procesaRespuesta linea 125";
             $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
@@ -143,7 +140,6 @@ class PreguntasController
     public function finalizarPorFaltaDePreguntas(){
         $this->limpiarSesionPreguntas();
         $this->actualizarEstadisticas($_SESSION['user_id']);
-        echo "terminarPartida esta entrando por faltaDePreguntas linea 147";
         $this->terminarPartida();
         header('Location: /');
     }
@@ -162,7 +158,6 @@ class PreguntasController
     }
 
     public function tiempoAgotado(){
-        echo "terminarPartida esta entrando por tiempoAgotado linea 165";
         $this->terminarPartida();
         $data['tiempoAgotado'] = "¡Te quedaste sin tiempo!";
         $this->renderer->render("preguntaErronea", $data);
