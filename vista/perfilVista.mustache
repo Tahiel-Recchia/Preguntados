@@ -1,26 +1,22 @@
 <main class="w-full p-8 flex flex-col gap-8 text-[#E2E4F3]">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-        <!-- COLUMNA IZQUIERDA -->
-        <aside class="md:col-span-1 flex flex-col items-center">
+        {{#usuario}} <aside class="md:col-span-1 flex flex-col items-center">
 
-          <!-- Foto de perfil -->
-          <img src="{{usuario.fotoDePerfil}}"
-              onerror="this.src='/public/placeholder.png'"
-              alt="Foto de perfil"
-              class="w-32 h-32 rounded-full object-cover border-4 border-[#E65895] shadow-lg" />
+            <img src="{{fotoDePerfil}}"
+                 onerror="this.src='/public/placeholder.png'"
+                 alt="Foto de perfil"
+                 class="w-32 h-32 rounded-full object-cover border-4 border-[#E65895] shadow-lg" />
 
-            <!-- Nombre de usuario -->
-            {{#usuario}}
             <h1 class="text-3xl font-bold text-center mt-4">{{nombreDeUsuario}}</h1>
-            {{#isEditor}}
-            <div class="mt-2 flex justify-center">
-                <span class="px-3 py-1 rounded-full bg-[#BC6BE8] text-sm font-semibold">Editor</span>
-            </div>
-            {{/isEditor}}
-            <!-- Contenedor de detalles personales -->
-            <div class="w-full bg-[#2c2f56] rounded-lg p-4 mt-8 space-y-4">
 
+            {{#isEditor}}
+                <div class="mt-2 flex justify-center">
+                    <span class="px-3 py-1 rounded-full bg-[#BC6BE8] text-sm font-semibold">Editor</span>
+                </div>
+            {{/isEditor}}
+
+            <div class="w-full bg-[#2c2f56] rounded-lg p-4 mt-8 space-y-4">
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-400 font-medium">Año de Nacimiento</span>
                     <span class="font-semibold text-white">{{fechaNac}}</span>
@@ -33,44 +29,67 @@
 
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-400 font-medium">Miembro desde</span>
-                    <span class="font-semibold text-white">Oct 2025</span> <!-- Dato de ejemplo -->
+                    <span class="font-semibold text-white">Oct 2025</span>
                 </div>
             </div>
 
-            <!-- Botón de Compartir -->
-            <a href="/perfil/getQr/{{id}}" class="w-full mt-6 py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
-                </svg>
-                Compartir Perfil
+            <a href="/perfil/getQr?id={{id}}" class="w-full mt-6 py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+            </svg>
+            Compartir Perfil
             </a>
         </aside>
 
-        <!--COLUMNA DERECHA  -->
-        <section class="md:col-span-2">
-            <h2 class="text-2xl font-bold mb-6 border-b-2 border-[#2c2f56] pb-2">Ubicación</h2>
-            <form id="formUbicacion" method="POST" action="/perfil/actualizarUbicacion" class="space-y-3">
-                <input type="text" id="addressInput" name="direccion"
-                value="{{direccion}}"
-                class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3]
-                focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition"
-                placeholder="Ej: Argentina, Buenos Aires" required>
 
-                <div id="map" data-direccion="{{direccion}}" class="w-full h-[250px] rounded-lg border border-gray-600"></div>
+            <section class="md:col-span-2">
+                <h2 class="text-2xl font-bold mb-6 border-b-2 border-[#2c2f56] pb-2">Ubicación</h2>
 
-                <p class="text-xs opacity-70 mt-1">Haz clic en el mapa para seleccionar una nueva ubicación</p>
+                {{#esMiPerfil}}
+                    <form id="formUbicacion" method="POST" action="/perfil/actualizarUbicacion" class="space-y-3">
 
-                <button type="submit"
-                class="py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8]
-                text-white font-semibold hover:opacity-90 active:opacity-80 transition w-full">
-                Guardar ubicación
-                </button>
-            </form>
-        </section>
+                        <label class="text-sm text-gray-400 mb-1 block">Editar dirección:</label>
+                        <input type="text" id="addressInput" name="direccion"
+                               value="{{direccion}}"
+                               class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3]
+                    focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition"
+                               placeholder="Ej: Argentina, Buenos Aires" required>
+
+                        <div id="map" data-direccion="{{direccion}}" class="w-full h-[250px] rounded-lg border border-gray-600 cursor-crosshair"></div>
+
+                        <p class="text-xs opacity-70 mt-1 text-[#E65895]">
+                            <i class="fas fa-info-circle"></i> Haz clic en el mapa para corregir tu ubicación.
+                        </p>
+
+                        <button type="submit"
+                                class="py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8]
+                    text-white font-semibold hover:opacity-90 active:opacity-80 transition w-full shadow-md mt-4">
+                            Guardar Nueva Ubicación
+                        </button>
+                    </form>
+                {{/esMiPerfil}}
 
 
-            {{/usuario}}
-    </div>
+                {{^esMiPerfil}}
+                    <div class="space-y-4">
+                        <div class="w-full p-4 rounded-lg bg-[#2c2f56] border border-[#2c2f56]">
+                            <p class="text-gray-400 text-xs mb-1">Reside en:</p>
+                            <p class="text-lg font-semibold text-white flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-[#E65895]">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+                                {{direccion}}
+                            </p>
+                        </div>
+
+                        <div id="map" data-direccion="{{direccion}}" class="w-full h-[250px] rounded-lg border border-gray-600 opacity-90 pointer-events-none"></div>
+                    </div>
+                {{/esMiPerfil}}
+
+            </section>
+
+        {{/usuario}} </div>
 </main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="/public/javascript/profileMap.js"></script>

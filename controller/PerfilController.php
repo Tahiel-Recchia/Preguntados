@@ -20,50 +20,33 @@ class PerfilController
 
     public function base()
     {
+        $usuarioId = $_GET['id'] ?? $_SESSION['user_id'] ?? null;
+        if (!$usuarioId) {
+            header('Location: /login');
+            exit();
+        }
+        $fila = $this->model->getDatosUsuario($usuarioId);
         $datos = [];
-
-        // --- Sesión del usuario logueado ---
-        if (isset($_SESSION["nombreDeUsuario"])) {
-            $datos["sesion"] = $this->model->getDatosUsuario($_SESSION["user_id"]);
-
-            // Normalizar ruta de foto de perfil de sesión
-            if (!empty($datos["sesion"]["fotoDePerfil"])) {
-                $foto = $datos["sesion"]["fotoDePerfil"];
-                if (strpos($foto, '/') !== 0 && stripos($foto, 'http') !== 0) {
-                    $foto = '/' . ltrim($foto, '/');
-                }
-                $datos["sesion"]["fotoDePerfil"] = $foto;
-            } else {
-                $datos["sesion"]["fotoDePerfil"] = '/public/placeholder.png';
-            }
+        if ($fila) {
+            $fila['fotoDePerfil'] = $this->normalizarFoto($fila['fotoDePerfil']);
+            $fila['isEditor'] = ($fila['rol_id'] == 2);
+            $fila['esMiPerfil'] = ($usuarioId == ($_SESSION['user_id'] ?? null));
+            $datos['usuario'] = $fila;
         }
-
-        // --- Usuario mostrado (propio o por id GET) ---
-        $usuarioId = isset($_GET['id']) ? $_GET['id'] : ($_SESSION["user_id"] ?? null);
-        $datos['usuario'] = $usuarioId ? $this->model->getDatosUsuario($usuarioId) : null;
-
-        // Normalizar foto del usuario mostrado
-        if (!empty($datos['usuario']['fotoDePerfil'])) {
-            $foto = $datos['usuario']['fotoDePerfil'];
-            if (strpos($foto, '/') !== 0 && stripos($foto, 'http') !== 0) {
-                $foto = '/' . ltrim($foto, '/');
-            }
-            $datos['usuario']['fotoDePerfil'] = $foto;
-        } else {
-            $datos['usuario']['fotoDePerfil'] = '/public/placeholder.png';
-        }
-
-        // --- Marcar si el usuario es editor ---
-        $datos['isEditor'] = false;
-        if (!empty($datos['usuario']) && isset($datos['usuario']['rol_id'])) {
-            $datos['isEditor'] = ($datos['usuario']['rol_id'] == 2);
-        }
-
-        
-   
-   
         $this->renderer->render("perfil", $datos);
     }
+
+    private function normalizarFoto($foto) {
+        if (empty($foto)) {
+            return '/public/placeholder.png';
+        }
+        if (strpos($foto, '/') !== 0 && stripos($foto, 'http') !== 0) {
+            return '/' . ltrim($foto, '/');
+        }
+        return $foto;
+    }
+
+
 
 
     public function actualizarUbicacion()
@@ -73,7 +56,6 @@ class PerfilController
             exit;
         }
 
-        session_start();
         $userId = $_SESSION['user_id'] ?? null;
         if (!$userId) {
             header("Location: /login");
@@ -95,7 +77,8 @@ class PerfilController
 
     public function getQr(){
         $datos['qrImageUrl'] = $this->qr->getQr($_GET['id']);
-        $datos['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'];
+        $datosDeUsuario = $this->model->getDatosUsuario($_GET['id']);
+        $datos['nombreDeUsuario'] = $datosDeUsuario['nombreDeUsuario'];
         $this->renderer->render("qr", $datos);
     }
 }
