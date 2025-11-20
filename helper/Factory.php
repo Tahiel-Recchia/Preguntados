@@ -26,6 +26,8 @@ include_once ("controller/RankingController.php");
 include_once("model/PartidaModel.php");
 include_once("model/PuntajeModel.php");
 include_once("model/QrModel.php");
+include_once("model/HistoriaModel.php");
+include_once("controller/HistorialController.php");
 
 class Factory
 {
@@ -69,7 +71,8 @@ class Factory
         $this->objetos["paneleditorcontroller"] = new PanelEditorController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["paneleditormodel"]);
         $this->objetos["editorpreguntamodel"] = new EditorPreguntaModel($this->objetos["database"]);
         $this->objetos["editorpreguntacontroller"] = new EditorPreguntaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["editorpreguntamodel"]);
-    
+        $this->objetos["historialmodel"] = new HistoriaModel($this->objetos["database"]);
+        $this->objetos["historialcontroller"] = new HistorialController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["historialmodel"]);
     }
 
 
