@@ -19,13 +19,10 @@ class Router
 
     public function executeController($controllerName, $methodName)
     {
-        // Obtener instancia del controlador solicitada (si viene nulo, usar el controlador por defecto)
+        $this->verificarPartidaEnCurso($controllerName);
         $controller = $this->getController($controllerName);
         if ($controller === null) {
-            // Obtener la instancia del controlador por defecto desde la factory
-            // (usamos create() directamente porque $this->defaultController ya contiene la clave completa)
             $controller = $this->factory->create($this->defaultController);
-            // Si aún así no existe, no hay nada que ejecutar
             if ($controller === null) {
                 return;
             }
@@ -51,6 +48,29 @@ class Router
             return;
         }
         call_user_func([$controller, $method]);
+    }
+
+    public function verificarPartidaEnCurso($controllerName){
+        $controllerCheck = strtolower($controllerName);
+
+        // Lista negra: Palabras que NO son controladores reales, sino archivos
+        // Agregamos 'imagenes' y 'favicon.ico' que vimos en tu log
+        $ignorados = ['imagenes', 'public', 'js', 'css', 'favicon.ico', 'vendor'];
+
+        // La condición ahora dice:
+        // 1. Si NO es preguntas
+        // 2. Y NO es ruleta
+        // 3. Y NO está en la lista de ignorados (imagenes, favicon, etc.)
+        // 4. Y hay sesión... ENTONCES borramos.
+
+        if($controllerCheck !== "preguntas"
+            && $controllerCheck !== "ruleta"
+            && !in_array($controllerCheck, $ignorados)
+            && isset($_SESSION['idPartida'])) {
+
+            $preguntasController = $this->factory->create('preguntasController');
+            call_user_func([$preguntasController, "terminarPartida"]);
+        }
     }
 
 }

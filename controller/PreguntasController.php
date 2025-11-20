@@ -28,15 +28,16 @@ class PreguntasController
         if(!isset($_SESSION["preguntas_correctas"])){
             $_SESSION["preguntas_correctas"] = 0;
         }
-        $this->inicializarPartida();
+        if(!isset($_SESSION["idPartida"])) {
+            echo "Inicializar Partida";
+            $this->inicializarPartida();
+        }
         $this->jugarPartida();
     }
 
     public function inicializarPartida(){
-        if(!isset($_SESSION["idPartida"])){
             $_SESSION["puntajeActual"] = 0;
             $_SESSION['idPartida'] = $this->partida->iniciarPartida();
-        }
     }
     public function jugarPartida()
     {
@@ -52,18 +53,22 @@ class PreguntasController
 
     public function mostrarPregunta()
     {
-        $pregunta  = $this->obtenerPregunta();
+        if(!isset($_SESSION['id_pregunta_actual'])){
+            $pregunta  = $this->obtenerPregunta();
+            $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
 
-        if (!$pregunta) {
-            $this->finalizarPorFaltaDePreguntas();
-            return;
+            if (!$pregunta) {
+                $this->finalizarPorFaltaDePreguntas();
+                return;
+            }
+
+            $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
+            $_SESSION['respuesta_correcta_actual'] = $this->model->getRespuestaCorrecta($pregunta['id_pregunta']);
+            $_SESSION['horaEnvio'] = $this->model->getHoraEnvio();
+        } else {
+            $pregunta = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
         }
-        $respuestaCorrecta = $this->model->getRespuestaCorrecta($pregunta['id_pregunta']);
-        $horaEnvio = $this->model->getHoraEnvio();
-        $_SESSION['horaEnvio'] = $horaEnvio;
-        $_SESSION['respuesta_correcta_actual'] = $respuestaCorrecta;
-        $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
-
+        var_dump($_SESSION['puntajeActual']);
         $this->renderer->render("preguntas", $pregunta);
     }
     public function obtenerPregunta()
@@ -117,6 +122,7 @@ class PreguntasController
             $this->renderer->render("preguntas", $data);
         } else {
             $this->terminarPartida();
+            echo "terminarPartida esta entrando por procesaRespuesta linea 125";
             $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
@@ -137,6 +143,7 @@ class PreguntasController
     public function finalizarPorFaltaDePreguntas(){
         $this->limpiarSesionPreguntas();
         $this->actualizarEstadisticas($_SESSION['user_id']);
+        echo "terminarPartida esta entrando por faltaDePreguntas linea 147";
         $this->terminarPartida();
         header('Location: /');
     }
@@ -149,30 +156,29 @@ class PreguntasController
         $this->puntaje->actualizarMejorPuntaje($idUsuario, $puntajeFinal);
 
         $this->limpiarSesionPreguntas();
-
         $_SESSION['puntajeActual'] = 0;
 
         unset($_SESSION['idPartida']);
     }
 
     public function tiempoAgotado(){
+        echo "terminarPartida esta entrando por tiempoAgotado linea 165";
         $this->terminarPartida();
         $data['tiempoAgotado'] = "¡Te quedaste sin tiempo!";
         $this->renderer->render("preguntaErronea", $data);
     }
 
     public function procesarOpciones($data, $respuestaCorrecta, $respuestaUsuario) {
-
-        $opciones = $data['opciones'];
-
-        foreach ($opciones as $opcion) {
+        if (!isset($data['opciones'])) return $data;
+        foreach ($data['opciones'] as &$opcion) {
             $esLaCorrecta = ($opcion['descripcion'] == $respuestaCorrecta);
             $esLaSeleccionada = ($opcion['descripcion'] == $respuestaUsuario);
-
             $opcion['es_la_correcta'] = $esLaCorrecta;
             $opcion['es_la_seleccionada_incorrecta'] = ($esLaSeleccionada && !$esLaCorrecta);
-            $opcion['es_otra_incorrecta'] = (!$esLaCorrecta && $esLaSeleccionada != $respuestaUsuario);
+            $opcion['es_otra_incorrecta'] = (!$esLaCorrecta && !$esLaSeleccionada);
         }
+        unset($opcion);
+
         $data['modo_resultado'] = true;
 
         return $data;

@@ -163,21 +163,9 @@ function animarGiroConEasing(anguloDestino, duracion, ganador) {
             anguloActual = anguloActual % (2 * Math.PI);
 
             const categoriaId = ganador.id;
-            const formData = new FormData();
-            formData.append('categoria', categoriaId);
-            fetch('/preguntas/mostrarnuevapregunta', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
-            })
-                .then(() => {
-                    window.location.href = `/preguntas/obtenerpregunta?categoria=${categoriaId}`;
-                })
-                .catch(error => {
-                    console.error('Error al enviar la categoría:', error);
-                    pResultado.textContent = 'Error al ir a preguntas.';
-                    botonGirar.disabled = false;
-                });
+            setTimeout(() => {
+                window.location.href = `/preguntas/base?categoria=${categoriaId}`;
+            }, 500);
         }
     }
     requestAnimationFrame(frame);
