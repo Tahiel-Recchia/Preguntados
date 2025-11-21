@@ -1,7 +1,7 @@
 Options -Indexes
 
 <FilesMatch ".*\.(log|ini|htaccess)$">
-    deny from all
+    Require all denied
 </FilesMatch>
 
 <IfModule mod_rewrite.c>
