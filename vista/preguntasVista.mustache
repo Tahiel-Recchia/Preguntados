@@ -57,7 +57,113 @@
                 </button>
             </form>
         </div>
+        {{#modo_resultado}}
+        <div class="w-2/3 self-center mt-4 flex gap-4">
+            <button id="btnSugerirPregunta" type="button" class="flex-1 py-3 bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-bold rounded-lg hover:opacity-90">Sugerir Pregunta</button>
+            <button id="btnReportarPregunta" type="button" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-lg hover:opacity-90">Reportar Pregunta</button>
+        </div>
+        {{/modo_resultado}}
     {{/modo_resultado}}
 
 </main>
 <script src="/public/Javascript/timer.js"></script>
+
+<!-- Modal Sugerir Pregunta -->
+<div id="modalSugerir" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg">
+        <h3 class="text-xl font-semibold mb-3">Sugerir nueva pregunta</h3>
+        <form id="formSugerir" action="/index.php?controller=paneleditor&method=guardarSugerencia" method="POST" class="flex flex-col gap-4">
+            <div>
+                <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+                <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+                    <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="1">Geografía</option>
+                        <option value="2">Historia</option>
+                        <option value="3">Ciencia</option>
+                        <option value="4">Deportes</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+                    <select name="id_dificultad" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required>
+                        <option value="1">Fácil</option>
+                        <option value="2">Media</option>
+                        <option value="3">Difícil</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-2">
+                <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
+                <div class="flex flex-col gap-2">
+                    <input name="respuesta_correcta" placeholder="Respuesta correcta" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required />
+                    <input name="respuesta_incorrecta1" placeholder="Respuesta incorrecta 1" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required />
+                    <input name="respuesta_incorrecta2" placeholder="Respuesta incorrecta 2" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required />
+                    <input name="respuesta_incorrecta3" placeholder="Respuesta incorrecta 3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required />
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-4">
+                <button type="button" id="cerrarSugerir" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-[#BC6BE8] rounded-lg hover:opacity-80">Enviar Sugerencia</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Reportar Pregunta -->
+<div id="modalReportar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-lg text-white shadow-lg">
+        <h3 class="text-xl font-semibold mb-3">Reportar pregunta</h3>
+        <div id="reportPreguntaTexto" class="mb-3 text-gray-200"></div>
+        <form id="formReportar" action="/index.php?controller=paneleditor&method=reportarPregunta" method="POST" class="flex flex-col gap-3">
+            <input type="hidden" name="pregunta_id" id="report_pregunta_id" value="">
+            <label class="block text-sm mb-1 text-gray-300">Descripción breve (motivo)</label>
+            <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required></textarea>
+            <div class="flex justify-end gap-3 mt-2">
+                <button type="button" id="cerrarReportar" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-red-600 rounded-lg hover:opacity-80">Enviar Reporte</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Modal handlers for Sugerir / Reportar
+    (function(){
+        const btnSugerir = document.getElementById('btnSugerirPregunta');
+        const modalSugerir = document.getElementById('modalSugerir');
+        const cerrarSugerir = document.getElementById('cerrarSugerir');
+
+        if (btnSugerir && modalSugerir) {
+            btnSugerir.addEventListener('click', function(){ modalSugerir.classList.remove('hidden'); modalSugerir.classList.add('flex'); });
+        }
+        if (cerrarSugerir && modalSugerir) {
+            cerrarSugerir.addEventListener('click', function(){ modalSugerir.classList.remove('flex'); modalSugerir.classList.add('hidden'); });
+        }
+
+        const btnReportar = document.getElementById('btnReportarPregunta');
+        const modalReportar = document.getElementById('modalReportar');
+        const cerrarReportar = document.getElementById('cerrarReportar');
+        const reportTexto = document.getElementById('reportPreguntaTexto');
+        const reportIdField = document.getElementById('report_pregunta_id');
+
+        if (btnReportar && modalReportar) {
+            btnReportar.addEventListener('click', function(){
+                // Try to show the pregunta text if present in the page
+                const preguntaEl = document.querySelector('.bg-[#343964] p') || document.querySelector('p');
+                const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
+                if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
+                // If server provides pregunta id in a global JS var, set it; otherwise leave blank
+                if (reportIdField) reportIdField.value = window.__currentPreguntaId || '';
+                modalReportar.classList.remove('hidden'); modalReportar.classList.add('flex');
+            });
+        }
+        if (cerrarReportar && modalReportar) {
+            cerrarReportar.addEventListener('click', function(){ modalReportar.classList.remove('flex'); modalReportar.classList.add('hidden'); });
+        }
+    })();
+</script>

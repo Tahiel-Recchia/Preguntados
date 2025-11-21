@@ -1,25 +1,42 @@
 <main class="w-full p-8 flex flex-col gap-8 text-[#E2E4F3]">
-
   <h1 class="text-3xl font-bold border-b-2 border-[#2c2f56] pb-3">Panel del Editor</h1>
+    <div class="flex gap-4 mb-6">
+    <button id="btnPreguntas" type="button"
+      class="tab-btn px-5 py-2 rounded-lg font-semibold border border-[#BC6BE8] text-[#FFFFFF] hover:bg-[#BC6BE8]/20 transition"
+      onclick="mostrarSeccion('preguntas')">
+      Preguntas
+    </button>
+    <button id="btnReportes" type="button"
+      class="tab-btn px-5 py-2 rounded-lg font-semibold border border-[#BC6BE8] text-[#FFFFFF] hover:bg-[#BC6BE8]/20 transition"
+      onclick="mostrarSeccion('reportes')">
+      Reportes
+    </button>
+    <button id="btnSugerencias" type="button"
+      class="tab-btn px-5 py-2 rounded-lg font-semibold border border-[#BC6BE8]/40 text-[#FFFFFF]/70 hover:bg-[#BC6BE8]/10 transition"
+      onclick="mostrarSeccion('sugerencias')">
+      Sugerencias
+    </button>
+  </div>
 
-  <!-- ===== BOTÓN DESPLEGAR FORMULARIO ===== -->
-  <button 
-    onclick="toggleFormulario()" 
-    class="w-fit py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition flex items-center gap-2">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
-      <path fill-rule="evenodd" d="M12 2.25a9.75 9.75 0 1 0 9.75 9.75A9.76 9.76 0 0 0 12 2.25Zm0 18a8.25 8.25 0 1 1 8.25-8.25A8.26 8.26 0 0 1 12 20.25ZM12.75 7.5a.75.75 0 0 0-1.5 0v4.5H7.5a.75.75 0 0 0 0 1.5h3.75v3.75a.75.75 0 0 0 1.5 0V13.5H16.5a.75.75 0 0 0 0-1.5h-3.75Z" clip-rule="evenodd"/>
-    </svg>
-    Agregar Nueva Pregunta
-  </button>
-
-  <!-- ===== FORMULARIO NUEVA PREGUNTA ===== -->
-  <section id="formulario" class="bg-[#2c2f56] rounded-xl p-6 shadow-xl hidden transition-all duration-300">
-    <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
-        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75S6.615 21.75 12 21.75 21.75 17.385 21.75 12 17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+  <!-- ===== BOTÓN DESPLEGAR FORMULARIO SOLO EN SECCIÓN PREGUNTAS ===== -->
+  <section id="seccion-preguntas">
+    <button 
+      onclick="toggleFormulario()" 
+      class="w-fit py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
+        <path fill-rule="evenodd" d="M12 2.25a9.75 9.75 0 1 0 9.75 9.75A9.76 9.76 0 0 0 12 2.25Zm0 18a8.25 8.25 0 1 1 8.25-8.25A8.26 8.26 0 0 1 12 20.25ZM12.75 7.5a.75.75 0 0 0-1.5 0v4.5H7.5a.75.75 0 0 0 0 1.5h3.75v3.75a.75.75 0 0 0 1.5 0V13.5H16.5a.75.75 0 0 0 0-1.5h-3.75Z" clip-rule="evenodd"/>
       </svg>
-      Nueva Pregunta
-    </h2>
+      Agregar Nueva Pregunta
+    </button>
+
+    <!-- ===== FORMULARIO NUEVA PREGUNTA ===== -->
+    <section id="formulario" class="bg-[#2c2f56] rounded-xl p-6 shadow-xl hidden transition-all duration-300">
+      <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
+          <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75S6.615 21.75 12 21.75 21.75 17.385 21.75 12 17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+        </svg>
+        Nueva Pregunta
+      </h2>
 
   <form action="/index.php?controller=paneleditor&method=guardar" method="POST" class="flex flex-col gap-4">
       <div>
@@ -79,15 +96,11 @@
   
   </section>
 
-  <!-- ===== LISTADO DE PREGUNTAS EXISTENTES ===== -->
-  <section>
+    <!-- ===== LISTADO DE PREGUNTAS EXISTENTES ===== -->
+    <section id="seccion-preguntas">
     <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
-        <path fill-rule="evenodd" d="M4.5 2.25a.75.75 0 0 0 0 1.5v16.5a.75.75 0 0 0 0 1.5h15a.75.75 0 0 0 0-1.5V3.75a.75.75 0 0 0 0-1.5h-15ZM6 6.75h12v1.5H6v-1.5Zm0 4.5h12v1.5H6v-1.5Zm0 4.5h12v1.5H6v-1.5Z" clip-rule="evenodd" />
-      </svg>
       Listado de Preguntas
     </h2>
-
     <div class="overflow-x-auto">
       <table class="w-full border-collapse">
         <thead>
@@ -101,39 +114,171 @@
           </tr>
         </thead>
         <tbody class="text-gray-300">
-  {{#preguntas}}
-  <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
-    <td class="p-3">{{id}}</td>
-    <td class="p-3">{{descripcion}}</td>
-    <td class="p-3">{{categoria}}</td>
-    <td class="p-3">{{dificultad}}</td>
-    <td class="p-3 text-center">
-      {{#aprobada}}
-        <span class="text-green-400 font-semibold">Sí</span>
-      {{/aprobada}}
-      {{^aprobada}}
-        <span class="text-red-400 font-semibold">No</span>
-      {{/aprobada}}
-    </td>
-            <td class="p-3 flex justify-center gap-2">
-<a href="/index.php?controller=editorpregunta&method=editar&id={{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>             
-<button onclick="abrirModalEliminarInline({{id}})" data-action="eliminar" data-id="{{id}}" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
+          {{#preguntas}}
+          <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
+            <td class="p-3">{{id}}</td>
+            <td class="p-3">{{descripcion}}</td>
+            <td class="p-3">{{categoria}}</td>
+            <td class="p-3">{{dificultad}}</td>
+            <td class="p-3 text-center">
+              {{#aprobada}}
+                <span class="text-green-400 font-semibold">Sí</span>
+              {{/aprobada}}
+              {{^aprobada}}
+                <span class="text-red-400 font-semibold">No</span>
+              {{/aprobada}}
             </td>
-  </tr>
-  {{/preguntas}}
-</tbody>
+            <td class="p-3 flex justify-center gap-2">
+              <a href="/index.php?controller=editorpregunta&method=editar&id={{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
+              <button onclick="abrirModalEliminarInline({{id}})" data-action="eliminar" data-id="{{id}}" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
+            </td>
+          </tr>
+          {{/preguntas}}
+        </tbody>
       </table>
+      {{^preguntas}}
+        <p class="text-gray-400">NO HAY PREGUNTAS</p>
+      {{/preguntas}}
+    </div>
+  </section>
+
+  <!-- ===== SECCIÓN REPORTES ===== -->
+<section id="seccion-reportes" class="hidden">
+  <h2 class="text-2xl font-semibold mb-4 text-[#E65895] flex items-center gap-2">
+    Reportes de Preguntas
+  </h2>
+  <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-[#2c2f56] text-[#E2E4F3]">
+            <th class="p-3 text-left">ID</th>
+            <th class="p-3 text-left">Descripción</th>
+            <th class="p-3 text-left">Categoría</th>
+            <th class="p-3 text-left">Dificultad</th>
+            <th class="p-3 text-center">Aprobada</th>
+            <th class="p-3 text-center">Acciones</th>
+          </tr>
+      </thead>
+      <tbody class="text-gray-300">
+        {{#reportes}}
+        <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
+          <td class="p-3">{{id_reporte}}</td>
+          <td class="p-3">{{pregunta}}</td>
+          <td class="p-3 flex justify-center gap-2">
+            <form action="/index.php?controller=paneleditor&method=aceptarReporte" method="POST">
+              <input type="hidden" name="id_reporte" value="{{id_reporte}}">
+              <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white">Aceptar</button>
+            </form>
+            <form action="/index.php?controller=paneleditor&method=rechazarReporte" method="POST">
+              <input type="hidden" name="id_reporte" value="{{id_reporte}}">
+              <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white">Rechazar</button>
+            </form>
+          </td>
+        </tr>
+        {{/reportes}}
+        {{^reportes}}
+        <tr>
+          <td class="p-3 text-gray-400" colspan="3">NO HAY REPORTES</td>
+        </tr>
+        {{/reportes}}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+  <!-- ===== SECCIÓN SUGERENCIAS ===== -->
+  <section id="seccion-sugerencias" class="hidden">
+    <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
+      Sugerencias de Preguntas
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-[#2c2f56] text-[#E2E4F3]">
+            <th class="p-3 text-left">ID</th>
+            <th class="p-3 text-left">Descripción</th>
+            <th class="p-3 text-left">Categoría</th>
+            <th class="p-3 text-left">Dificultad</th>
+            <th class="p-3 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-300">
+          {{#sugerencias}}
+          <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
+            <td class="p-3">{{id}}</td>
+            <td class="p-3">{{descripcion}}</td>
+            <td class="p-3">{{categoria}}</td>
+            <td class="p-3">{{dificultad}}</td>
+            <td class="p-3 flex justify-center gap-2">
+              <form action="/index.php?controller=paneleditor&method=aceptarSugerencia" method="POST">
+                <input type="hidden" name="id_sugerencia" value="{{id}}">
+                <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white">Aceptar</button>
+              </form>
+              <form action="/index.php?controller=paneleditor&method=rechazarSugerencia" method="POST">
+                <input type="hidden" name="id_sugerencia" value="{{id}}">
+                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white">Rechazar</button>
+              </form>
+            </td>
+          </tr>
+          {{/sugerencias}}
+          {{^sugerencias}}
+          <tr>
+            <td class="p-3 text-gray-400" colspan="5">NO HAY SUGERENCIAS</td>
+          </tr>
+          {{/sugerencias}}
+        </tbody>
+      </table>
+      <!-- DEBUG: sugerencias (debug removed to avoid Mustache array rendering) -->
     </div>
   </section>
 
 </main>
 
 <script>
-  // Función para mostrar/ocultar el formulario de nueva pregunta
-  function toggleFormulario() {
-    const form = document.getElementById("formulario");
-    form.classList.toggle("hidden");
+  // Mostrar sección preguntas por defecto y botón activo
+  window.addEventListener('DOMContentLoaded', function() {
+    mostrarSeccion('preguntas');
+  });
+  function mostrarSeccion(seccion) {
+    const secPreg = document.getElementById('seccion-preguntas');
+    const secRep = document.getElementById('seccion-reportes');
+    const secSug = document.getElementById('seccion-sugerencias');
+
+    // Mostrar/ocultar con inline style y con clase 'hidden' para cubrir ambos métodos
+    if (secPreg) {
+      if (seccion === 'preguntas') { secPreg.style.display = 'block'; secPreg.classList.remove('hidden'); } else { secPreg.style.display = 'none'; secPreg.classList.add('hidden'); }
+    }
+    if (secRep) {
+      if (seccion === 'reportes') { secRep.style.display = 'block'; secRep.classList.remove('hidden'); } else { secRep.style.display = 'none'; secRep.classList.add('hidden'); }
+    }
+    if (secSug) {
+      if (seccion === 'sugerencias') { secSug.style.display = 'block'; secSug.classList.remove('hidden'); } else { secSug.style.display = 'none'; secSug.classList.add('hidden'); }
+    }
+    // Unificar color de botón activo
+    document.getElementById('btnPreguntas').classList.remove('bg-[#BC6BE8]');
+    document.getElementById('btnReportes').classList.remove('bg-[#BC6BE8]');
+    document.getElementById('btnSugerencias').classList.remove('bg-[#BC6BE8]');
+    if (seccion === 'preguntas') {
+      document.getElementById('btnPreguntas').classList.add('bg-[#BC6BE8]');
+    } else if (seccion === 'reportes') {
+      document.getElementById('btnReportes').classList.add('bg-[#BC6BE8]');
+    } else if (seccion === 'sugerencias') {
+      document.getElementById('btnSugerencias').classList.add('bg-[#BC6BE8]');
+    }
   }
+  window.onload = function() {
+    mostrarSeccion('preguntas');
+  };
+
+  // Añadir listeners seguros a los botones de pestañas (fallback si onclick inline falla)
+  document.addEventListener('DOMContentLoaded', function() {
+    const bRep = document.getElementById('btnReportes');
+    const bSug = document.getElementById('btnSugerencias');
+    const bPreg = document.getElementById('btnPreguntas');
+    if (bRep) bRep.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('reportes'); });
+    if (bSug) bSug.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('sugerencias'); });
+    if (bPreg) bPreg.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('preguntas'); });
+  });
 </script>
 
 <!-- Modal de edición de pregunta -->
@@ -367,5 +512,6 @@
     }
   }, { capture: true });
 </script>
+
 
 

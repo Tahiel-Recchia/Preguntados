@@ -7,9 +7,9 @@ class Database
 
     public function __construct($server, $user, $pass, $database)
     {
-        $this->conexion = new mysqli($server, $user, $pass, $database);
-        if ($this->conexion->error) {
-            die("Error en la conexión: " . $this->conexion->error);
+        $this->conexion = @new mysqli($server, $user, $pass, $database);
+        if ($this->conexion->connect_error) {
+            die("Error en la conexión: " . $this->conexion->connect_error);
         }
     }
 
@@ -29,10 +29,7 @@ class Database
         }
 
         if ($result instanceof mysqli_result) {
-            if ($result->num_rows > 0) {
-                return $result->fetch_all(MYSQLI_ASSOC);
-            }
-            return [];
+            return $result;
         }
         return $result;
     }

@@ -15,8 +15,8 @@ class EditorPreguntaController
 
     public function base()
     {
-        // Permitir acceso solo a editores o administradores
-        if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [2, 3])) {
+        // Permitir acceso solo a editores (no admins)
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] != 2) {
             header('Location: /index.php?controller=menu');
             exit;
         }
