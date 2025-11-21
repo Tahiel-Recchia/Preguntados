@@ -1,6 +1,4 @@
-<?php
-// $datos = lista de jugadores
-?>
+<?php ?>
 <!DOCTYPE html>
 <html>
 <head>

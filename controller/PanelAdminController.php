@@ -44,6 +44,8 @@ class PanelAdminController
 
     public function descargarpdf()
     {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
         $this->requireAdmin();
 
         $jugadores = $this->model->obtenerJugadoresPorPais();
