@@ -28,6 +28,8 @@ include_once("model/PuntajeModel.php");
 include_once("model/QrModel.php");
 include_once("model/AdminModel.php");
 include_once("controller/PanelAdminController.php");
+include_once("model/HistoriaModel.php");
+include_once("controller/HistorialController.php");
 
 class Factory
 {
@@ -73,7 +75,8 @@ class Factory
         $this->objetos["editorpreguntacontroller"] = new EditorPreguntaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["editorpreguntamodel"]);
         $this->objetos["adminmodel"] = new AdminModel($this->objetos["database"]);
         $this->objetos["paneladmincontroller"] = new PanelAdminController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["adminmodel"]);
-
+        $this->objetos["historialmodel"] = new HistoriaModel($this->objetos["database"]);
+        $this->objetos["historialcontroller"] = new HistorialController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["historialmodel"]);
     }
 
 
