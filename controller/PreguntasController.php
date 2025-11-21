@@ -89,8 +89,13 @@ class PreguntasController
             $data['es_correcto'] = true;
             $this->renderer->render("preguntas", $data);
         } else {
+            // En caso de respuesta incorrecta, terminar la partida pero mostrar
+            // la vista de preguntas en modo resultado para que el usuario pueda
+            // reportar o sugerir la pregunta antes de ser redirigido.
+            $data['mensaje_resultado'] = "Respuesta incorrecta";
+            $data['es_correcto'] = false;
             $this->terminarPartida();
-            $this->renderer->render("preguntaErronea", $data);
+            $this->renderer->render("preguntas", $data);
         }
     }
 

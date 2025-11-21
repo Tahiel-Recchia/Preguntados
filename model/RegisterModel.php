@@ -8,6 +8,7 @@ class RegisterModel
     }
 
     public function registerUser($userData){
+        error_log('RegisterModel::registerUser called for username=' . ($userData['username'] ?? '[none]') . ' email=' . ($userData['email'] ?? '[none]'));
         $internalErrors = [];
         if ($this->verifyUsername($userData["username"])) {
             $internalErrors[] = "El nombre de usuario ya está registrado.";
@@ -49,6 +50,7 @@ class RegisterModel
         (nombreCompleto, nombreDeUsuario, mail, contrasenia, fechaNac, sexo, direccion, token, rol_id, fotoDePerfil)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        error_log('RegisterModel::insertUserIntoDatabase preparing SQL for user ' . ($userData['username'] ?? '[none]'));
         $stmt = $this->conexion->prepare($sql);
 
         if (!$stmt) {
@@ -58,8 +60,9 @@ class RegisterModel
         $rol = (int)$userData['role'];
         $foto = isset($userData['profilePic']) ? $userData['profilePic'] : '/public/placeholder.png';
 
+        // Tipos: 8 strings, 1 int (rol), 1 string (foto)
         $stmt->bind_param(
-            "ssssssssss",
+            "ssssssssis",
             $userData["name"],
             $userData["username"],
             $userData["email"],
@@ -73,9 +76,11 @@ class RegisterModel
         );
 
         if (!$stmt->execute()) {
+            error_log('RegisterModel::insertUserIntoDatabase execute failed: ' . $stmt->error);
             throw new \Exception("Error al insertar usuario: " . $stmt->error);
         }
-
+        $insertId = $stmt->insert_id;
+        error_log('RegisterModel::insertUserIntoDatabase success, insert_id=' . $insertId);
         $stmt->close();
     }
 

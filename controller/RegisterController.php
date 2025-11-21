@@ -47,12 +47,13 @@ class RegisterController
                 $this->renderer->render("login", ['noNavbar' => true, 'noFooter' => true]);
 
             } catch (\Exception $e) {
+                // Normalizar a la clave 'error' usada por la vista para mostrar mensajes al usuario.
                 $messages = explode(" | ", $e->getMessage());
-                foreach ($messages as $msg) {
-                    $errors[] = $msg;
-                }
+                $errors = implode("; ", $messages);
+                // También registrar en el log para diagnóstico (visible en apache/php error log)
+                error_log('RegisterController::base caught exception: ' . $e->getMessage());
 
-                $this->renderer->render("register", ["errors" => $errors, 'noNavbar' => true, 'noFooter' => true]);
+                $this->renderer->render("register", ["error" => $errors, 'noNavbar' => true, 'noFooter' => true]);
             }
         }
     }
