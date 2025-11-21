@@ -233,7 +233,13 @@
   </section>
 
 </main>
-
+<script>
+  // Función para mostrar/ocultar el formulario de nueva pregunta
+  function toggleFormulario() {
+    const form = document.getElementById("formulario");
+    form.classList.toggle("hidden");
+  }
+</script>
 <script>
   // Mostrar sección preguntas por defecto y botón activo
   window.addEventListener('DOMContentLoaded', function() {
