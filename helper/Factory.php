@@ -21,11 +21,13 @@ include_once("model/PanelEditorModel.php");
 include_once("controller/PanelEditorController.php");
 include_once("controller/EditorPreguntaController.php");
 include_once("model/EditorPreguntaModel.php");
-include_once ("model/RankingModel.php");
-include_once ("controller/RankingController.php");
+include_once("model/RankingModel.php");
+include_once("controller/RankingController.php");
 include_once("model/PartidaModel.php");
 include_once("model/PuntajeModel.php");
 include_once("model/QrModel.php");
+include_once("model/AdminModel.php");
+include_once("controller/PanelAdminController.php");
 
 class Factory
 {
@@ -54,7 +56,7 @@ class Factory
         $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
         $this->objetos["qrmodel"] = new QrModel();
         $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"], $this->objetos["qrmodel"]);
-       // editor model y controller
+        // editor model y controller
         $this->objetos["puntajemodel"] = new PuntajeModel($this->objetos["database"]);
         $this->objetos["categoriamodel"] = new CategoriaModel($this->objetos["database"]);
         $this->objetos["preguntasmodel"] = new PreguntasModel($this->objetos["database"]);
@@ -69,7 +71,9 @@ class Factory
         $this->objetos["paneleditorcontroller"] = new PanelEditorController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["paneleditormodel"]);
         $this->objetos["editorpreguntamodel"] = new EditorPreguntaModel($this->objetos["database"]);
         $this->objetos["editorpreguntacontroller"] = new EditorPreguntaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["editorpreguntamodel"]);
-    
+        $this->objetos["adminmodel"] = new AdminModel($this->objetos["database"]);
+        $this->objetos["paneladmincontroller"] = new PanelAdminController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["adminmodel"]);
+
     }
 
 

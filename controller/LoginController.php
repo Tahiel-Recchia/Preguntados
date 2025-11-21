@@ -12,10 +12,11 @@ class LoginController
         $this->model = $model;
     }
 
-    public function base(){
-        if (isset($_POST["username"]) && isset($_POST["password"])){
+    public function base()
+    {
+        if (isset($_POST["username"]) && isset($_POST["password"])) {
             $this->login();
-        } else{
+        } else {
             $data = ['noNavbar' => true, 'noFooter' => true];
             if (isset($_SESSION['login_error'])) {
                 $data['error'] = $_SESSION['login_error'];
@@ -47,7 +48,8 @@ class LoginController
     }
 
 
-    public function login(){
+    public function login()
+    {
         $user = $_POST["username"];
         $password = $_POST["password"];
 
@@ -70,11 +72,16 @@ class LoginController
                 $_SESSION['fotoDePerfil'] = '/public/placeholder.png';
             }
 
-            session_write_close();
-            header("Location: /menu");
+            // 🔥 Redirección según rol
+            if ($_SESSION["rol"] == 3) {
+                header("Location: /?controller=panelAdmin&action=base");
+            } else {
+                header("Location: /menu");
+            }
+            exit();
             exit();
 
-        } else{
+        } else {
             $_SESSION['login_error'] = $result;
 
             session_write_close();

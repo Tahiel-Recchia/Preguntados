@@ -1,6 +1,8 @@
 {
     "require": {
+        "php": "^7.4",
         "mustache/mustache": "^3.0",
-        "endroid/qr-code": "^5.0"
+        "endroid/qr-code": "4.6.1",
+        "dompdf/dompdf": "^1.2"
     }
 }

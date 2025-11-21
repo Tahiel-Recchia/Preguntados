@@ -1,0 +1,83 @@
+<div class="w-full max-w-6xl mx-auto px-4 p-5">
+
+    <h2 class="text-2xl font-bold mb-6 text-white">Jugadores por país</h2>
+
+    <div class="bg-black/10 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-white/10">
+        <!-- 📋 TABLA -->
+        <div class="overflow-hidden rounded-xl border border-white/20">
+            <table class="table-auto w-full text-white">
+                <thead>
+                <tr class="bg-white/20">
+                    <th class="px-4 py-3 text-left font-semibold">País</th>
+                    <th class="px-4 py-3 text-left font-semibold">Cantidad de jugadores</th>
+                </tr>
+                </thead>
+                <tbody class="backdrop-blur">
+                {{#jugadoresPorPais}}
+                    <tr class="border-b border-white/10 hover:bg-white/10 transition">
+                        <td class="px-4 py-3">{{pais}}</td>
+                        <td class="px-4 py-3">{{cantidad}}</td>
+                    </tr>
+                {{/jugadoresPorPais}}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 📊 GRÁFICO -->
+        <h2 class="text-xl font-bold mt-10 mb-4 text-white">Gráfico: Jugadores por país</h2>
+
+        <div class="bg-white/10 backdrop-blur p-5 rounded-xl border border-white/10">
+            <canvas id="jugadoresChart" style="width:100%; height:350px;"></canvas>
+        </div>
+        <div class="text-center mt-6">
+        <a href="index.php?controller=paneladmin&action=descargarpdf"
+    class="inline-block py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] 
+                font-semibold text-white hover:opacity-90 transition">
+        Descargar PDF de gráficos
+        </a>
+
+    </div>
+
+</div>
+
+    <script>
+        const jugadores = JSON.parse('{{{ jugPorPaisJson }}}');
+        const labels = jugadores.map(j => j.pais);
+        const cantidades = jugadores.map(j => parseInt(j.cantidad));
+
+        const ctx = document.getElementById('jugadoresChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cantidad de jugadores',
+                    data: cantidades,
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: "rgba(255,255,255,0.1)" },
+                        ticks: { color: "white" }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: "white" }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: "white" }
+                    }
+                }
+            }
+        });
+    </script>
+</div>
