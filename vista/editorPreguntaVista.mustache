@@ -1,99 +1,73 @@
 <main class="w-full p-8 flex flex-col gap-8 text-[#E2E4F3]">
 
-  <h1 class="text-3xl font-bold border-b-2 border-[#2c2f56] pb-3">Panel del Editor</h1>
+  <h1 class="text-3xl font-bold border-b-2 border-[#2c2f56] pb-3">
+    Editar Pregunta #{{pregunta.id}}
+  </h1>
 
-  <!-- Botones de navegación -->
-  <div class="flex gap-4 mb-4">
-  <button id="btnPreguntas" class="tab-btn px-4 py-2 rounded-lg font-semibold transition" onclick="mostrarSeccion('preguntas')">
-    Preguntas
-  </button>
-  <button id="btnReportes" class="tab-btn px-4 py-2 rounded-lg font-semibold transition" onclick="mostrarSeccion('reportes')">
-    Reportes
-  </button>
-  <button id="btnSugerencias" class="tab-btn px-4 py-2 rounded-lg font-semibold transition" onclick="mostrarSeccion('sugerencias')">
-    Sugerencias
-  </button>
-</div>
+  <form action="/index.php?controller=paneleditor&method=actualizar" method="POST" class="flex flex-col gap-4 bg-[#2c2f56] p-6 rounded-xl">
+    <input type="hidden" name="id" value="{{pregunta.id}}">
+    <div>
+      <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+      <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">{{pregunta.descripcion}}</textarea>
+    </div>
 
-
-  <!-- Sección PREGUNTAS -->
-  <div id="seccion-preguntas" class="bg-[#2c2f56] p-6 rounded-xl shadow-lg">
-    <h2 class="text-xl font-bold text-[#BC6BE8] mb-4">📝 Contenido de Preguntas</h2>
-    <p class="text-gray-300">Aquí va el contenido de preguntas...</p>
-  </div>
-  
-  <!-- Sección REPORTES -->
-  <section id="seccion-reportes" class="hidden">
-    <h2 class="text-2xl font-semibold mb-3">Reportes de Preguntas</h2>
-
-    {{#reportes}}
-      <div class="p-4 bg-[#2c2f56] rounded-lg mb-4">
-        <p><strong>ID Pregunta:</strong> {{pregunta_id}}</p>
-        <p><strong>Motivo:</strong> {{motivo}}</p>
-        <p><strong>Usuario:</strong> {{usuario}}</p>
-        <button onclick="resolverReporte({{id}})" class="mt-2 bg-green-600 px-3 py-1 rounded">Marcar como resuelto</button>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+        <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <option value="1" {{#pregunta.id_categoria_1}}selected{{/pregunta.id_categoria_1}}>Geografía</option>
+          <option value="2" {{#pregunta.id_categoria_2}}selected{{/pregunta.id_categoria_2}}>Historia</option>
+          <option value="3" {{#pregunta.id_categoria_3}}selected{{/pregunta.id_categoria_3}}>Ciencia</option>
+          <option value="4" {{#pregunta.id_categoria_4}}selected{{/pregunta.id_categoria_4}}>Deportes</option>
+        </select>
       </div>
-    {{/reportes}}
 
-    {{^reportes}}
-      <p class="text-gray-400">No hay reportes pendientes.</p>
-    {{/reportes}}
-  </section>
-
-  <!-- Sección SUGERENCIAS -->
-  <section id="seccion-sugerencias" class="hidden">
-    <h2 class="text-2xl font-semibold mb-3">Sugerencias</h2>
-
-    {{#sugerencias}}
-      <div class="p-4 bg-[#2c2f56] rounded-lg mb-4">
-        <p><strong>Usuario:</strong> {{usuario}}</p>
-        <p><strong>Mensaje:</strong> {{mensaje}}</p>
+      <div>
+        <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+        <select name="id_dificultad" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <option value="1" {{#pregunta.id_dificultad_1}}selected{{/pregunta.id_dificultad_1}}>Fácil</option>
+          <option value="2" {{#pregunta.id_dificultad_2}}selected{{/pregunta.id_dificultad_2}}>Media</option>
+          <option value="3" {{#pregunta.id_dificultad_3}}selected{{/pregunta.id_dificultad_3}}>Difícil</option>
+        </select>
       </div>
-    {{/sugerencias}}
+    </div>
 
-    {{^sugerencias}}
-      <p class="text-gray-400">No hay sugerencias por ahora.</p>
-    {{/sugerencias}}
-  </section>
+    <!-- ===== RESPUESTAS ===== -->
+    <div class="mt-2">
+      <h3 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h3>
+      <div class="flex flex-col gap-2">
+        <div>
+          <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+          <input type="text" name="respuesta_correcta" value="{{rtaCorrecta.descripcion}}"
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+          <input type="text" name="respuesta_incorrecta1" value="{{rtaIncorrectas.0.descripcion}}"
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+          <input type="text" name="respuesta_incorrecta2" value="{{rtaIncorrectas.1.descripcion}}"
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+          <input type="text" name="respuesta_incorrecta3" value="{{rtaIncorrectas.2.descripcion}}"
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+      </div>
+    </div>
 
+
+    <div class="flex items-center gap-2 mt-2">
+      <input type="checkbox" name="aprobada" id="aprobada" {{#pregunta.aprobada}}checked{{/pregunta.aprobada}}>
+      <label for="aprobada" class="text-gray-300">Aprobada</label>
+    </div>
+
+    <button type="submit" class="mt-4 py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90">
+      Guardar Cambios
+    </button>
+
+  </form>
 </main>
-
-<script>
-function mostrarSeccion(seccion) {
-  const secciones = {
-    preguntas: document.getElementById("seccion-preguntas"),
-    reportes: document.getElementById("seccion-reportes"),
-    sugerencias: document.getElementById("seccion-sugerencias")
-  };
-
-  const botones = {
-    preguntas: document.getElementById("btnPreguntas"),
-    reportes: document.getElementById("btnReportes"),
-    sugerencias: document.getElementById("btnSugerencias")
-  };
-
-  for (const key in secciones) {
-    if (key === seccion) {
-      secciones[key].classList.remove("hidden");
-    } else {
-      secciones[key].classList.add("hidden");
-    }
-
-    botones[key].classList.toggle("bg-[#BC6BE8]", key === seccion);
-    botones[key].classList.toggle("text-white", key === seccion);
-    botones[key].classList.toggle("opacity-100", key === seccion);
-    botones[key].classList.toggle("bg-[#3f4477]", key !== seccion);
-    botones[key].classList.toggle("text-gray-300", key !== seccion);
-    botones[key].classList.toggle("opacity-70", key !== seccion);
-  }
-}
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  mostrarSeccion('preguntas'); // sección por defecto
-});
-</script>
-
-</body>
-</html>
-

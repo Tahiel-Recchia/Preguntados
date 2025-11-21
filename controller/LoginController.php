@@ -79,7 +79,6 @@ class LoginController
                 header("Location: /menu");
             }
             exit();
-            exit();
 
         } else {
             $_SESSION['login_error'] = $result;
