@@ -15,9 +15,7 @@ class PanelEditorController
     private function requireEditor()
     {
         if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [2])) {
-            header('HTTP/1.1 403 Forbidden');
-            // redirigir a menú usando URL explícita para entornos sin .htaccess
-            header('Location: /index.php?controller=menu');
+            header('Location: /');
             exit;
         }
     }
@@ -66,7 +64,7 @@ class PanelEditorController
                 $respuesta_incorrecta3
             );
 
-            header("Location: /index.php?controller=paneleditor");
+            header("Location: /paneleditor");
             exit;
         }
 
@@ -82,7 +80,7 @@ class PanelEditorController
         if ($id) {
             $this->model->deletePregunta($id);
         }
-        header("Location: /index.php?controller=paneleditor");
+        header("Location: /paneleditor");
         exit;
     }
 
@@ -111,7 +109,7 @@ class PanelEditorController
             $respuesta_incorrecta3
         );
 
-        header("Location: /index.php?controller=paneleditor");
+        header("Location: /paneleditor");
         exit;
     }
 
@@ -164,7 +162,7 @@ public function aceptarReporte()
     $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'aceptado' WHERE id = :id");
     $stmt->execute([':id' => $id]);
 
-    header("Location: /index.php?controller=paneleditor&method=verReportes");
+    header("Location: /paneleditor/verReportes");
     exit;
 }
 
@@ -176,7 +174,7 @@ public function rechazarReporte()
     $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'rechazado' WHERE id = :id");
     $stmt->execute([':id' => $id]);
 
-    header("Location: /index.php?controller=paneleditor&method=verReportes");
+    header("Location: /paneleditor/verReportes");
     exit;
 }
 
@@ -197,7 +195,7 @@ public function aceptarSugerencia()
     $this->requireEditor();
     $id = $_POST['id_sugerencia'];
     $this->model->aceptarSugerencia($id);
-    header("Location: /index.php?controller=paneleditor&method=verSugerencias");
+    header("Location: /paneleditor/verSugerencias");
     exit;
 }
 
@@ -206,11 +204,11 @@ public function rechazarSugerencia()
     $this->requireEditor();
     $id = $_POST['id_sugerencia'];
     $this->model->rechazarSugerencia($id);
-    header("Location: /index.php?controller=paneleditor&method=verSugerencias");
+    header("Location: /paneleditor/verSugerencias");
     exit;
 }
 
-    // Endpoint público para que un usuario sugiera una pregunta desde la UI de juego
+
     public function guardarSugerencia()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

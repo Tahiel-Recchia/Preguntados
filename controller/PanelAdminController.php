@@ -15,10 +15,8 @@ class PanelAdminController
     }
     private function requireAdmin()
     {
-        if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [3])) {
-            header('HTTP/1.1 403 Forbidden');
-            // redirigir a menú usando URL explícita para entornos sin .htaccess
-            header('Location: /index.php?controller=panelAdmin');
+        if (!isset($_SESSION['rol']) ||  !in_array($_SESSION['rol'], [3])) {
+            header('Location: /');
             exit;
         }
     }

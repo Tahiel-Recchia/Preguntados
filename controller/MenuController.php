@@ -33,7 +33,7 @@ class MenuController{
             $data["isAdmin"] = isset($data["sesion"]) && isset($data["sesion"]["rol_id"]) && in_array(intval($data["sesion"]["rol_id"]), [3], true);
         }
         $data["ranking"] = $this->model->getRankingLimitado(5);
-        // Renderizamos la vista con el nombre base 'menu' (Renderer agrega 'Vista' automáticamente)
+        var_dump($_SESSION['rol']);
         $this->renderer->render("menu", $data);
     }
 }

@@ -71,10 +71,8 @@ class LoginController
             } else {
                 $_SESSION['fotoDePerfil'] = '/public/placeholder.png';
             }
-
-            // 🔥 Redirección según rol
             if ($_SESSION["rol"] == 3) {
-                header("Location: /?controller=panelAdmin&action=base");
+                header("Location: /panelAdmin");
             } else {
                 header("Location: /menu");
             }

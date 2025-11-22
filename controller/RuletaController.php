@@ -17,7 +17,7 @@ class RuletaController
     public function base(){
         // Bloquear acceso a la ruleta/juego para editores y administradores
         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [2, 3])) {
-            header('Location: /index.php?controller=menu');
+            header('Location: /');
             exit;
         }
         $categoriasArray = $this->model->getCategorias();

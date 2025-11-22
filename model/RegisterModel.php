@@ -100,5 +100,56 @@ class RegisterModel
         $stmt->close();
         return $emailExists;
     }
+
+    public function verify()
+    {
+        $token = $_GET['token'] ?? null;
+
+        if (!$token) {
+            // Token no existe
+            header("Location: /");
+            exit();
+        }
+
+        // Llamar al modelo para buscar usuario con ese token y activarlo
+        $verified = $this->model->verifyUserByToken($token);
+
+        if ($verified) {
+            // Éxito: Redirigir al login con mensaje de éxito
+            $this->renderer->render("login", [
+                "success" => "Cuenta verificada correctamente. Ya puedes iniciar sesión.",
+                'noNavbar' => true,
+                'noFooter' => true
+            ]);
+        } else {
+            // Fallo: Token inválido o expirado
+            $this->renderer->render("register", [
+                "errors" => ["El enlace de verificación es inválido o ha expirado."],
+                'noNavbar' => true,
+                'noFooter' => true
+            ]);
+        }
+    }
+
+
+    private function sendVerificationEmail($email, $name, $token)
+    {
+        // URL que apunta a tu método 'verify'. Ajusta 'localhost' a tu dominio real
+        $verificationLink = "http://localhost/register/verify?token=" . $token;
+
+        $subject = "Verifica tu cuenta en Preguntados";
+        $body = "Hola $name,<br><br>Por favor haz clic en el siguiente enlace para activar tu cuenta:<br>";
+        $body .= "<a href='$verificationLink'>$verificationLink</a>";
+
+        // RECOMENDACIÓN: Usa PHPMailer aquí. La función mail() nativa suele ir a SPAM.
+        // Ejemplo básico con mail() (solo para pruebas locales si tienes configurado SMTP):
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+        $headers .= 'From: <no-reply@tuapp.com>' . "\r\n";
+
+        if(!mail($email, $subject, $body, $headers)){
+            throw new \Exception("No se pudo enviar el correo de verificación.");
+        }
+    }
 }
 ?>

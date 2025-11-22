@@ -4,7 +4,7 @@
     Editar Pregunta #{{pregunta.id}}
   </h1>
 
-  <form action="/index.php?controller=paneleditor&method=actualizar" method="POST" class="flex flex-col gap-4 bg-[#2c2f56] p-6 rounded-xl">
+  <form action="/paneleditor/actualizar" method="POST" class="flex flex-col gap-4 bg-[#2c2f56] p-6 rounded-xl">
     <input type="hidden" name="id" value="{{pregunta.id}}">
     <div>
       <label class="block text-sm mb-1 text-gray-300">Descripción</label>

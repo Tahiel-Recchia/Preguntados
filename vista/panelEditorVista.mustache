@@ -38,7 +38,7 @@
         Nueva Pregunta
       </h2>
 
-  <form action="/index.php?controller=paneleditor&method=guardar" method="POST" class="flex flex-col gap-4">
+  <form action="/paneleditor/guardar" method="POST" class="flex flex-col gap-4">
       <div>
         <label class="block text-sm mb-1 text-gray-300">Descripción</label>
         <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-[#BC6BE8]"></textarea>
@@ -129,7 +129,7 @@
               {{/aprobada}}
             </td>
             <td class="p-3 flex justify-center gap-2">
-              <a href="/index.php?controller=editorpregunta&method=editar&id={{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
+              <a href="/editorpregunta/editar/{{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
               <button onclick="abrirModalEliminarInline({{id}})" data-action="eliminar" data-id="{{id}}" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
             </td>
           </tr>
@@ -165,11 +165,11 @@
           <td class="p-3">{{id_reporte}}</td>
           <td class="p-3">{{pregunta}}</td>
           <td class="p-3 flex justify-center gap-2">
-            <form action="/index.php?controller=paneleditor&method=aceptarReporte" method="POST">
+            <form action="/paneleditor/aceptarReporte" method="POST">
               <input type="hidden" name="id_reporte" value="{{id_reporte}}">
               <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white">Aceptar</button>
             </form>
-            <form action="/index.php?controller=paneleditor&method=rechazarReporte" method="POST">
+            <form action="/paneleditor/rechazarReporte" method="POST">
               <input type="hidden" name="id_reporte" value="{{id_reporte}}">
               <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white">Rechazar</button>
             </form>
@@ -210,11 +210,11 @@
             <td class="p-3">{{categoria}}</td>
             <td class="p-3">{{dificultad}}</td>
             <td class="p-3 flex justify-center gap-2">
-              <form action="/index.php?controller=paneleditor&method=aceptarSugerencia" method="POST">
+              <form action="/paneleditor/aceptarSugerencia" method="POST">
                 <input type="hidden" name="id_sugerencia" value="{{id}}">
                 <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white">Aceptar</button>
               </form>
-              <form action="/index.php?controller=paneleditor&method=rechazarSugerencia" method="POST">
+              <form action="/paneleditor/rechazarSugerencia" method="POST">
                 <input type="hidden" name="id_sugerencia" value="{{id}}">
                 <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white">Rechazar</button>
               </form>
@@ -322,7 +322,7 @@
     if (preguntaAEliminarId) {
       const form = document.createElement('form');
       form.method = 'POST';
-  form.action = '/index.php?controller=paneleditor&method=eliminar';
+  form.action = '/paneleditor/eliminar';
       
       const input = document.createElement('input');
       input.type = 'hidden';
@@ -340,7 +340,6 @@
 </script>
 
 <script>
-  // Delegación de eventos para botones Editar / Eliminar (funciona aunque haya inline handlers rotos)
   document.addEventListener('click', function (e) {
 
     const eliminarBtn = e.target.closest('button[data-action="eliminar"]');
@@ -358,7 +357,6 @@
 </script>
 
 <script>
-  // Wrappers inline seguros para forzar ejecución y mostrar errores si fallan
 
   function abrirModalEliminarInline(id) {
     console.log('abrirModalEliminarInline called, id=', id);
