@@ -39,48 +39,72 @@ class PanelAdminController
         // cargar tabla
         $data["jugadoresPorPais"] = $this->model->obtenerJugadoresPorPais();
         $data["jugPorPaisJson"] = json_encode($data["jugadoresPorPais"]);
+        $porcentajes = $this->model->obtenerPorcentajesPorDificultad();
+        $data["porcentajesJson"] = json_encode($porcentajes);
         $this->renderer->render("panelAdmin", $data);
     }
-
-    public function descargarpdf()
+    public function generarPdfGraficos()
     {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
         $this->requireAdmin();
 
-        $jugadores = $this->model->obtenerJugadoresPorPais();
-
-        // Limpiar TODO output previo
+        // Limpiar cualquier salida previa
         while (ob_get_level()) {
             ob_end_clean();
         }
 
-        ob_start();
+        $data = json_decode(file_get_contents("php://input"), true);
 
-        $ruta = __DIR__ . '/../helper/graficosSoloPdf.php';
-        if (!file_exists($ruta)) {
-            die("ERROR: No se encuentra la vista del PDF");
+        if (!$data || !isset($data["grafico1"]) || !isset($data["grafico2"]) || !isset($data["grafico3"])) {
+            http_response_code(400);
+            echo "Faltan datos";
+            exit;
         }
 
-        $datos = $jugadores;
-
-        include $ruta;
-
-        $html = ob_get_clean();
-
-        if (trim($html) == "") {
-            die("ERROR: HTML vacío en la plantilla PDF");
-        }
+        $img1 = $data["grafico1"];
+        $img2 = $data["grafico2"];
+        $img3 = $data["grafico3"];
 
         $dompdf = new Dompdf();
         $dompdf->set_option("isRemoteEnabled", true);
+        $dompdf->set_option("isHtml5ParserEnabled", true);
+
+        $dompdf->set_option("isRemoteEnabled", true);
+
+        $html = '
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {color: black !important; font-family: Arial, sans-serif; text-align:center; }
+            h1 { text-align:center; margin-bottom:30px; }
+            h3 { margin-top:40px; margin-bottom:10px; }
+            img { width: 75%; margin-bottom: 40px; }
+            
+        </style>
+    </head>
+    <body>
+        <h1>Reporte de Gráficos</h1>
+
+        <h3>Tabla: Jugadores por país</h3>
+        <img src="' . $img3 . '" />
+
+        <h3>Jugadores por país</h3>
+        <img src="' . $img1 . '" />
+
+        <h3>Porcentaje por dificultad de preguntas</h3>
+        <img src="' . $img2 . '" />
+    </body>
+    </html>
+    ';
+
         $dompdf->loadHtml($html);
         $dompdf->setPaper("A4", "portrait");
         $dompdf->render();
 
-        // Descargar
-        $dompdf->stream("jugadores_por_pais.pdf", ["Attachment" => true]);
+        // Descargar PDF
+        $dompdf->stream("reporte_graficos.pdf", ["Attachment" => true]);
         exit;
     }
+
 
 }

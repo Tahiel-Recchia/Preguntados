@@ -39,6 +39,22 @@ class AdminModel
         return $datos; // ← ahora sí es un array válido
     }
 
+    public function obtenerPorcentajesPorDificultad()
+    {
+        $sql = "SELECT 
+                d.descripcion AS dificultad,
+                COUNT(p.id) AS total,
+                ROUND((COUNT(p.id) / (SELECT COUNT(*) FROM pregunta) * 100), 2) AS porcentaje
+            FROM pregunta p
+            JOIN dificultad d ON p.id_dificultad = d.id
+            GROUP BY p.id_dificultad";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+
+        return $resultado->fetch_all(MYSQLI_ASSOC);
+    }
 
 }
 
