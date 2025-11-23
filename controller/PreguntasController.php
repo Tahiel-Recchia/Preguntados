@@ -106,8 +106,6 @@ class PreguntasController
             return;
         }
 
-        unset($_SESSION['horaEnvio'], $_SESSION['horaRespuesta']);
-
         $esCorrecta = $this->model->verificarRespuesta($idPregunta, $respuestaUsuario);
 
         $data = $this->model->obtenerPorId($idPregunta);
@@ -118,17 +116,19 @@ class PreguntasController
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
             $this->actualizarEstadisticas($idUsuario);
+            unset($_SESSION['horaEnvio'], $_SESSION['horaRespuesta']);
             $this->renderer->render("preguntas", $data);
         } else {
             $this->terminarPartida();
             $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
+
         unset($_SESSION['respuesta_correcta_actual'], $_SESSION['id_pregunta_actual']);
     }
 
     public function sumarPuntos(){
-        $_SESSION['puntajeActual'] +=30;
+        $_SESSION['puntajeActual'] = $this->partida->sumarPuntos($_SESSION['horaEnvio'], $_SESSION['horaRespuesta'], $_SESSION['puntajeActual']);
         $_SESSION['preguntas_correctas'] ++;
     }
 
@@ -184,6 +184,8 @@ class PreguntasController
         unset($_SESSION['preguntasVistas']);
         unset($_SESSION['respuesta_correcta_actual']);
         unset($_SESSION['id_pregunta_actual']);
+        unset($_SESSION['horaEnvio'], $_SESSION['horaRespuesta']);
+        unset($_SESSION['respuesta_correcta_actual']);
     }
 
     public function salir(){

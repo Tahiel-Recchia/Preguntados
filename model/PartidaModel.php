@@ -37,4 +37,14 @@ class PartidaModel {
         }
         return true;
     }
+
+    public function sumarPuntos($horaEnvio, $horaRespuesta, $puntaje){
+        $segundosEnvio = $horaEnvio->getTimestamp();
+        $segundosRespuesta   = $horaRespuesta->getTimestamp();
+        $segundosTardados = $segundosRespuesta - $segundosEnvio;
+        $tiempoLimite = 10;
+        $segundosSobrantes = $tiempoLimite - $segundosTardados;
+        $puntaje += $segundosSobrantes * 5;
+        return $puntaje;
+    }
 }
