@@ -54,6 +54,7 @@ class PreguntasController
     {
         if(!isset($_SESSION['id_pregunta_actual'])){
             $pregunta  = $this->obtenerPregunta();
+            $pregunta['puntos'] = $_SESSION['puntajeActual'];
             $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
 
             if (!$pregunta) {
@@ -111,7 +112,7 @@ class PreguntasController
 
         $data = $this->model->obtenerPorId($idPregunta);
         $data = $this->procesarOpciones($data, $respuestaCorrecta, $respuestaUsuario);
-
+        $data['puntos'] = $_SESSION['puntajeActual'];
         if ($esCorrecta) {
             $this->sumarPuntos();
             $data['mensaje_resultado'] = "¡Correcto!";

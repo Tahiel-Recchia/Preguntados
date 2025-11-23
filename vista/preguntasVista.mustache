@@ -1,70 +1,103 @@
-<main class="flex flex-col h-[60%] w-1/2 mx-auto">
-    <div class="flex justify-between items-center max-w-[1024px] pb-[40px]">
-        <h1 class="text-white text-xl font-bold">Preguntados</h1>
-        <div class="text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] rounded-3xl px-[16px] py-[8px] font-semibold">🏆 2/10 Puntos</div>
-    </div>
+<main class="bg-[#343964] flex items-center justify-center p-4 font-sans">
 
-    <div class="bg-[#343964] py-[62px] rounded-2xl w-full justify-center flex flex-col">
+    <div class="w-full max-w-3xl flex flex-col gap-6">
 
-        {{#mensaje_resultado}}
-            <p class="text-center text-lg font-medium pb-[42px] text-green-400">{{mensaje_resultado}}</p>
-        {{/mensaje_resultado}}
+        <header class="flex justify-between items-center px-2">
+            <h1 class="text-2xl font-bold text-white tracking-wider drop-shadow-md">Preguntados</h1>
 
-        {{^mensaje_resultado}}
-            <div class="text-white p-6 rounded-lg flex-center justify-center space-x-4">
-                <p class="font-bold text-4x1 text-center">Tiempo restante: <span id="timer">10</span> segundos</p>
+            <div class="inline-flex items-center bg-[#343964] text-white rounded-full px-4 py-2 border border-[#BC6BE8]/30 shadow-lg shadow-[#BC6BE8]/10">
+                <span class="font-semibold mr-2 text-gray-300 text-sm uppercase tracking-wide">Puntos</span>
+                <span class="font-bold text-xl text-[#BC6BE8]">{{puntos}}</span>
             </div>
-            <p class="text-white text-center text-lg font-medium pb-[42px]">
-                {{pregunta}}
-            </p>
-        {{/mensaje_resultado}}
-    </div>
+        </header>
 
-    {{^modo_resultado}}
+        <div class="bg-[#2d2e42] rounded-3xl shadow-2xl overflow-hidden border border-white/5 relative">
 
-        <form class="grid grid-cols-2 gap-[20px] w-2/3 self-center" action="/preguntas/base" method="POST">
-            {{#opciones}}
-                <button class="cursor-pointer w-full py-[20px] bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-200 transition"
-                        type="submit"
-                        name="respuesta_usuario"
-                        value="{{descripcion}}">
-                    {{descripcion}}
-                </button>
-            {{/opciones}}
-        </form>
-    {{/modo_resultado}}
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#E65895] to-[#BC6BE8]"></div>
 
+            <div class="p-8 md:p-10 flex flex-col items-center justify-center text-center min-h-[200px]">
 
-    {{#modo_resultado}}
-        <div class="grid grid-cols-2 gap-[20px] w-2/3 self-center">
-            {{#opciones}}
-                <div class="w-full py-[20px] text-center text-white font-semibold rounded-lg
+                {{#mensaje_resultado}}
+                    <div class="mb-6 px-6 py-3 bg-green-500/10 border border-green-500/30 rounded-xl">
+                        <p class="text-xl font-bold text-green-400 animate-pulse">
+                            {{mensaje_resultado}}
+                        </p>
+                    </div>
+                {{/mensaje_resultado}}
 
-                    {{#es_la_correcta}}
-                        bg-green-600 border-2 border-green-300  {{/es_la_correcta}}
-                    {{^es_la_correcta}}
-                            bg-gray-700 opacity-60
-                    {{/es_la_correcta}}">
-                    {{descripcion}}
-                </div>
-            {{/opciones}}
+                {{^mensaje_resultado}}
+                    <div class="mb-8 flex items-center justify-center gap-2 text-gray-400 bg-[#1e1e2e]/50 px-4 py-1.5 rounded-lg border border-white/5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="font-mono font-bold text-lg">
+                            <span id="timer" class="text-[#E65895]">10</span> s
+                        </p>
+                    </div>
+
+                    <p class="text-white text-2xl md:text-3xl font-bold leading-snug drop-shadow-sm">
+                        {{pregunta}}
+                    </p>
+                {{/mensaje_resultado}}
+            </div>
         </div>
 
-        <div class="w-2/3 self-center mt-5">
-            <form action="/ruleta/base" method="GET">
-                <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
-                    Siguiente Pregunta
-                </button>
+        {{^modo_resultado}}
+            <form class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full" action="/preguntas/base" method="POST">
+                {{#opciones}}
+                    <button type="submit"
+                            name="respuesta_usuario"
+                            value="{{descripcion}}"
+                            class="w-full py-5 px-6 rounded-xl bg-[#1e1e2e] text-white font-semibold text-lg
+                               border-2 border-transparent hover:border-[#BC6BE8] hover:bg-[#3e4375]
+                               hover:-translate-y-1 hover:shadow-lg transition-all duration-200 shadow-md">
+                        {{descripcion}}
+                    </button>
+                {{/opciones}}
             </form>
-        </div>
-        {{#modo_resultado}}
-        <div class="w-2/3 self-center mt-4 flex gap-4">
-            <button id="btnSugerirPregunta" type="button" class="flex-1 py-3 bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-bold rounded-lg hover:opacity-90">Sugerir Pregunta</button>
-            <button id="btnReportarPregunta" type="button" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-lg hover:opacity-90">Reportar Pregunta</button>
-        </div>
         {{/modo_resultado}}
-    {{/modo_resultado}}
 
+
+        {{#modo_resultado}}
+            <div class="flex flex-col gap-6 w-full">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{#opciones}}
+                        <div class="w-full py-5 px-6 rounded-xl text-center font-bold text-lg border-2 transition-all duration-300
+                        {{#es_la_correcta}}
+                            bg-green-600/20 border-green-500 text-green-400
+                        {{/es_la_correcta}}
+                            {{^es_la_correcta}}
+                            bg-[#252636] border-transparent text-gray-500 opacity-60
+                        {{/es_la_correcta}}">
+                            {{descripcion}}
+                        </div>
+                    {{/opciones}}
+                </div>
+
+                <div class="bg-[#2d2e42] p-6 rounded-2xl border border-white/5 flex flex-col gap-4 shadow-xl">
+
+                    <form action="/ruleta/base" method="GET" class="w-full">
+                        <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg rounded-xl transition-colors shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2">
+                            Siguiente Pregunta
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </form>
+
+                    <div class="flex gap-4">
+                        <button id="btnSugerirPregunta" type="button" class="flex-1 py-3 bg-[#343964] border border-[#E65895]/30 text-[#E65895] font-semibold rounded-lg hover:bg-[#E65895] hover:text-white transition-all text-sm">
+                            Sugerir Pregunta
+                        </button>
+                        <button id="btnReportarPregunta" type="button" class="flex-1 py-3 bg-[#343964] border border-red-500/30 text-red-400 font-semibold rounded-lg hover:bg-red-500 hover:text-white transition-all text-sm">
+                            Reportar Pregunta
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        {{/modo_resultado}}
+
+    </div>
 </main>
 <script src="/public/Javascript/timer.js"></script>
 

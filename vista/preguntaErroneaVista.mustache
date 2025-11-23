@@ -1,48 +1,189 @@
-<main class="flex flex-col h-[60%] w-1/2 mx-auto">
-    <div class="flex justify-between items-center max-w-[1024px] pb-[40px]">
-        <h1 class="text-white text-xl font-bold">Preguntados</h1>
-        <div class="text-white bg-gradient-to-r from-[#E65895] to-[#BC6BE8] rounded-3xl px-[16px] py-[8px] font-semibold">🏆 2/10 Puntos</div>
-    </div>
+<main class="bg-[#343964] flex items-center justify-center p-4 font-sans">
 
-    {{#tiempoAgotado}}
-        <div class="bg-[#343964] py-[62px] rounded-2xl w-full justify-center flex flex-col">
-            <p class="text-center text-lg font-medium pb-[42px] text-red-400">{{tiempoAgotado}}</p>
-        </div>
-    {{/tiempoAgotado}}
+    <div class="w-full max-w-3xl flex flex-col gap-6">
 
-    {{^tiempoAgotado}}
-        <div class="bg-[#343964] py-[62px] rounded-2xl w-full justify-center flex flex-col">
-            <p class="text-center text-lg font-medium pb-[42px] text-red-400">¡Incorrecto!</p>
-        </div>
+        <header class="flex justify-between items-center px-2">
+            <h1 class="text-2xl font-bold text-white tracking-wider drop-shadow-md">Preguntados</h1>
 
-        <div class="grid grid-cols-2 gap-[20px] w-2/3 self-center mt-8">
-            {{#opciones}}
-                <div class="w-full py-[20px] text-center text-white font-semibold rounded-lg border-2
+            <div class="inline-flex items-center bg-[#343964] text-white rounded-full px-4 py-2 border border-[#BC6BE8]/30 shadow-lg shadow-[#BC6BE8]/10">
+                <span class="font-semibold mr-2 text-gray-300 text-sm uppercase tracking-wide">Puntos Finales</span>
+                <span class="font-bold text-xl text-[#BC6BE8]">{{puntos}}</span>
+            </div>
+        </header>
 
-                {{! AQUÍ ESTABA EL ERROR: Cambiado de es_correcta a es_la_correcta }}
-                    {{#es_la_correcta}}
-                    bg-green-600 border-green-300
-                {{/es_la_correcta}}
+        <div class="bg-[#2d2e42] rounded-3xl shadow-2xl overflow-hidden border border-red-500/20 relative">
 
-                    {{#es_la_seleccionada_incorrecta}}
-                    bg-red-600 border-red-300
-                {{/es_la_seleccionada_incorrecta}}
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 to-pink-600"></div>
 
-                    {{#es_otra_incorrecta}}
-                    bg-gray-700 border-transparent opacity-60
-                {{/es_otra_incorrecta}}
-                ">
-                    {{descripcion}}
+            <div class="p-8 md:p-10 flex flex-col items-center justify-center text-center">
+
+                {{#tiempoAgotado}}
+                    <div class="mb-6 p-4 bg-red-500/10 rounded-full border border-red-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">¡Se acabó el tiempo!</h2>
+                    <p class="text-red-400 text-lg font-medium">{{tiempoAgotado}}</p>
+                {{/tiempoAgotado}}
+
+
+                {{^tiempoAgotado}}
+                    <div class="mb-6 p-4 bg-red-500/10 rounded-full border border-red-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-8">¡Respuesta Incorrecta!</h2>
+
+                    <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                        {{#opciones}}
+                            <div class="w-full py-4 px-6 rounded-xl text-center font-bold border-2 flex items-center justify-center min-h-[64px]
+
+                                {{#es_la_correcta}}
+                                    bg-green-600/20 border-green-500 text-green-400
+                                {{/es_la_correcta}}
+
+                                {{#es_la_seleccionada_incorrecta}}
+                                    bg-red-600/20 border-red-500 text-red-400
+                                {{/es_la_seleccionada_incorrecta}}
+
+                                {{#es_otra_incorrecta}}
+                                    bg-[#252636] border-transparent text-gray-500 opacity-40
+                                {{/es_otra_incorrecta}}
+                            ">
+                                {{descripcion}}
+
+
+                                {{#es_la_correcta}}
+                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                {{/es_la_correcta}}
+                                {{#es_la_seleccionada_incorrecta}}
+                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                {{/es_la_seleccionada_incorrecta}}
+                            </div>
+                        {{/opciones}}
+                    </div>
+                {{/tiempoAgotado}}
+
+            </div>
+
+            <div class="bg-[#2d2e42] p-6 rounded-2xl border border-white/5 flex flex-col gap-4 shadow-xl">
+
+                <form action="/menu/base" method="GET">
+                    <button type="submit" class="w-full py-4 bg-[#343964] hover:bg-[#3e4375] border border-[#BC6BE8]/30 text-white font-bold text-lg rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#BC6BE8] group-hover:-translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Volver al Menú Principal
+                    </button>
+                </form>
+
+                <div class="flex gap-4">
+                    <button id="btnSugerirPregunta" type="button" class="flex-1 py-3 bg-[#343964] border border-[#E65895]/30 text-[#E65895] font-semibold rounded-lg hover:bg-[#E65895] hover:text-white transition-all text-sm">
+                        Sugerir Pregunta
+                    </button>
+                    <button id="btnReportarPregunta" type="button" class="flex-1 py-3 bg-[#343964] border border-red-500/30 text-red-400 font-semibold rounded-lg hover:bg-red-500 hover:text-white transition-all text-sm">
+                        Reportar Pregunta
+                    </button>
                 </div>
-            {{/opciones}}
-        </div>
-    {{/tiempoAgotado}}
+            </div>
 
-    <div class="w-2/3 self-center mt-5">
-        <form action="/menu/base" method="GET">
-            <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
-                Ir al menú
-            </button>
-        </form>
+        </div>
+    </div>
+    <div id="modalSugerir" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg">
+            <h3 class="text-xl font-semibold mb-3">Sugerir nueva pregunta</h3>
+            <form id="formSugerir" action="/paneleditor/guardarSugerencia" method="POST" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+                    <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+                        <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="1">Geografía</option>
+                            <option value="2">Historia</option>
+                            <option value="3">Ciencia</option>
+                            <option value="4">Deportes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+                        <select name="id_dificultad" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required>
+                            <option value="1">Fácil</option>
+                            <option value="2">Media</option>
+                            <option value="3">Difícil</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
+                    <div class="flex flex-col gap-2">
+                        <input name="respuesta_correcta" placeholder="Respuesta correcta" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required />
+                        <input name="respuesta_incorrecta1" placeholder="Respuesta incorrecta 1" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required />
+                        <input name="respuesta_incorrecta2" placeholder="Respuesta incorrecta 2" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required />
+                        <input name="respuesta_incorrecta3" placeholder="Respuesta incorrecta 3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required />
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-4">
+                    <button type="button" id="cerrarSugerir" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-[#BC6BE8] rounded-lg hover:opacity-80">Enviar Sugerencia</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="modalReportar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-lg text-white shadow-lg">
+            <h3 class="text-xl font-semibold mb-3">Reportar pregunta</h3>
+            <div id="reportPreguntaTexto" class="mb-3 text-gray-200"></div>
+            <form id="formReportar" action="/paneleditor/reportarPregunta" method="POST" class="flex flex-col gap-3">
+                <input type="hidden" name="pregunta_id" id="report_pregunta_id" value="">
+                <label class="block text-sm mb-1 text-gray-300">Descripción breve (motivo)</label>
+                <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required></textarea>
+                <div class="flex justify-end gap-3 mt-2">
+                    <button type="button" id="cerrarReportar" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-red-600 rounded-lg hover:opacity-80">Enviar Reporte</button>
+                </div>
+            </form>
+        </div>
     </div>
 </main>
+<script>
+    // Modal handlers for Sugerir / Reportar
+    (function(){
+        const btnSugerir = document.getElementById('btnSugerirPregunta');
+        const modalSugerir = document.getElementById('modalSugerir');
+        const cerrarSugerir = document.getElementById('cerrarSugerir');
+
+        if (btnSugerir && modalSugerir) {
+            btnSugerir.addEventListener('click', function(){ modalSugerir.classList.remove('hidden'); modalSugerir.classList.add('flex'); });
+        }
+        if (cerrarSugerir && modalSugerir) {
+            cerrarSugerir.addEventListener('click', function(){ modalSugerir.classList.remove('flex'); modalSugerir.classList.add('hidden'); });
+        }
+
+        const btnReportar = document.getElementById('btnReportarPregunta');
+        const modalReportar = document.getElementById('modalReportar');
+        const cerrarReportar = document.getElementById('cerrarReportar');
+        const reportTexto = document.getElementById('reportPreguntaTexto');
+        const reportIdField = document.getElementById('report_pregunta_id');
+
+        if (btnReportar && modalReportar) {
+            btnReportar.addEventListener('click', function(){
+                // Try to show the pregunta text if present in the page
+                const preguntaEl = document.querySelector('.bg-[#343964] p') || document.querySelector('p');
+                const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
+                if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
+                // If server provides pregunta id in a global JS var, set it; otherwise leave blank
+                if (reportIdField) reportIdField.value = window.__currentPreguntaId || '';
+                modalReportar.classList.remove('hidden'); modalReportar.classList.add('flex');
+            });
+        }
+        if (cerrarReportar && modalReportar) {
+            cerrarReportar.addEventListener('click', function(){ modalReportar.classList.remove('flex'); modalReportar.classList.add('hidden'); });
+        }
+    })();
+</script>
