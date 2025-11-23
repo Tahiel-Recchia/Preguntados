@@ -32,7 +32,7 @@ class PanelEditorController
             ];
         }
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
-        $data["preguntas"] = $this->model->obtenerPreguntas();
+        $data["preguntas"] = $this->model->obtenerPreguntas($_SESSION['user_id'] ?? null);
         $sugs = $this->model->obtenerPreguntasSugeridas();
         $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
         $reportes = $this->model->obtenerReportesPendientes();
@@ -61,7 +61,8 @@ class PanelEditorController
                 $respuesta_correcta,
                 $respuesta_incorrecta1,
                 $respuesta_incorrecta2,
-                $respuesta_incorrecta3
+                $respuesta_incorrecta3,
+                $_SESSION['user_id'] ?? null
             );
 
             header("Location: /paneleditor");
@@ -148,7 +149,7 @@ class PanelEditorController
         $data = [];
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         $data['reportes'] = is_array($this->model->obtenerReportesPendientes()) ? array_values($this->model->obtenerReportesPendientes()) : [];
-        $data['preguntas'] = is_array($this->model->obtenerPreguntas()) ? array_values($this->model->obtenerPreguntas()) : [];
+        $data['preguntas'] = is_array($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) ? array_values($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) : [];
         $sugs = $this->model->obtenerPreguntasSugeridas();
         $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
         $this->renderer->render('panelEditor', $data);
@@ -185,7 +186,7 @@ public function rechazarReporte()
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         $sugs = $this->model->obtenerPreguntasSugeridas();
         $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
-        $data['preguntas'] = is_array($this->model->obtenerPreguntas()) ? array_values($this->model->obtenerPreguntas()) : [];
+        $data['preguntas'] = is_array($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) ? array_values($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) : [];
         $data['reportes'] = is_array($this->model->obtenerReportesPendientes()) ? array_values($this->model->obtenerReportesPendientes()) : [];
         $this->renderer->render('panelEditor', $data);
     }
@@ -194,7 +195,7 @@ public function aceptarSugerencia()
 {
     $this->requireEditor();
     $id = $_POST['id_sugerencia'];
-    $this->model->aceptarSugerencia($id);
+    $this->model->aceptarSugerencia($id, $_SESSION['user_id'] ?? null);
     header("Location: /paneleditor/verSugerencias");
     exit;
 }
