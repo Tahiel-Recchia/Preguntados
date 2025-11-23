@@ -56,5 +56,23 @@ class AdminModel
         return $resultado->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function hacerEditor($userId){
+        $sql = "UPDATE usuario SET rol_id = 2 WHERE id = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $resultado = $stmt->execute();
+        $stmt->close();
+        return $resultado;
+    }
+
+    public function eliminarEditor($userId){
+        $sql = "UPDATE usuario SET rol_id = 1 WHERE id = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $resultado = $stmt->execute();
+        $stmt->close();
+        return $resultado;
+    }
+
 }
 

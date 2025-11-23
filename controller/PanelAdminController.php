@@ -104,5 +104,26 @@ class PanelAdminController
         exit;
     }
 
+    public function hacerEditor(){
+        $idUsuario = $_GET["id"];
+        if($_SESSION['rol'] !== 3){
+            header("Location: /");
+            exit();
+        }
+        $this->model->hacerEditor($idUsuario);
+        header("Location: /perfil/base/".$idUsuario);
+        exit();
+    }
+
+    public function eliminarEditor(){
+        $idUsuario = $_GET["id"];
+        if($_SESSION['rol'] !== 3){
+            header("Location: /");
+            exit();
+        }
+        $this->model->eliminarEditor($idUsuario);
+        header("Location: /perfil/base/".$idUsuario);
+        exit();
+    }
 
 }

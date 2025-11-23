@@ -52,22 +52,9 @@ class Router
 
     public function verificarPartidaEnCurso($controllerName){
         $controllerCheck = strtolower($controllerName);
-
-        // Lista negra: Palabras que NO son controladores reales, sino archivos
-        // Agregamos 'imagenes' y 'favicon.ico' que vimos en tu log
-        $ignorados = ['imagenes', 'public', 'js', 'css', 'favicon.ico', 'vendor'];
-
-        // La condición ahora dice:
-        // 1. Si NO es preguntas
-        // 2. Y NO es ruleta
-        // 3. Y NO está en la lista de ignorados (imagenes, favicon, etc.)
-        // 4. Y hay sesión... ENTONCES borramos.
-
-        if($controllerCheck !== "preguntas"
-            && $controllerCheck !== "ruleta"
-            && !in_array($controllerCheck, $ignorados)
-            && isset($_SESSION['idPartida'])) {
-
+        if(isset($_SESSION['idPartida'])
+            && $controllerCheck !== "preguntas"
+            && $controllerCheck !== "ruleta") {
             $preguntasController = $this->factory->create('preguntasController');
             call_user_func([$preguntasController, "terminarPartida"]);
         }

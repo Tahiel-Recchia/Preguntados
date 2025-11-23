@@ -30,7 +30,10 @@ class PerfilController
         if ($fila) {
             $fila['fotoDePerfil'] = $this->normalizarFoto($fila['fotoDePerfil']);
             $fila['isEditor'] = ($fila['rol_id'] == 2);
+            $fila['isAdmin'] = ($fila['rol_id'] == 3);
             $fila['esMiPerfil'] = ($usuarioId == ($_SESSION['user_id'] ?? null));
+            $fila['puedeHacerEditor'] = ($_SESSION['rol'] == 3 && !$fila['isEditor'] && !$fila['esMiPerfil']);
+            $fila['puedeEliminarEditor'] = ($_SESSION['rol'] == 3 && $fila['isEditor'] && !$fila['esMiPerfil']);
             $datos['usuario'] = $fila;
         }
         $this->renderer->render("perfil", $datos);
@@ -81,4 +84,6 @@ class PerfilController
         $datos['nombreDeUsuario'] = $datosDeUsuario['nombreDeUsuario'];
         $this->renderer->render("qr", $datos);
     }
+
+
 }

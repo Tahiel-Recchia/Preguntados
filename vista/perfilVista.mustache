@@ -32,8 +32,27 @@
                     <span class="font-semibold text-white">Oct 2025</span>
                 </div>
             </div>
+        {{#puedeHacerEditor}}
+            <a href="/panelAdmin/hacerEditor/{{id}}"
+               class="w-full mt-6 py-3 px-4 rounded-xl bg-gradient-to-r from-[#4facfe] to-[#00f2fe] text-white font-bold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2">
 
-            <a href="/perfil/getQr?id={{id}}" class="w-full mt-6 py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Ascender a Editor
+            </a>
+        {{/puedeHacerEditor}}
+            {{#puedeEliminarEditor}}
+                <a href="/panelAdmin/eliminarEditor/{{id}}"
+                   class="w-full mt-6 py-3 px-4 rounded-xl bg-gradient-to-r from-[#EF4444] to-[#F43F5E] text-white font-bold shadow-lg shadow-red-500/30 hover:shadow-red-500/50 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Revocar Permiso
+                </a>
+            {{/puedeEliminarEditor}}
+            <a href="/perfil/getQr/{{id}}" class="w-full mt-6 py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
             </svg>

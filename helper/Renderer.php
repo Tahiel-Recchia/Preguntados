@@ -19,6 +19,7 @@ class Renderer{
             $data['sesion']['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'];
             $data['sesion']['fotoDePerfil'] = $_SESSION['fotoDePerfil'];
             $data['sesion']['id'] = $_SESSION['user_id'];
+            $data['sesion']['rol'] = $_SESSION['rol'];
         }
         $contentFilePath = $this->viewsPath . '/' . $contentFile . "Vista.mustache";
         echo $this->generateHtml($contentFilePath, $data);
@@ -29,9 +30,6 @@ class Renderer{
         $contentTemplate = file_get_contents($contentFile);
         $renderedContent = $this->mustache->render($contentTemplate, $data);
         $data['content'] = $renderedContent;
-
-        // Compatibilidad: si existe 'sesion' como array, exponer sus claves al nivel superior
-        // así las vistas que usan {{nombreDeUsuario}} o {{fotoDePerfil}} seguirán funcionando.
         if (isset($data['sesion']) && is_array($data['sesion'])) {
             foreach ($data['sesion'] as $k => $v) {
                 if (!array_key_exists($k, $data)) {
