@@ -380,7 +380,7 @@ class PanelEditorModel
 public function obtenerReportesPendientes()
 {
     // Devolvemos un array asociativo con info básica del reporte y la pregunta
-    $query = "SELECT r.id AS id_reporte, p.descripcion AS pregunta
+    $query = "SELECT r.id AS id_reporte, r.pregunta_id, r.descripcion AS descripcion, p.descripcion AS pregunta
               FROM reporte r
               LEFT JOIN pregunta p ON r.pregunta_id = p.id";
     $res = $this->conexion->query($query);

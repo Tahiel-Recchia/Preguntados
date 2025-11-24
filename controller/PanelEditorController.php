@@ -158,6 +158,12 @@ class PanelEditorController
 
         $report = $this->model->obtenerReportePorId($id);
         error_log('PanelEditorController::obtenerReporte - reporte: ' . print_r($report, true));
+        // Normalizar campo de texto del motivo/descripcion para el frontend
+        if ($report && is_array($report)) {
+            if (empty($report['descripcion'])) {
+                $report['descripcion'] = $report['motivo'] ?? $report['mensaje'] ?? $report['razon'] ?? $report['report_text'] ?? '';
+            }
+        }
         if (!$report) {
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Reporte no encontrado']);
