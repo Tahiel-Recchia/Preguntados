@@ -157,6 +157,7 @@ class PanelEditorController
         }
 
         $report = $this->model->obtenerReportePorId($id);
+        error_log('PanelEditorController::obtenerReporte - reporte: ' . print_r($report, true));
         if (!$report) {
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Reporte no encontrado']);
