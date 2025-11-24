@@ -53,17 +53,16 @@ class PreguntasController
     public function mostrarPregunta()
     {
         if(!isset($_SESSION['id_pregunta_actual'])){
-            $partida  = $this->obtenerPregunta();
-
-            $_SESSION['id_pregunta_actual'] = $partida['id_pregunta'];
-
-            if (!$partida) {
+            $pregunta  = $this->obtenerPregunta();
+            if (!$pregunta) {
                 $this->finalizarPorFaltaDePreguntas();
                 return;
             }
 
-            $_SESSION['id_pregunta_actual'] = $partida['id_pregunta'];
-            $_SESSION['respuesta_correcta_actual'] = $this->model->getRespuestaCorrecta($partida['id_pregunta']);
+            // ahora que sabemos que $pregunta es válido, setear campos y sesión
+            $pregunta['puntos'] = $_SESSION['puntajeActual'];
+            $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
+            $_SESSION['respuesta_correcta_actual'] = $this->model->getRespuestaCorrecta($pregunta['id_pregunta']);
             $_SESSION['horaEnvio'] = $this->model->getHoraEnvio();
             $partida['puntos'] = $_SESSION['puntajeActual'];
         } else {

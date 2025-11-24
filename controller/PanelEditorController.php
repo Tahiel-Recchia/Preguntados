@@ -32,7 +32,7 @@ class PanelEditorController
             ];
         }
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
-        $data["preguntas"] = $this->model->obtenerPreguntas();
+        $data["preguntas"] = $this->model->obtenerPreguntas($_SESSION['user_id'] ?? null);
         $sugs = $this->model->obtenerPreguntasSugeridas();
         $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
         $reportes = $this->model->obtenerReportesPendientes();
@@ -61,7 +61,8 @@ class PanelEditorController
                 $respuesta_correcta,
                 $respuesta_incorrecta1,
                 $respuesta_incorrecta2,
-                $respuesta_incorrecta3
+                $respuesta_incorrecta3,
+                $_SESSION['user_id'] ?? null
             );
 
             header("Location: /paneleditor");
@@ -142,13 +143,57 @@ class PanelEditorController
         exit;
     }
 
+    /**
+     * Devuelve un reporte con la información de la pregunta y sus respuestas en JSON
+     */
+    public function obtenerReporte()
+    {
+        $this->requireEditor();
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Falta id']);
+            exit;
+        }
+
+        $report = $this->model->obtenerReportePorId($id);
+        error_log('PanelEditorController::obtenerReporte - reporte: ' . print_r($report, true));
+        // Normalizar campo de texto del motivo/descripcion para el frontend
+        if ($report && is_array($report)) {
+            if (empty($report['descripcion'])) {
+                $report['descripcion'] = $report['motivo'] ?? $report['mensaje'] ?? $report['razon'] ?? $report['report_text'] ?? '';
+            }
+        }
+        if (!$report) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Reporte no encontrado']);
+            exit;
+        }
+
+        $preguntaId = $report['pregunta_id'] ?? null;
+        $pregData = null;
+        if ($preguntaId) {
+            $pregData = $this->model->obtenerPreguntaConRespuestas($preguntaId);
+        }
+
+        $out = [
+            'reporte' => $report,
+            'pregunta' => $pregData['pregunta'] ?? null,
+            'respuestas' => $pregData['respuestas'] ?? []
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($out);
+        exit;
+    }
+
     public function verReportes()
     {
         $this->requireEditor();
         $data = [];
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         $data['reportes'] = is_array($this->model->obtenerReportesPendientes()) ? array_values($this->model->obtenerReportesPendientes()) : [];
-        $data['preguntas'] = is_array($this->model->obtenerPreguntas()) ? array_values($this->model->obtenerPreguntas()) : [];
+        $data['preguntas'] = is_array($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) ? array_values($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) : [];
         $sugs = $this->model->obtenerPreguntasSugeridas();
         $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
         $this->renderer->render('panelEditor', $data);
@@ -185,7 +230,7 @@ public function rechazarReporte()
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         $sugs = $this->model->obtenerPreguntasSugeridas();
         $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
-        $data['preguntas'] = is_array($this->model->obtenerPreguntas()) ? array_values($this->model->obtenerPreguntas()) : [];
+        $data['preguntas'] = is_array($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) ? array_values($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) : [];
         $data['reportes'] = is_array($this->model->obtenerReportesPendientes()) ? array_values($this->model->obtenerReportesPendientes()) : [];
         $this->renderer->render('panelEditor', $data);
     }
@@ -194,7 +239,7 @@ public function aceptarSugerencia()
 {
     $this->requireEditor();
     $id = $_POST['id_sugerencia'];
-    $this->model->aceptarSugerencia($id);
+    $this->model->aceptarSugerencia($id, $_SESSION['user_id'] ?? null);
     header("Location: /paneleditor/verSugerencias");
     exit;
 }
@@ -254,7 +299,12 @@ public function rechazarSugerencia()
             exit;
         }
 
-        $this->model->insertarReporte($pregunta_id, $descripcion, $id_usuario);
+        $res = $this->model->insertarReporte($pregunta_id, $descripcion, $id_usuario);
+        if ($res === false) {
+            error_log("PanelEditorController::reportarPregunta - insertarReporte returned false. pregunta_id={$pregunta_id}, usuario={$id_usuario}, descripcion=" . substr($descripcion,0,200));
+        } else {
+            error_log("PanelEditorController::reportarPregunta - reporte creado id={$res}, pregunta_id={$pregunta_id}");
+        }
 
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
         exit;
