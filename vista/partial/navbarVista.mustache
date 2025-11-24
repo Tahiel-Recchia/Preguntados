@@ -22,18 +22,12 @@
         <!-- Links de Escritorio -->
         <div class="hidden lg:flex lg:gap-x-12">
             {{#sesion}}
-                {{#isJugador}}
                 <!-- Links si está logueado -->
                 <a href="/menu" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Menu</a>
                 <a href="/historial" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Historial</a>
                 <a href="/ranking" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Ranking</a>
                 <!-- Mostrar Salir después de Categoria (en rojo) -->
                 <a href="/login/logout" class="text-sm/6 font-semibold text-red-500 hover:text-red-400 transition-colors">Salir</a>
-                {{/isJugador}}
-                {{^isJugador}}
-                <a href="/menu" class="text-sm/6 font-semibold text-white hover:text-[#BC6BE8] transition-colors">Menu</a>
-                <a href="/login/logout" class="text-sm/6 font-semibold text-red-500 hover:text-red-400 transition-colors">Salir</a>
-                {{/isJugador}}
             {{/sesion}}
             {{^sesion}}
                 <!-- Links si NO está logueado -->

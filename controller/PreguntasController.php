@@ -22,6 +22,10 @@ class PreguntasController
 
     public function base()
     {
+        if(isset($_SESSION['forzar_salida'])){
+            unset($_SESSION['forzar_salida']);
+            return;
+        }
         if(!isset($_SESSION["preguntas_totales"])){
             $_SESSION["preguntas_totales"] = 0;
         }
@@ -54,8 +58,6 @@ class PreguntasController
     {
         if(!isset($_SESSION['id_pregunta_actual'])){
             $pregunta  = $this->obtenerPregunta();
-            $pregunta['puntos'] = $_SESSION['puntajeActual'];
-            $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
 
             if (!$pregunta) {
                 $this->finalizarPorFaltaDePreguntas();
@@ -65,10 +67,12 @@ class PreguntasController
             $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
             $_SESSION['respuesta_correcta_actual'] = $this->model->getRespuestaCorrecta($pregunta['id_pregunta']);
             $_SESSION['horaEnvio'] = $this->model->getHoraEnvio();
+            $partida['puntos'] = $_SESSION['puntajeActual'];
         } else {
-            $pregunta = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
+            $partida = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
         }
-        $this->renderer->render("preguntas", $pregunta);
+        $partida['ocultarNavbar'] = true;
+        $this->renderer->render("preguntas", $partida);
     }
     public function obtenerPregunta()
     {
@@ -128,7 +132,7 @@ class PreguntasController
     }
 
     public function sumarPuntos(){
-        $_SESSION['puntajeActual'] = $this->partida->sumarPuntos($_SESSION['horaEnvio'], $_SESSION['horaRespuesta'], $_SESSION['puntajeActual']);
+        $_SESSION['puntajeActual'] += 30;
         $_SESSION['preguntas_correctas'] ++;
     }
 
@@ -143,6 +147,7 @@ class PreguntasController
         $this->actualizarEstadisticas($_SESSION['user_id']);
         $this->terminarPartida();
         header('Location: /');
+        exit();
     }
 
     public function terminarPartida(){
@@ -189,8 +194,8 @@ class PreguntasController
     }
 
     public function salir(){
+        $_SESSION['forzar_salida'] = true;
         $this->terminarPartida();
-        header('Location: /');
-        exit();
+        $this->renderer->render("menu");
     }
 }
