@@ -123,12 +123,12 @@ class PreguntasController
             $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
-        $this->model->actualizarDificultadPregunta($idPregunta, $esCorrecta);
+
         unset($_SESSION['respuesta_correcta_actual'], $_SESSION['id_pregunta_actual']);
     }
 
     public function sumarPuntos(){
-        $_SESSION['puntajeActual'] += 1;
+        $_SESSION['puntajeActual'] += 1
         $_SESSION['preguntas_correctas'] ++;
     }
 

@@ -13,8 +13,8 @@
             <!-- Req #1: Nombre de usuario -->
             {{#sesion}}
             <h1 class="text-3xl font-bold text-center mt-4">{{nombreDeUsuario}}</h1>
-
             <!-- Req #1: Puntaje -->
+            {{#isJugador}}
             <div class="mt-3 flex items-center justify-center gap-2 p-2 bg-[#2c2f56] rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-[#BC6BE8]">
                     <path fill-rule="evenodd" d="M16.5 1.5c.965 0 1.75.785 1.75 1.75v17.5c0 .965-.785 1.75-1.75 1.75h-9c-.965 0-1.75-.785-1.75-1.75V3.25c0-.965.785-1.75 1.75-1.75h9Zm-9 1.5v3h9v-3h-9Zm0 4.5v3h9v-3h-9Zm0 4.5v3h9v-3h-9Zm0 4.5v3h9v-3h-9Z" clip-rule="evenodd" />
@@ -24,10 +24,11 @@
             <div class="mt-3 flex items-center justify-center gap-2 p-2 bg-[#2c2f56] rounded-lg">
                 <span class="text-xl font-semibold text-white">{{ratio}} Ratio</span>
             </div>
+            {{/isJugador}}
             <!-- Contenedor de Acciones -->
             <div class="w-full flex flex-col items-center mt-8 space-y-4">
-                {{#isJugador}}
                 <!-- Req #2: Botón Crear Partida -->
+                {{#isJugador}}
                 <a href="/buscarpartida/jugarpartida" class="w-full py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold hover:opacity-90 active:opacity-80 transition focus:outline-none focus:ring-2 focus:ring-[#BC6BE8] focus:ring-offset-2 focus:ring-offset-[#343964] flex items-center justify-center gap-2 text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                         <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
