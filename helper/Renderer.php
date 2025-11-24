@@ -20,6 +20,10 @@ class Renderer{
             $data['sesion']['fotoDePerfil'] = $_SESSION['fotoDePerfil'];
             $data['sesion']['id'] = $_SESSION['user_id'];
             $data['sesion']['rol'] = $_SESSION['rol'];
+
+            $data["isJugador"] = isset($data["sesion"]) && isset($data["sesion"]["rol_id"]) && in_array(intval($data["sesion"]["rol_id"]), [1], true);
+            $data["isEditor"] = isset($data["sesion"]) && isset($data["sesion"]["rol_id"]) && in_array(intval($data["sesion"]["rol_id"]), [2], true);
+            $data["isAdmin"] = isset($data["sesion"]) && isset($data["sesion"]["rol_id"]) && in_array(intval($data["sesion"]["rol_id"]), [3], true);
         }
         $contentFilePath = $this->viewsPath . '/' . $contentFile . "Vista.mustache";
         echo $this->generateHtml($contentFilePath, $data);
