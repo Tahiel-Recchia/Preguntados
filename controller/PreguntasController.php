@@ -53,22 +53,24 @@ class PreguntasController
     public function mostrarPregunta()
     {
         if(!isset($_SESSION['id_pregunta_actual'])){
-            $pregunta  = $this->obtenerPregunta();
-            $pregunta['puntos'] = $_SESSION['puntajeActual'];
-            $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
+            $partida  = $this->obtenerPregunta();
 
-            if (!$pregunta) {
+            $_SESSION['id_pregunta_actual'] = $partida['id_pregunta'];
+
+            if (!$partida) {
                 $this->finalizarPorFaltaDePreguntas();
                 return;
             }
 
-            $_SESSION['id_pregunta_actual'] = $pregunta['id_pregunta'];
-            $_SESSION['respuesta_correcta_actual'] = $this->model->getRespuestaCorrecta($pregunta['id_pregunta']);
+            $_SESSION['id_pregunta_actual'] = $partida['id_pregunta'];
+            $_SESSION['respuesta_correcta_actual'] = $this->model->getRespuestaCorrecta($partida['id_pregunta']);
             $_SESSION['horaEnvio'] = $this->model->getHoraEnvio();
+            $partida['puntos'] = $_SESSION['puntajeActual'];
         } else {
-            $pregunta = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
+            $partida = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
         }
-        $this->renderer->render("preguntas", $pregunta);
+        $partida['ocultarNavbar'] = true;
+        $this->renderer->render("preguntas", $partida);
     }
     public function obtenerPregunta()
     {
@@ -128,7 +130,7 @@ class PreguntasController
     }
 
     public function sumarPuntos(){
-        $_SESSION['puntajeActual'] += 1
+        $_SESSION['puntajeActual'] += 1;
         $_SESSION['preguntas_correctas'] ++;
     }
 
