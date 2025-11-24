@@ -203,9 +203,25 @@ public function aceptarReporte()
 {
     $this->requireEditor();
     $id = $_POST['id_reporte'];
-
-    $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'aceptado' WHERE id = :id");
-    $stmt->execute([':id' => $id]);
+    // Si existe columna 'estado' la marcamos como aceptado, sino no hacemos nada especial
+    $tieneEstado = false;
+    try {
+        $cols = $this->conexion->query("SHOW COLUMNS FROM reporte");
+        if ($cols && is_array($cols)) {
+            $fields = array_column($cols, 'Field');
+            $tieneEstado = in_array('estado', $fields);
+        }
+    } catch (Exception $e) {
+        $tieneEstado = false;
+    }
+    if ($tieneEstado) {
+        $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'aceptado' WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->close();
+        }
+    }
 
     header("Location: /paneleditor/verReportes");
     exit;
@@ -215,9 +231,13 @@ public function rechazarReporte()
 {
     $this->requireEditor();
     $id = $_POST['id_reporte'];
-
-    $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'rechazado' WHERE id = :id");
-    $stmt->execute([':id' => $id]);
+    // La acción "Quitar Reporte" debe borrar el registro
+    $stmt = $this->conexion->prepare("DELETE FROM reporte WHERE id = ?");
+    if ($stmt) {
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+    }
 
     header("Location: /paneleditor/verReportes");
     exit;
