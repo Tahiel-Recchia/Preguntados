@@ -140,7 +140,7 @@
             <h3 class="text-xl font-semibold mb-3">Reportar pregunta</h3>
             <div id="reportPreguntaTexto" class="mb-3 text-gray-200"></div>
             <form id="formReportar" action="/paneleditor/reportarPregunta" method="POST" class="flex flex-col gap-3">
-                <input type="hidden" name="pregunta_id" id="report_pregunta_id" value="">
+                <input type="hidden" name="pregunta_id" id="report_pregunta_id" value="{{id_pregunta}}">
                 <label class="block text-sm mb-1 text-gray-300">Descripción breve (motivo)</label>
                 <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required></textarea>
                 <div class="flex justify-end gap-3 mt-2">
@@ -151,6 +151,8 @@
         </div>
     </div>
 </main>
+<!-- Hidden current question text for JS (always present so report modal can show it) -->
+<div id="__currentPreguntaText" style="display:none">{{pregunta}}</div>
 <script>
     // Modal handlers for Sugerir / Reportar
     (function(){
@@ -173,12 +175,18 @@
 
         if (btnReportar && modalReportar) {
             btnReportar.addEventListener('click', function(){
-                // Try to show the pregunta text if present in the page
-                const preguntaEl = document.querySelector('.bg-[#343964] p') || document.querySelector('p');
-                const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
-                if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
-                // If server provides pregunta id in a global JS var, set it; otherwise leave blank
-                if (reportIdField) reportIdField.value = window.__currentPreguntaId || '';
+                // Prefer hidden current-question element first (works after answer/result)
+                const hidden = document.getElementById('__currentPreguntaText');
+                if (hidden && hidden.textContent && hidden.textContent.trim().length) {
+                    if (reportTexto) reportTexto.textContent = 'Pregunta: ' + hidden.textContent.trim();
+                } else {
+                    // Try to show the pregunta text if present in the page
+                    const preguntaEl = document.querySelector('.bg-[#343964] p') || document.querySelector('p');
+                    const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
+                    if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
+                }
+                // If server provides pregunta id in the template, it will already be set in the hidden input
+                if (reportIdField && !reportIdField.value) reportIdField.value = window.__currentPreguntaId || '';
                 modalReportar.classList.remove('hidden'); modalReportar.classList.add('flex');
             });
         }

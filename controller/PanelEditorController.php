@@ -143,6 +143,43 @@ class PanelEditorController
         exit;
     }
 
+    /**
+     * Devuelve un reporte con la información de la pregunta y sus respuestas en JSON
+     */
+    public function obtenerReporte()
+    {
+        $this->requireEditor();
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Falta id']);
+            exit;
+        }
+
+        $report = $this->model->obtenerReportePorId($id);
+        if (!$report) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Reporte no encontrado']);
+            exit;
+        }
+
+        $preguntaId = $report['pregunta_id'] ?? null;
+        $pregData = null;
+        if ($preguntaId) {
+            $pregData = $this->model->obtenerPreguntaConRespuestas($preguntaId);
+        }
+
+        $out = [
+            'reporte' => $report,
+            'pregunta' => $pregData['pregunta'] ?? null,
+            'respuestas' => $pregData['respuestas'] ?? []
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($out);
+        exit;
+    }
+
     public function verReportes()
     {
         $this->requireEditor();
@@ -255,7 +292,12 @@ public function rechazarSugerencia()
             exit;
         }
 
-        $this->model->insertarReporte($pregunta_id, $descripcion, $id_usuario);
+        $res = $this->model->insertarReporte($pregunta_id, $descripcion, $id_usuario);
+        if ($res === false) {
+            error_log("PanelEditorController::reportarPregunta - insertarReporte returned false. pregunta_id={$pregunta_id}, usuario={$id_usuario}, descripcion=" . substr($descripcion,0,200));
+        } else {
+            error_log("PanelEditorController::reportarPregunta - reporte creado id={$res}, pregunta_id={$pregunta_id}");
+        }
 
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
         exit;

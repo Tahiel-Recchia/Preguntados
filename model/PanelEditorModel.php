@@ -559,6 +559,9 @@ public function obtenerPreguntasSugeridas()
                 $stmt->bind_param("is", $pregunta_id, $descripcion);
             }
             $ok = $stmt->execute();
+            if (!$ok) {
+                error_log('insertarReporte error execute: ' . $this->conexion->error);
+            }
             $id = $stmt->insert_id;
             $stmt->close();
             return $ok ? $id : false;
@@ -569,6 +572,9 @@ public function obtenerPreguntasSugeridas()
                 $stmt2 = $this->conexion->prepare("INSERT INTO reporte (pregunta_id, descripcion) VALUES (?, ?)");
                 $stmt2->bind_param("is", $pregunta_id, $descripcion);
                 $ok2 = $stmt2->execute();
+                if (!$ok2) {
+                    error_log('insertarReporte fallback execute error: ' . $this->conexion->error);
+                }
                 $id2 = $stmt2->insert_id;
                 $stmt2->close();
                 return $ok2 ? $id2 : false;
