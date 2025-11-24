@@ -20,9 +20,10 @@ class PreguntasModel
         }
 
         $sql_pregunta = "SELECT p.id, p.descripcion, c.descripcion AS categoria_nombre
-                     FROM pregunta p
-                     JOIN categoria c ON p.id_categoria = c.id
-                     WHERE p.aprobada = 1 AND p.id_categoria = ?";
+                 FROM pregunta p
+                 JOIN categoria c ON p.id_categoria = c.id
+                 WHERE p.aprobada = 1 AND p.id_categoria = ?
+                 AND p.id NOT IN (SELECT pregunta_id FROM reporte)";
 
         if (!empty($idsExcluidos)) {
             // Creamos placeholders (?,?,?) para los IDs a excluir
@@ -112,10 +113,11 @@ class PreguntasModel
 
     public function obtenerPorId($idPreguntaBuscada) {
         $sql_pregunta = "SELECT id, descripcion
-                    FROM pregunta
-                     WHERE aprobada = 1 AND id = ?
-                     ORDER BY RAND() 
-                     LIMIT 1";
+                FROM pregunta
+                 WHERE aprobada = 1 AND id = ?
+                 AND id NOT IN (SELECT pregunta_id FROM reporte)
+                 ORDER BY RAND() 
+                 LIMIT 1";
 
         $stmt_pregunta = $this->conexion->prepare($sql_pregunta);
         $stmt_pregunta->bind_param("i", $idPreguntaBuscada);

@@ -20,12 +20,13 @@ class PanelEditorModel
         $creatorCol = $this->detectCreatorColumn();
 
         if ($creatorCol && $editorId !== null) {
-            $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
-                         c.descripcion AS categoria, d.descripcion AS dificultad
-                  FROM pregunta p
-                  LEFT JOIN categoria c ON p." . $catCol . " = c.id
-                  LEFT JOIN dificultad d ON p." . $difCol . " = d.id
-                  WHERE p." . $creatorCol . " = ?";
+                 $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
+                        c.descripcion AS categoria, d.descripcion AS dificultad
+                    FROM pregunta p
+                    LEFT JOIN categoria c ON p." . $catCol . " = c.id
+                    LEFT JOIN dificultad d ON p." . $difCol . " = d.id
+                    WHERE p." . $creatorCol . " = ?
+                    AND p.id NOT IN (SELECT pregunta_id FROM reporte)";
 
             $stmt = $this->conexion->prepare($query);
             if ($stmt) {
@@ -42,12 +43,13 @@ class PanelEditorModel
         }
 
         // Fallback: si no hay columna creador o no nos pasaron editorId, devolvemos solo preguntas aprobadas
-        $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
-                     c.descripcion AS categoria, d.descripcion AS dificultad
-              FROM pregunta p
-              LEFT JOIN categoria c ON p." . $catCol . " = c.id
-              LEFT JOIN dificultad d ON p." . $difCol . " = d.id
-              WHERE p.aprobada = 1";
+         $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
+                c.descripcion AS categoria, d.descripcion AS dificultad
+            FROM pregunta p
+            LEFT JOIN categoria c ON p." . $catCol . " = c.id
+            LEFT JOIN dificultad d ON p." . $difCol . " = d.id
+            WHERE p.aprobada = 1
+            AND p.id NOT IN (SELECT pregunta_id FROM reporte)";
 
         $res = $this->conexion->query($query);
         if ($res === false || !is_object($res)) {
