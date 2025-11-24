@@ -158,6 +158,13 @@ class PreguntasController
     }
 
     public function tiempoAgotado(){
+        // Capturar la última pregunta antes de limpiar la sesión
+        $idPregunta = $_SESSION['id_pregunta_actual'] ?? null;
+        $data = [];
+        if ($idPregunta) {
+            // Obtener descripción e id para que el modal de reporte funcione también por timeout
+            $data = $this->model->obtenerPorId($idPregunta) ?? [];
+        }
         $this->terminarPartida();
         $data['tiempoAgotado'] = "¡Te quedaste sin tiempo!";
         $this->renderer->render("preguntaErronea", $data);

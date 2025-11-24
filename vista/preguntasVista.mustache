@@ -101,8 +101,9 @@
 </main>
 <script src="/public/Javascript/timer.js"></script>
 
-<!-- Hidden current question text for JS (always present so report modal can show it) -->
+<!-- Hidden current question text and ID for JS (always present so report modal can show it) -->
 <div id="__currentPreguntaText" style="display:none">{{pregunta}}</div>
+<div id="__currentPreguntaId" style="display:none">{{id_pregunta}}</div>
 
 <!-- Modal Sugerir Pregunta -->
 <div id="modalSugerir" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
@@ -203,7 +204,11 @@
                         const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
                         if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
                     }
-                    if (reportIdField) reportIdField.value = window.__currentPreguntaId || '';
+                    // Obtener el ID de la pregunta desde el elemento oculto
+                    const hiddenId = document.getElementById('__currentPreguntaId');
+                    const preguntaId = hiddenId ? hiddenId.textContent.trim() : '';
+                    if (reportIdField) reportIdField.value = preguntaId;
+                    console.log('Abriendo modal reportar - pregunta_id:', preguntaId);
                     modalReportar.classList.remove('hidden'); modalReportar.classList.add('flex');
                 }
                 return;
@@ -215,5 +220,36 @@
                 return;
             }
         });
+
+        // Interceptar el envío del formulario de reportar para hacerlo via AJAX
+        const formReportar = document.getElementById('formReportar');
+        if (formReportar) {
+            formReportar.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(formReportar);
+                
+                fetch('/paneleditor/reportarPregunta', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    console.log('Reporte enviado exitosamente');
+                    // Cerrar el modal
+                    if (modalReportar) {
+                        modalReportar.classList.remove('flex');
+                        modalReportar.classList.add('hidden');
+                    }
+                    // Limpiar el formulario
+                    formReportar.reset();
+                    // Opcional: mostrar mensaje de éxito
+                    alert('Reporte enviado correctamente');
+                })
+                .catch(error => {
+                    console.error('Error al enviar reporte:', error);
+                    alert('Error al enviar el reporte. Por favor intenta nuevamente.');
+                });
+            });
+        }
     })();
 </script>

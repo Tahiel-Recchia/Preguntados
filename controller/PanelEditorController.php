@@ -285,7 +285,13 @@ public function rechazarSugerencia()
     // Endpoint para reportar una pregunta (desde la UI de juego)
     public function reportarPregunta()
     {
+        error_log("=== reportarPregunta INICIO ===");
+        error_log("REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD']);
+        error_log("POST data: " . print_r($_POST, true));
+        error_log("SESSION user_id: " . ($_SESSION['user_id'] ?? 'no definido'));
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error_log("No es POST, redirigiendo");
             header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
             exit;
         }
@@ -294,18 +300,25 @@ public function rechazarSugerencia()
         $descripcion = $_POST['descripcion'] ?? '';
         $id_usuario = $_SESSION['user_id'] ?? null;
 
+        error_log("pregunta_id extraído: " . var_export($pregunta_id, true));
+        error_log("descripcion extraída: " . var_export($descripcion, true));
+
         if (empty($pregunta_id) || empty($descripcion)) {
+            error_log("FALTA pregunta_id o descripcion - pregunta_id: '{$pregunta_id}', descripcion: '{$descripcion}'");
+            error_log("Redirigiendo por datos vacíos");
             header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
             exit;
         }
 
+        error_log("Intentando insertar reporte...");
         $res = $this->model->insertarReporte($pregunta_id, $descripcion, $id_usuario);
         if ($res === false) {
             error_log("PanelEditorController::reportarPregunta - insertarReporte returned false. pregunta_id={$pregunta_id}, usuario={$id_usuario}, descripcion=" . substr($descripcion,0,200));
         } else {
-            error_log("PanelEditorController::reportarPregunta - reporte creado id={$res}, pregunta_id={$pregunta_id}");
+            error_log("PanelEditorController::reportarPregunta - reporte creado EXITOSAMENTE id={$res}, pregunta_id={$pregunta_id}");
         }
 
+        error_log("=== reportarPregunta FIN ===");
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
         exit;
     }
