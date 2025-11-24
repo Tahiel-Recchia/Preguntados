@@ -204,23 +204,35 @@
             formReportar.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const formData = new FormData(formReportar);
+                const btnReportar = document.getElementById('btnReportarPregunta');
                 
                 fetch('/paneleditor/reportarPregunta', {
                     method: 'POST',
                     body: formData,
-                    credentials: 'same-origin'
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'fetch', 'Accept': 'application/json' }
                 })
-                .then(response => {
-                    console.log('Reporte enviado exitosamente');
-                    // Cerrar el modal
+                .then(response => response.json().catch(()=>({status:'ok'})))
+                .then(data => {
+                    console.log('Respuesta reporte:', data);
                     if (modalReportar) {
                         modalReportar.classList.remove('flex');
                         modalReportar.classList.add('hidden');
                     }
-                    // Limpiar el formulario
                     formReportar.reset();
-                    // Opcional: mostrar mensaje de éxito
-                    alert('Reporte enviado correctamente');
+                    if (data.status === 'duplicate') {
+                        alert('Ya reportaste esta pregunta.');
+                    } else if (data.status === 'error') {
+                        alert('Error al enviar el reporte');
+                        return; // no deshabilitar si error
+                    } else {
+                        alert('Reporte enviado correctamente');
+                    }
+                    if (btnReportar) {
+                        btnReportar.disabled = true;
+                        btnReportar.classList.add('opacity-50','cursor-not-allowed');
+                        btnReportar.textContent = 'Reporte enviado';
+                    }
                 })
                 .catch(error => {
                     console.error('Error al enviar reporte:', error);
