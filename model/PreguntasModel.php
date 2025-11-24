@@ -11,82 +11,87 @@ class PreguntasModel
 
     public function obtenerPorCategoria($categoriaId, $idsExcluidos = [], $nivelUsuario)
     {
-        if ($nivelUsuario <= 0.33) {
-            $dificultad = 1;
-        } elseif ($nivelUsuario <= 0.66) {
-            $dificultad = 2;
-        } else {
-            $dificultad = 3;
+        $dificultadDeseada = $this->calcularDificultad($nivelUsuario);
+        $pregunta = $this->buscarPreguntaEnBD($categoriaId, $idsExcluidos, $dificultadDeseada);
+        if (!$pregunta) {
+            $pregunta = $this->buscarPreguntaEnBD($categoriaId, $idsExcluidos, null);
         }
 
-        $sql_pregunta = "SELECT p.id, p.descripcion, c.descripcion AS categoria_nombre
-                     FROM pregunta p
-                     JOIN categoria c ON p.id_categoria = c.id
-                     WHERE p.aprobada = 1 AND p.id_categoria = ?";
 
-        if (!empty($idsExcluidos)) {
-            // Creamos placeholders (?,?,?) para los IDs a excluir
-            $placeholders = implode(',', array_fill(0, count($idsExcluidos), '?'));
-            $sql_pregunta .= " AND p.id NOT IN ($placeholders)";
-        }
-
-        $todasLasPreguntas = $this->contarPreguntasPorCategoria($categoriaId);
-        $totalVistas = count($idsExcluidos);
-
-        $todasLasPreguntasVistas = false;
-
-        if($totalVistas >= $todasLasPreguntas) {
-            $sql_pregunta .= " AND p.id_dificultad = ?";
-            $todasLasPreguntasVistas = true;
-        }
-        $sql_pregunta .= " ORDER BY RAND() LIMIT 1";
-
-        $stmt_pregunta = $this->conexion->prepare($sql_pregunta);
-        $tipos = "i";
-        $params = [$categoriaId];
-
-        if (!empty($idsExcluidos)) {
-            $tipos .= str_repeat('i', count($idsExcluidos));
-            $params = array_merge($params, $idsExcluidos);
-        }
-        if($todasLasPreguntasVistas){
-            $tipos .= "i";
-            $params[] = $dificultad;
-        }
-
-        $stmt_pregunta->bind_param($tipos, ...$params);
-        $stmt_pregunta->execute();
-        $resultado_pregunta = $stmt_pregunta->get_result();
-
-        if ($resultado_pregunta->num_rows === 0) {
+        if (!$pregunta) {
             return null;
         }
 
-        $pregunta = $resultado_pregunta->fetch_assoc();
-        $id_pregunta = $pregunta['id'];
-        $stmt_pregunta->close();
+        $opciones = $this->obtenerOpciones($pregunta['id']);
 
-        $tablaResp = $this->detectRespuestasTable();
-        $sql_opciones = "SELECT descripcion, es_correcta FROM " . $tablaResp . " WHERE id_pregunta = ?";
-
-        $stmt_opciones = $this->conexion->prepare($sql_opciones);
-        $stmt_opciones->bind_param("i", $id_pregunta);
-        $stmt_opciones->execute();
-        $resultado_opciones = $stmt_opciones->get_result();
-        $opciones = $resultado_opciones->fetch_all(MYSQLI_ASSOC);
-        $stmt_opciones->close();
-
-        shuffle($opciones);
-
-
-        $datos_para_la_vista = [
+        return [
             "pregunta"  => $pregunta["descripcion"],
             "categoria" => $pregunta["categoria_nombre"],
             "id_pregunta" => $pregunta["id"],
             "opciones"  => $opciones
         ];
+    }
 
-        return $datos_para_la_vista;
+
+
+    private function calcularDificultad($nivel)
+    {
+        if ($nivel <= 0.33) return 1;
+        if ($nivel <= 0.66) return 2;
+        return 3;
+    }
+
+    private function buscarPreguntaEnBD($categoriaId, $idsExcluidos, $dificultad = null)
+    {
+        $sql = "SELECT p.id, p.descripcion, c.descripcion AS categoria_nombre
+            FROM pregunta p
+            JOIN categoria c ON p.id_categoria = c.id
+            WHERE p.aprobada = 1 AND p.id_categoria = ?";
+
+        $params = [$categoriaId];
+        $types = "i";
+
+        if ($dificultad !== null) {
+            $sql .= " AND p.id_dificultad = ?";
+            $params[] = $dificultad;
+            $types .= "i";
+        }
+
+        if (!empty($idsExcluidos)) {
+
+            $placeholders = implode(',', array_fill(0, count($idsExcluidos), '?'));
+            $sql .= " AND p.id NOT IN ($placeholders)";
+            $params = array_merge($params, $idsExcluidos);
+            $types .= str_repeat('i', count($idsExcluidos));
+        }
+
+        $sql .= " ORDER BY RAND() LIMIT 1";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $data = $result->fetch_assoc();
+        $stmt->close();
+
+        return $data;
+    }
+
+    private function obtenerOpciones($idPregunta)
+    {
+        $tablaResp = $this->detectRespuestasTable();
+        $sql = "SELECT descripcion, es_correcta FROM " . $tablaResp . " WHERE id_pregunta = ?";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $opciones = $res->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        shuffle($opciones);
+        return $opciones;
     }
 
     public function getRespuestaCorrecta($idPregunta){
@@ -153,9 +158,6 @@ class PreguntasModel
         return $datos_para_la_vista;
     }
 
-    /**
-     * Detecta el nombre de la tabla de respuestas: 'respuesta' o 'respuestas'
-     */
     private function detectRespuestasTable()
     {
         try {
@@ -191,5 +193,28 @@ class PreguntasModel
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
         return $row['total'];
+    }
+
+    public function actualizarDificultadPregunta($idPregunta, $fueCorrecta){
+        $sql = "SELECT respuestas_correctas, respuestas_totales FROM pregunta WHERE id = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        if(!$result) return;
+        $respuestas_correctas = $result['respuestas_correctas'] + ($fueCorrecta ? 1 : 0);
+        $respuestas_totales = $result['respuestas_totales'] + 1;
+        $promedioDeRespuestas = ($respuestas_totales > 0) ? ($respuestas_correctas / $respuestas_totales) : 0;
+        $dificultad = 2;
+        if($respuestas_totales >= 10){
+            if ($promedioDeRespuestas >= 0.7) $dificultad = 1;
+            if ($promedioDeRespuestas <= 0.3) $dificultad = 3;
+        }
+
+        $sql = "UPDATE pregunta SET respuestas_correctas = ?, respuestas_totales = ?, id_dificultad = ? WHERE id = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("iidi",$respuestas_correctas,$respuestas_totales,$dificultad,$idPregunta);
+        $stmt->execute();
     }
 }

@@ -241,7 +241,7 @@ public function rechazarSugerencia()
     public function reportarPregunta()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+            header('Location: /');
             exit;
         }
 
@@ -250,7 +250,7 @@ public function rechazarSugerencia()
         $id_usuario = $_SESSION['user_id'] ?? null;
 
         if (empty($pregunta_id) || empty($descripcion)) {
-            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+            header('Location: /');
             exit;
         }
 

@@ -1,12 +1,15 @@
 <?php
-class PartidaModel {
+class PartidaModel
+{
     private $conexion;
 
-    public function __construct($conexion){
+    public function __construct($conexion)
+    {
         $this->conexion = $conexion;
     }
 
-    public function iniciarPartida(){
+    public function iniciarPartida()
+    {
         $fecha_inicio_obj = new DateTime();
         $horaInicio = $fecha_inicio_obj->format('Y-m-d H:i:s');
         $estado = "En curso";
@@ -17,7 +20,9 @@ class PartidaModel {
         $stmt->close();
         return $this->conexion->lastInsertId();
     }
-    public function terminarPartida($idPartida, $puntaje){
+
+    public function terminarPartida($idPartida, $puntaje)
+    {
         $fecha_fin_obj = new DateTime();
         $horaFin = $fecha_fin_obj->format('Y-m-d H:i:s');
         $estado = "Finalizada";
@@ -28,23 +33,15 @@ class PartidaModel {
         $stmt->close();
     }
 
-    public function verificarTiempo($horaEnvio, $horaRespuesta){
+    public function verificarTiempo($horaEnvio, $horaRespuesta)
+    {
         $segundosEnvio = $horaEnvio->getTimestamp();
-        $segundosRespuesta   = $horaRespuesta->getTimestamp();
+        $segundosRespuesta = $horaRespuesta->getTimestamp();
         $diferenciaSegundos = $segundosRespuesta - $segundosEnvio;
-        if ($diferenciaSegundos > 10){
+        if ($diferenciaSegundos > 10) {
             return false;
         }
         return true;
     }
 
-    public function sumarPuntos($horaEnvio, $horaRespuesta, $puntaje){
-        $segundosEnvio = $horaEnvio->getTimestamp();
-        $segundosRespuesta   = $horaRespuesta->getTimestamp();
-        $segundosTardados = $segundosRespuesta - $segundosEnvio;
-        $tiempoLimite = 10;
-        $segundosSobrantes = $tiempoLimite - $segundosTardados;
-        $puntaje += $segundosSobrantes * 5;
-        return $puntaje;
-    }
 }
