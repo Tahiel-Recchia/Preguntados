@@ -32,7 +32,7 @@ class RegisterController
 
             $passwordErrors = $this->verifyPassword($userData["password"], $userData["passwordRepeated"]);
             if (!empty($passwordErrors)) {
-                $this->renderer->render("register", ["error" => $passwordErrors, 'noNavbar' => true, 'noFooter' => true]);
+                $this->renderer->render("register", ["errors" => $passwordErrors, 'noNavbar' => true, 'noFooter' => true]);
                 return;
             }
 
@@ -58,10 +58,10 @@ class RegisterController
     {
         $errors = [];
         if ($password !== $passwordRepeated) {
-            $errors = "Las contraseñas no coinciden";
+            $errors[] = "Las contraseñas no coinciden";
         }
         if (strlen($password) < 8) {
-            $errors = "La contraseña debe tener al menos 8 caracteres.";
+            $errors[] = "La contraseña debe tener al menos 8 caracteres.";
         }
         return $errors;
     }
@@ -97,4 +97,33 @@ class RegisterController
         return "/imagenes/perfiles/" . $nuevoNombre;
     }
 
+    public function check(){
+        header('Content-Type: application/json; charset=utf-8');
+
+        $campo = $_POST['campo'] ?? null;
+        $valor = $_POST['valor'] ?? null;
+
+        if(!$campo || !$valor){
+            echo json_encode(["ok" => false, "mensaje" => "Datos invalidos"]);
+            return;
+        }
+
+        if($campo === "username"){
+            $existe = $this->model->verifyUsername($valor);
+            echo json_encode([
+                "ok" => !$existe,
+                "mensaje" => $existe ? "El nombre de usuario ya esta registrado." : "Usuario disponible"
+            ]);
+            return;
+        }
+
+        if($campo === "email"){
+            $existe = $this->model->verifyEmail($valor);
+            echo json_encode([
+                "ok"=> !$existe,
+                "mensaje" => $existe ? "El email ya esta registrado." : "Email disponible"
+            ]);
+            return;
+        }
+    }
 }

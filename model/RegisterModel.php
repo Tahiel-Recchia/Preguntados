@@ -28,7 +28,7 @@ class RegisterModel
     }
 
 
-    private function generateToken()
+    public function generateToken()
     {
         $token = bin2hex(openssl_random_pseudo_bytes(16));
 
@@ -37,12 +37,12 @@ class RegisterModel
         return $tokenData;
     }
 
-    private function generatePasswordHash($password){
+    public function generatePasswordHash($password){
         return password_hash($password, PASSWORD_DEFAULT);
 
     }
 
-    private function insertUserIntoDatabase($userData, $tokenData, $passwordHash)
+    public function insertUserIntoDatabase($userData, $tokenData, $passwordHash)
     {
         // Insertar con rol_id (por defecto 1 = jugador)
         $sql = "INSERT INTO usuario 
@@ -79,7 +79,7 @@ class RegisterModel
         $stmt->close();
     }
 
-    private function verifyUsername($username){
+    public function verifyUsername($username){
         $sql = "SELECT 1 FROM usuario WHERE nombreDeUsuario = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $username);
@@ -90,7 +90,7 @@ class RegisterModel
         return $userExists;
     }
 
-    private function verifyEmail($email){
+    public function verifyEmail($email){
         $sql = "SELECT 1 FROM usuario WHERE mail = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $email);
@@ -132,7 +132,7 @@ class RegisterModel
     }
 
 
-    private function sendVerificationEmail($email, $name, $token)
+    public function sendVerificationEmail($email, $name, $token)
     {
         // URL que apunta a tu método 'verify'. Ajusta 'localhost' a tu dominio real
         $verificationLink = "http://localhost/register/verify?token=" . $token;

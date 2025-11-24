@@ -3,14 +3,18 @@
 <main class="bg-[#343964] rounded-2xl shadow-2xl w-full max-w-xl p-8 flex flex-col gap-4 text-[#E2E4F3]">
     <h1 class="text-3xl font-bold text-center">Crear cuenta</h1>
 
-    {{#error}}
+    {{#errors}}
         <div class="bg-red-900/50 border border-red-700 text-red-300 p-3 rounded-lg flex items-center gap-3 text-sm">
             <svg class="h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
             </svg>
-            <span>{{error}}</span>
+            <ul>
+                {{#.}}
+                <li>{{.}}</li>
+                {{/.}}
+            </ul>
         </div>
-    {{/error}}
+    {{/errors}}
 
     <form class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 mt-4" method="POST" action="/register/base" enctype="multipart/form-data">
 
@@ -31,7 +35,10 @@
 
         <div>
             <label class="block text-sm font-semibold mb-2">Nombre de usuario</label>
-            <input name="username" type="text" class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3] focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition" placeholder="Tu usuario" required>
+            <input id="username" name="username" type="text"
+                   class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3] focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition"
+                   placeholder="Tu usuario" required>
+            <p id="usernameCheck" class="text-xs mt-1 h-4"></p>
         </div>
 
 
@@ -62,7 +69,10 @@
 
         <div class="col-span-1 md:col-span-2">
             <label class="block text-sm font-semibold mb-2">Correo electrónico</label>
-            <input name="email" type="email" class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3] focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition" placeholder="usuario@ejemplo.com" required>
+            <input id="email" name="email" type="email"
+                   class="w-full p-3 rounded-lg bg-[#2c2f56] border border-gray-500 text-[#E2E4F3] focus:border-[#E65895] focus:ring-2 focus:ring-[#E65895] focus:outline-none transition"
+                   placeholder="usuario@ejemplo.com" required>
+            <p id="emailCheck" class="text-xs mt-1 h-4"></p>
         </div>
 
         <div>
@@ -88,7 +98,34 @@
         </a>
     </p>
 </main>
+<script>
+    function validar(campo, valor, outputId){
+        const output = document.getElementById(outputId);
+        if(valor.trim().length === 0){
+            output.textContent = "";
+            return;
+        }
 
+        const formData = new FormData();
+        formData.append("campo", campo);
+        formData.append("valor", valor);
+
+        fetch("/preguntados/register/check",{
+            method: "POST",
+            body: formData
+        }).then(response => response.json())
+                .then(data => {
+                    output.textContent = data.mensaje;
+                    output.style.color = data.ok ? "#7CFF7C" : "#FF6B6B";
+                })
+    }
+    document.getElementById("username").addEventListener("input", function(){
+        validar("username", this.value, "usernameCheck");
+    })
+    document.getElementById("email").addEventListener("input", function(){
+        validar("email", this.value, "emailCheck");
+    })
+</script>
 <script>
     const inputFile = document.getElementById('profilePic');
     const previewImg = document.getElementById('previewImage');
