@@ -110,7 +110,7 @@
         formData.append("campo", campo);
         formData.append("valor", valor);
 
-        fetch("/preguntados/register/check",{
+        fetch("/register/check",{
             method: "POST",
             body: formData
         }).then(response => response.json())
