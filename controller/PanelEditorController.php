@@ -317,6 +317,13 @@ public function rechazarSugerencia()
     public function guardarSugerencia()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            // Si no es POST, responder acorde al tipo de petición
+            $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+                exit;
+            }
             header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
             exit;
         }
@@ -331,13 +338,28 @@ public function rechazarSugerencia()
 
         // Validaciones mínimas
         if (empty($descripcion) || empty($respuesta_correcta) || empty($respuesta_incorrecta1) || empty($respuesta_incorrecta2) || empty($respuesta_incorrecta3)) {
+            $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'message' => 'Campos incompletos']);
+                exit;
+            }
             header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
             exit;
         }
 
         $id = $this->model->insertarSugerencia($descripcion, $id_categoria, $id_dificultad, $respuesta_correcta, $respuesta_incorrecta1, $respuesta_incorrecta2, $respuesta_incorrecta3);
-
-        // redirigir de vuelta a la página anterior (juego)
+        $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            if ($id) {
+                echo json_encode(['status' => 'ok', 'id' => $id, 'message' => 'Sugerencia enviada']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'No se pudo guardar la sugerencia']);
+            }
+            exit;
+        }
+        // Fallback navegación tradicional
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
         exit;
     }

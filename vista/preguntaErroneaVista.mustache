@@ -240,5 +240,40 @@
                 });
             });
         }
+        // Interceptar envío del formulario de sugerencia para evitar navegación
+        const formSugerir = document.getElementById('formSugerir');
+        if (formSugerir) {
+            formSugerir.addEventListener('submit', function(e){
+                e.preventDefault();
+                const fd = new FormData(formSugerir);
+                const btnSugerir = document.getElementById('btnSugerirPregunta');
+                fetch('/paneleditor/guardarSugerencia', {
+                    method: 'POST',
+                    body: fd,
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'fetch', 'Accept': 'application/json' }
+                })
+                .then(r => r.json().catch(()=>({status:'ok'})))
+                .then(data => {
+                    console.log('Respuesta sugerencia (incorrecta):', data);
+                    if (modalSugerir) { modalSugerir.classList.remove('flex'); modalSugerir.classList.add('hidden'); }
+                    formSugerir.reset();
+                    if (data.status === 'error') {
+                        alert(data.message || 'Error al enviar la sugerencia');
+                        return;
+                    }
+                    alert('Sugerencia enviada correctamente');
+                    if (btnSugerir) {
+                        btnSugerir.disabled = true;
+                        btnSugerir.classList.add('opacity-50','cursor-not-allowed');
+                        btnSugerir.textContent = 'Sugerencia enviada';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error sugerencia (incorrecta):', err);
+                    alert('Error al enviar la sugerencia. Intenta nuevamente.');
+                });
+            });
+        }
     })();
 </script>
