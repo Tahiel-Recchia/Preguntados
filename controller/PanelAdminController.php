@@ -15,7 +15,7 @@ class PanelAdminController
     }
     private function requireAdmin()
     {
-        if (!isset($_SESSION['rol']) ||  !in_array($_SESSION['rol'], [3])) {
+        if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [3])) {
             header('Location: /');
             exit;
         }
@@ -104,25 +104,27 @@ class PanelAdminController
         exit;
     }
 
-    public function hacerEditor(){
+    public function hacerEditor()
+    {
         $idUsuario = $_GET["id"];
-        if($_SESSION['rol'] !== 3){
+        if ($_SESSION['rol'] !== 3) {
             header("Location: /");
             exit();
         }
         $this->model->hacerEditor($idUsuario);
-        header("Location: /perfil/base/".$idUsuario);
+        header("Location: /perfil/base/" . $idUsuario);
         exit();
     }
 
-    public function eliminarEditor(){
+    public function eliminarEditor()
+    {
         $idUsuario = $_GET["id"];
-        if($_SESSION['rol'] !== 3){
+        if ($_SESSION['rol'] !== 3) {
             header("Location: /");
             exit();
         }
         $this->model->eliminarEditor($idUsuario);
-        header("Location: /perfil/base/".$idUsuario);
+        header("Location: /perfil/base/" . $idUsuario);
         exit();
     }
 

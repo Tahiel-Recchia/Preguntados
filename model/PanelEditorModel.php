@@ -9,21 +9,54 @@ class PanelEditorModel
         $this->conexion = $conexion;
     }
 
-    public function obtenerPreguntas()
+    public function obtenerPreguntas($editorId = null)
     {
         // Detectar nombres de columna en la tabla 'pregunta' (puede ser id_categoria o categoria_id según migraciones)
         $cols = $this->detectPreguntaColumns();
         $catCol = $cols['categoria'];
         $difCol = $cols['dificultad'];
 
-        $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
-                     c.descripcion AS categoria, 
-                     d.descripcion AS dificultad
-              FROM pregunta p
-              LEFT JOIN categoria c ON p." . $catCol . " = c.id
-              LEFT JOIN dificultad d ON p." . $difCol . " = d.id";
+        // Si existe una columna que indique el creador/editor, filtramos por ella
+        $creatorCol = $this->detectCreatorColumn();
 
-        return $this->conexion->query($query);
+        if ($creatorCol && $editorId !== null) {
+                 $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
+                        c.descripcion AS categoria, d.descripcion AS dificultad
+                    FROM pregunta p
+                    LEFT JOIN categoria c ON p." . $catCol . " = c.id
+                    LEFT JOIN dificultad d ON p." . $difCol . " = d.id
+                    WHERE p." . $creatorCol . " = ?
+                    AND p.id NOT IN (SELECT pregunta_id FROM reporte)";
+
+            $stmt = $this->conexion->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("i", $editorId);
+                $stmt->execute();
+                $res = $stmt->get_result();
+                $rows = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
+                $stmt->close();
+                return $rows;
+            } else {
+                error_log('PanelEditorModel::obtenerPreguntas - fallo prepare, query: ' . $this->conexion->error);
+                return [];
+            }
+        }
+
+        // Fallback: si no hay columna creador o no nos pasaron editorId, devolvemos solo preguntas aprobadas
+         $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
+                c.descripcion AS categoria, d.descripcion AS dificultad
+            FROM pregunta p
+            LEFT JOIN categoria c ON p." . $catCol . " = c.id
+            LEFT JOIN dificultad d ON p." . $difCol . " = d.id
+            WHERE p.aprobada = 1
+            AND p.id NOT IN (SELECT pregunta_id FROM reporte)";
+
+        $res = $this->conexion->query($query);
+        if ($res === false || !is_object($res)) {
+            error_log('PanelEditorModel::obtenerPreguntas fallback error: ' . $this->conexion->error);
+            return [];
+        }
+        return $res->fetch_all(MYSQLI_ASSOC);
     }
 
     public function obtenerPreguntaConRespuestas($id)
@@ -83,18 +116,27 @@ class PanelEditorModel
         $respuesta_correcta,
         $respuesta_incorrecta1,
         $respuesta_incorrecta2,
-        $respuesta_incorrecta3
+        $respuesta_incorrecta3,
+        $creadorId = null
     ) {
         // === INSERTAR PREGUNTA ===
         $cols = $this->detectPreguntaColumns();
         $catCol = $cols['categoria'];
         $difCol = $cols['dificultad'];
 
-        $stmt = $this->conexion->prepare(
-            "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", " . $difCol . ") 
-        VALUES (?, 1, ?, ?)"
-        );
-        $stmt->bind_param("sii", $descripcion, $id_categoria, $id_dificultad);
+        // Si existe columna creador y se proporcionó, incluirla en el INSERT
+        $creatorCol = $this->detectCreatorColumn();
+        if ($creatorCol && $creadorId !== null) {
+            $sql = "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", " . $difCol . ", " . $creatorCol . ") VALUES (?, 1, ?, ?, ?)";
+            $stmt = $this->conexion->prepare($sql);
+            if ($stmt) $stmt->bind_param("siii", $descripcion, $id_categoria, $id_dificultad, $creadorId);
+        } else {
+            $stmt = $this->conexion->prepare(
+                "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", " . $difCol . ") 
+            VALUES (?, 1, ?, ?)"
+            );
+            if ($stmt) $stmt->bind_param("sii", $descripcion, $id_categoria, $id_dificultad);
+        }
         $stmt->execute();
 
         // Obtener el ID de la última pregunta insertada
@@ -312,11 +354,35 @@ class PanelEditorModel
         return 'respuesta';
     }
 
+    /**
+     * Detecta posible columna que almacene el id del creador/editor en la tabla 'pregunta'.
+     * Devuelve el nombre de la columna o null si no se encuentra.
+     */
+    private function detectCreatorColumn()
+    {
+        try {
+            $cols = $this->conexion->query("SHOW COLUMNS FROM pregunta");
+        } catch (Exception $e) {
+            return null;
+        }
+
+        if (empty($cols) || !is_array($cols)) return null;
+
+        $fields = array_column($cols, 'Field');
+
+        $candidates = ['creador', 'creador_id', 'id_creador', 'id_usuario', 'usuario_id', 'autor_id', 'id_autor', 'editor_id', 'id_editor'];
+        foreach ($candidates as $cand) {
+            if (in_array($cand, $fields)) return $cand;
+        }
+
+        return null;
+    }
+
 // ===== Métodos para reportes =====
 public function obtenerReportesPendientes()
 {
     // Devolvemos un array asociativo con info básica del reporte y la pregunta
-    $query = "SELECT r.id AS id_reporte, p.descripcion AS pregunta
+    $query = "SELECT r.id AS id_reporte, r.pregunta_id, r.descripcion AS descripcion, p.descripcion AS pregunta
               FROM reporte r
               LEFT JOIN pregunta p ON r.pregunta_id = p.id";
     $res = $this->conexion->query($query);
@@ -391,8 +457,21 @@ public function obtenerPreguntasSugeridas()
     return $sugerencias;
 }
 
-    public function aceptarSugerencia($id)
+    public function aceptarSugerencia($id, $editorId = null)
     {
+        $creatorCol = $this->detectCreatorColumn();
+        if ($creatorCol && $editorId !== null) {
+            $sql = "UPDATE pregunta SET aprobada = 1, " . $creatorCol . " = ? WHERE id = ?";
+            $stmt = $this->conexion->prepare($sql);
+            if ($stmt) {
+                $stmt->bind_param("ii", $editorId, $id);
+                $stmt->execute();
+                $stmt->close();
+                return;
+            }
+        }
+
+        // fallback: solo marcar aprobada
         $stmt = $this->conexion->prepare("UPDATE pregunta SET aprobada = 1 WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -472,6 +551,43 @@ public function obtenerPreguntasSugeridas()
      */
     public function insertarReporte($pregunta_id, $descripcion, $id_usuario = null)
     {
+        // Evitar duplicados: si la tabla tiene columna id_usuario, verificar por usuario y pregunta
+        $tieneColUsuario = false;
+        try {
+            $cols = $this->conexion->query("SHOW COLUMNS FROM reporte");
+            if ($cols && is_array($cols)) {
+                $fields = array_column($cols, 'Field');
+                $tieneColUsuario = in_array('id_usuario', $fields);
+            }
+        } catch (Exception $e) {
+            // ignorar
+        }
+        if ($tieneColUsuario && $id_usuario !== null) {
+            $stmtCheck = $this->conexion->prepare("SELECT 1 FROM reporte WHERE pregunta_id = ? AND id_usuario = ? LIMIT 1");
+            if ($stmtCheck) {
+                $stmtCheck->bind_param("ii", $pregunta_id, $id_usuario);
+                $stmtCheck->execute();
+                $rs = $stmtCheck->get_result();
+                if ($rs && $rs->num_rows > 0) {
+                    $stmtCheck->close();
+                    return 'duplicate';
+                }
+                $stmtCheck->close();
+            }
+        } else {
+            // Sin columna de usuario: prevenir al menos un duplicado total por pregunta
+            $stmtCheck2 = $this->conexion->prepare("SELECT 1 FROM reporte WHERE pregunta_id = ? LIMIT 1");
+            if ($stmtCheck2) {
+                $stmtCheck2->bind_param("i", $pregunta_id);
+                $stmtCheck2->execute();
+                $rs2 = $stmtCheck2->get_result();
+                if ($rs2 && $rs2->num_rows > 0) {
+                    $stmtCheck2->close();
+                    return 'duplicate';
+                }
+                $stmtCheck2->close();
+            }
+        }
         // Intentar inserción con campos comunes
         try {
             if ($id_usuario !== null) {
@@ -482,6 +598,9 @@ public function obtenerPreguntasSugeridas()
                 $stmt->bind_param("is", $pregunta_id, $descripcion);
             }
             $ok = $stmt->execute();
+            if (!$ok) {
+                error_log('insertarReporte error execute: ' . $this->conexion->error);
+            }
             $id = $stmt->insert_id;
             $stmt->close();
             return $ok ? $id : false;
@@ -492,6 +611,9 @@ public function obtenerPreguntasSugeridas()
                 $stmt2 = $this->conexion->prepare("INSERT INTO reporte (pregunta_id, descripcion) VALUES (?, ?)");
                 $stmt2->bind_param("is", $pregunta_id, $descripcion);
                 $ok2 = $stmt2->execute();
+                if (!$ok2) {
+                    error_log('insertarReporte fallback execute error: ' . $this->conexion->error);
+                }
                 $id2 = $stmt2->insert_id;
                 $stmt2->close();
                 return $ok2 ? $id2 : false;

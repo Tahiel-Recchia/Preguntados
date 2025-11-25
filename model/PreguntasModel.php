@@ -117,10 +117,11 @@ class PreguntasModel
 
     public function obtenerPorId($idPreguntaBuscada) {
         $sql_pregunta = "SELECT id, descripcion
-                    FROM pregunta
-                     WHERE aprobada = 1 AND id = ?
-                     ORDER BY RAND() 
-                     LIMIT 1";
+                FROM pregunta
+                 WHERE aprobada = 1 AND id = ?
+                 AND id NOT IN (SELECT pregunta_id FROM reporte)
+                 ORDER BY RAND() 
+                 LIMIT 1";
 
         $stmt_pregunta = $this->conexion->prepare($sql_pregunta);
         $stmt_pregunta->bind_param("i", $idPreguntaBuscada);

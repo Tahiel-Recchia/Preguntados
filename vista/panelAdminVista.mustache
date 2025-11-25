@@ -137,7 +137,6 @@
         async function descargarPDF() {
             const tabla = document.getElementById("tablaContainer");
             const tablaCanvas = await html2canvas(tabla, { backgroundColor: "#000000ff" });
-            const grafico3 = tablaCanvas.toDataURL("image/png");
             // Cambiar a negro solo para exportar
             chartJugadores.options.plugins.legend.labels.color = "black";
             chartJugadores.options.scales.x.ticks.color = "black";
@@ -151,6 +150,7 @@
 
             const grafico1 = jugadoresChart.toDataURL("image/png");
             const grafico2 = dificultadChart.toDataURL("image/png");
+            const grafico3 = tablaCanvas.toDataURL("image/png");
 
             // Restaurar a blanco
             chartJugadores.options.plugins.legend.labels.color = "white";

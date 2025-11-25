@@ -7,7 +7,7 @@
   <form action="/paneleditor/actualizar" method="POST" class="flex flex-col gap-4 bg-[#2c2f56] p-6 rounded-xl">
     <input type="hidden" name="id" value="{{pregunta.id}}">
     <div>
-      <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+      <label class="block text-sm mb-1 text-gray-300">Pregunta</label>
       <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">{{pregunta.descripcion}}</textarea>
     </div>
 
@@ -65,9 +65,12 @@
       <label for="aprobada" class="text-gray-300">Aprobada</label>
     </div>
 
-    <button type="submit" class="mt-4 py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90">
-      Guardar Cambios
-    </button>
+    <div class="mt-4 flex justify-end gap-3">
+      <a href="/paneleditor" class="px-4 py-3 rounded-lg bg-gray-600 hover:bg-gray-700 text-white">Cancelar</a>
+      <button type="submit" class="px-4 py-3 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90">
+        Guardar Cambios
+      </button>
+    </div>
 
   </form>
 </main>

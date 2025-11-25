@@ -19,7 +19,7 @@
   </div>
 
   <!-- ===== BOTÓN DESPLEGAR FORMULARIO SOLO EN SECCIÓN PREGUNTAS ===== -->
-  <section id="seccion-preguntas">
+  <section id="seccion-preguntas-top">
     <button 
       onclick="toggleFormulario()" 
       class="w-fit py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition flex items-center gap-2">
@@ -144,19 +144,17 @@
 
   <!-- ===== SECCIÓN REPORTES ===== -->
 <section id="seccion-reportes" class="hidden">
-  <h2 class="text-2xl font-semibold mb-4 text-[#E65895] flex items-center gap-2">
-    Reportes de Preguntas
+  <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
+    Preguntas Reportadas
   </h2>
   <div class="overflow-x-auto">
       <table class="w-full border-collapse">
         <thead>
           <tr class="bg-[#2c2f56] text-[#E2E4F3]">
             <th class="p-3 text-left">ID</th>
-            <th class="p-3 text-left">Descripción</th>
-            <th class="p-3 text-left">Categoría</th>
-            <th class="p-3 text-left">Dificultad</th>
-            <th class="p-3 text-center">Aprobada</th>
-            <th class="p-3 text-center">Acciones</th>
+            <th class="p-3 text-left">Pregunta</th>
+            <th class="p-3 text-left">Motivo</th>
+            <th class="p-3 text-center">Acción</th>
           </tr>
       </thead>
       <tbody class="text-gray-300">
@@ -164,15 +162,9 @@
         <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
           <td class="p-3">{{id_reporte}}</td>
           <td class="p-3">{{pregunta}}</td>
-          <td class="p-3 flex justify-center gap-2">
-            <form action="/paneleditor/aceptarReporte" method="POST">
-              <input type="hidden" name="id_reporte" value="{{id_reporte}}">
-              <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white">Aceptar</button>
-            </form>
-            <form action="/paneleditor/rechazarReporte" method="POST">
-              <input type="hidden" name="id_reporte" value="{{id_reporte}}">
-              <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white">Rechazar</button>
-            </form>
+          <td class="p-3">{{descripcion}}</td>
+          <td class="p-3 text-center">
+            <button onclick="abrirModalVerReporte({{id_reporte}})" class="px-4 py-2 rounded-lg bg-[#3b82f6] hover:bg-[#2563eb] text-white">Ver</button>
           </td>
         </tr>
         {{/reportes}}
@@ -186,10 +178,72 @@
   </div>
 </section>
 
+  <!-- Modal para ver reporte (mostrar pregunta + motivo + acciones) -->
+  <div id="modalVerReporte" class="fixed inset-0 bg-black bg-opacity-50 hidden items-start md:items-center justify-center z-50 p-4">
+    <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg max-h-[85vh] overflow-y-auto">
+      <h3 class="text-xl font-semibold mb-3">REPORTE: <span id="modalReporteId">-</span></h3>
+      <div id="modalReporteContenido" class="flex flex-col gap-4">
+        <input type="hidden" id="reporte_id_field" value="">
+        <input type="hidden" id="reporte_pregunta_id" value="">
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Pregunta</label>
+          <textarea id="reporte_pregunta_descripcion" rows="3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly></textarea>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+            <input id="reporte_pregunta_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+            <input id="reporte_pregunta_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
+          <div class="flex flex-col gap-2">
+            <div>
+              <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+              <input id="reporte_rta_correcta" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            </div>
+            <div>
+              <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+              <input id="reporte_rta_1" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            </div>
+            <div>
+              <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+              <input id="reporte_rta_2" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            </div>
+            <div>
+              <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+              <input id="reporte_rta_3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Motivo del reporte</label>
+          <textarea id="reporte_motivo" rows="3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly></textarea>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 mt-4">
+        <form id="formEliminarDesdeReporte" action="/paneleditor/eliminar" method="POST" style="display:inline-block;">
+          <input type="hidden" name="id" id="formEliminar_pregunta_id" value="">
+          <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">Eliminar Pregunta</button>
+        </form>
+        <form id="formQuitarReporte" action="/paneleditor/rechazarReporte" method="POST" style="display:inline-block;">
+          <input type="hidden" name="id_reporte" id="formQuitar_id_reporte" value="">
+          <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-white">Quitar Reporte</button>
+        </form>
+        <button onclick="cerrarModalVerReporte()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== SECCIÓN SUGERENCIAS ===== -->
   <section id="seccion-sugerencias" class="hidden">
     <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
-      Sugerencias de Preguntas
+      Preguntas Sugeridas
     </h2>
     <div class="overflow-x-auto">
       <table class="w-full border-collapse">
@@ -210,14 +264,7 @@
             <td class="p-3">{{categoria}}</td>
             <td class="p-3">{{dificultad}}</td>
             <td class="p-3 flex justify-center gap-2">
-              <form action="/paneleditor/aceptarSugerencia" method="POST">
-                <input type="hidden" name="id_sugerencia" value="{{id}}">
-                <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white">Aceptar</button>
-              </form>
-              <form action="/paneleditor/rechazarSugerencia" method="POST">
-                <input type="hidden" name="id_sugerencia" value="{{id}}">
-                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white">Rechazar</button>
-              </form>
+              <button onclick="abrirModalVerSugerencia({{id}})" class="px-4 py-2 rounded-lg bg-[#3b82f6] hover:bg-[#2563eb] text-white">Ver</button>
             </td>
           </tr>
           {{/sugerencias}}
@@ -233,6 +280,61 @@
   </section>
 
 </main>
+<!-- Modal para ver sugerencia (solo lectura) -->
+<div id="modalVerSugerencia" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg max-h-[85vh] overflow-y-auto">
+    <h3 class="text-xl font-semibold mb-3">SUGERENCIA: <span id="modalSugerenciaId">-</span></h3>
+    <div id="modalContenido" class="flex flex-col gap-4">
+      <input type="hidden" id="sugerencia_id" value="">
+      <div>
+        <label class="block text-sm mb-1 text-gray-300">Pregunta</label>
+        <textarea id="sugerencia_descripcion" rows="3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly></textarea>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+          <input id="sugerencia_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+          <input id="sugerencia_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+        </div>
+      </div>
+      <div>
+        <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
+        <div class="flex flex-col gap-2">
+          <div>
+            <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+            <input id="sugerencia_rta_correcta" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+            <input id="sugerencia_rta_1" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+            <input id="sugerencia_rta_2" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+            <input id="sugerencia_rta_3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 mt-4">
+      <form id="formRechazarSugerencia" action="/paneleditor/rechazarSugerencia" method="POST" style="display:inline-block;">
+        <input type="hidden" name="id_sugerencia" id="rechazar_id" value="">
+        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">Rechazar</button>
+      </form>
+      <form id="formAceptarSugerencia" action="/paneleditor/aceptarSugerencia" method="POST" style="display:inline-block;">
+        <input type="hidden" name="id_sugerencia" id="aceptar_id" value="">
+        <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white">Aceptar</button>
+      </form>
+      <button onclick="cerrarModalVerSugerencia()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+    </div>
+  </div>
+</div>
 <script>
   // Función para mostrar/ocultar el formulario de nueva pregunta
   function toggleFormulario() {
@@ -395,6 +497,186 @@
       console.error('[DEBUG] error en listener debug:', err);
     }
   }, { capture: true });
+</script>
+
+<!-- Modal para ver sugerencia (solo lectura) -->
+<div id="modalVerSugerencia" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg">
+    <h3 class="text-xl font-semibold mb-3">Ver Sugerencia</h3>
+    <div id="modalContenido" class="flex flex-col gap-4">
+      <input type="hidden" id="sugerencia_id" value="">
+      <div>
+        <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+        <textarea id="sugerencia_descripcion" rows="3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly></textarea>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+          <input id="sugerencia_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+          <input id="sugerencia_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+        </div>
+      </div>
+      <div>
+        <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
+        <div class="flex flex-col gap-2">
+          <div>
+            <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+            <input id="sugerencia_rta_correcta" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+            <input id="sugerencia_rta_1" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+            <input id="sugerencia_rta_2" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+            <input id="sugerencia_rta_3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 mt-4">
+      <form id="formRechazarSugerencia" action="/paneleditor/rechazarSugerencia" method="POST" style="display:inline-block;">
+        <input type="hidden" name="id_sugerencia" id="rechazar_id" value="">
+        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">Rechazar</button>
+      </form>
+      <form id="formAceptarSugerencia" action="/paneleditor/aceptarSugerencia" method="POST" style="display:inline-block;">
+        <input type="hidden" name="id_sugerencia" id="aceptar_id" value="">
+        <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white">Aceptar</button>
+      </form>
+      <button onclick="cerrarModalVerSugerencia()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Modal Ver Sugerencia
+  function abrirModalVerSugerencia(id) {
+    const modal = document.getElementById('modalVerSugerencia');
+    // limpiar
+    document.getElementById('sugerencia_id').value = '';
+    document.getElementById('sugerencia_descripcion').value = '';
+    document.getElementById('sugerencia_categoria').value = '';
+    document.getElementById('sugerencia_dificultad').value = '';
+    document.getElementById('sugerencia_rta_correcta').value = '';
+    document.getElementById('sugerencia_rta_1').value = '';
+    document.getElementById('sugerencia_rta_2').value = '';
+    document.getElementById('sugerencia_rta_3').value = '';
+
+    // setear ids en formularios
+    document.getElementById('aceptar_id').value = id;
+    document.getElementById('rechazar_id').value = id;
+    document.getElementById('sugerencia_id').value = id;
+    // mostrar id en el título
+    const titleSpan = document.getElementById('modalSugerenciaId');
+    if (titleSpan) titleSpan.innerText = id;
+
+    // fetch pregunta
+    fetch('/paneleditor/obtenerPregunta?id=' + encodeURIComponent(id), { credentials: 'same-origin' })
+      .then(res => res.json())
+      .then(data => {
+        const p = data['pregunta'] || data;
+        const rtas = data['respuestas'] || [];
+        if (p) {
+          document.getElementById('sugerencia_descripcion').value = p.descripcion || '';
+          document.getElementById('sugerencia_categoria').value = p.categoria || p.categoria_nombre || '';
+          document.getElementById('sugerencia_dificultad').value = p.dificultad || p.dificultad_nombre || '';
+        }
+        // rellenar respuestas: asumir que la respuesta correcta está marcada con es_correcta=1
+        let correct = rtas.find(r => r.es_correcta == 1) || rtas[0] || {};
+        const incorrectas = rtas.filter(r => r.es_correcta != 1);
+        document.getElementById('sugerencia_rta_correcta').value = correct.descripcion || '';
+        document.getElementById('sugerencia_rta_1').value = (incorrectas[0] && incorrectas[0].descripcion) ? incorrectas[0].descripcion : (rtas[1] ? rtas[1].descripcion : '');
+        document.getElementById('sugerencia_rta_2').value = (incorrectas[1] && incorrectas[1].descripcion) ? incorrectas[1].descripcion : (rtas[2] ? rtas[2].descripcion : '');
+        document.getElementById('sugerencia_rta_3').value = (incorrectas[2] && incorrectas[2].descripcion) ? incorrectas[2].descripcion : '';
+      })
+      .catch(err => {
+        console.error('Error cargando sugerencia:', err);
+        alert('No se pudo cargar la sugerencia. Revisa la consola.');
+      });
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function cerrarModalVerSugerencia() {
+    const modal = document.getElementById('modalVerSugerencia');
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+  }
+</script>
+
+<script>
+  // Modal Ver Reporte
+  function abrirModalVerReporte(idReporte) {
+    const modal = document.getElementById('modalVerReporte');
+    // limpiar
+    document.getElementById('reporte_id_field').value = '';
+    document.getElementById('reporte_pregunta_id').value = '';
+    document.getElementById('reporte_pregunta_descripcion').value = '';
+    document.getElementById('reporte_pregunta_categoria').value = '';
+    document.getElementById('reporte_pregunta_dificultad').value = '';
+    document.getElementById('reporte_rta_correcta').value = '';
+    document.getElementById('reporte_rta_1').value = '';
+    document.getElementById('reporte_rta_2').value = '';
+    document.getElementById('reporte_rta_3').value = '';
+    document.getElementById('reporte_motivo').value = '';
+
+    document.getElementById('formQuitar_id_reporte').value = '';
+    document.getElementById('formEliminar_pregunta_id').value = '';
+
+    // mostrar id en título
+    const titleSpan = document.getElementById('modalReporteId');
+    if (titleSpan) titleSpan.innerText = idReporte;
+
+    fetch('/paneleditor/obtenerReporte?id=' + encodeURIComponent(idReporte), { credentials: 'same-origin' })
+      .then(res => res.json())
+      .then(data => {
+        console.log('fetch obtenerReporte response:', data);
+        if (data.error) throw new Error(data.error);
+        const r = data.reporte || {};
+        const p = data.pregunta || {};
+        const rtas = data.respuestas || [];
+
+        document.getElementById('reporte_id_field').value = r.id || '';
+        document.getElementById('reporte_pregunta_id').value = r.pregunta_id || '';
+        document.getElementById('reporte_pregunta_descripcion').value = p.descripcion || p.pregunta_descripcion || '';
+        document.getElementById('reporte_pregunta_categoria').value = p.categoria || p.categoria_nombre || '';
+        document.getElementById('reporte_pregunta_dificultad').value = p.dificultad || p.dificultad_nombre || '';
+
+        let correct = rtas.find(rr => rr.es_correcta == 1) || rtas[0] || {};
+        const incorrectas = rtas.filter(rr => rr.es_correcta != 1);
+        document.getElementById('reporte_rta_correcta').value = correct.descripcion || '';
+        document.getElementById('reporte_rta_1').value = (incorrectas[0] && incorrectas[0].descripcion) ? incorrectas[0].descripcion : (rtas[1] ? rtas[1].descripcion : '');
+        document.getElementById('reporte_rta_2').value = (incorrectas[1] && incorrectas[1].descripcion) ? incorrectas[1].descripcion : (rtas[2] ? rtas[2].descripcion : '');
+        document.getElementById('reporte_rta_3').value = (incorrectas[2] && incorrectas[2].descripcion) ? incorrectas[2].descripcion : '';
+
+        document.getElementById('reporte_motivo').value = r.descripcion || '';
+
+        // set hidden inputs for forms
+        document.getElementById('formQuitar_id_reporte').value = r.id || '';
+        document.getElementById('formEliminar_pregunta_id').value = r.pregunta_id || '';
+      })
+      .catch(err => {
+        console.error('Error cargando reporte:', err);
+        alert('No se pudo cargar el reporte. Revisa la consola.');
+      });
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function cerrarModalVerReporte() {
+    const modal = document.getElementById('modalVerReporte');
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+  }
 </script>
 
 

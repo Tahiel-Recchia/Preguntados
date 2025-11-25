@@ -101,13 +101,17 @@
 </main>
 <script src="/public/Javascript/timer.js"></script>
 
+<!-- Hidden current question text and ID for JS (always present so report modal can show it) -->
+<div id="__currentPreguntaText" style="display:none">{{pregunta}}</div>
+<div id="__currentPreguntaId" style="display:none">{{id_pregunta}}</div>
+
 <!-- Modal Sugerir Pregunta -->
 <div id="modalSugerir" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg">
         <h3 class="text-xl font-semibold mb-3">Sugerir nueva pregunta</h3>
         <form id="formSugerir" action="/paneleditor/guardarSugerencia" method="POST" class="flex flex-col gap-4">
             <div>
-                <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+                <label class="block text-sm mb-1 text-gray-300">Pregunta</label>
                 <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required></textarea>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -153,7 +157,7 @@
         <h3 class="text-xl font-semibold mb-3">Reportar pregunta</h3>
         <div id="reportPreguntaTexto" class="mb-3 text-gray-200"></div>
         <form id="formReportar" action="/paneleditor/reportarPregunta" method="POST" class="flex flex-col gap-3">
-            <input type="hidden" name="pregunta_id" id="report_pregunta_id" value="">
+            <input type="hidden" name="pregunta_id" id="report_pregunta_id" value="{{id_pregunta}}">
             <label class="block text-sm mb-1 text-gray-300">Descripción breve (motivo)</label>
             <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required></textarea>
             <div class="flex justify-end gap-3 mt-2">
@@ -167,36 +171,98 @@
 <script>
     // Modal handlers for Sugerir / Reportar
     (function(){
-        const btnSugerir = document.getElementById('btnSugerirPregunta');
+        // Cache modal elements (may be null if not present)
         const modalSugerir = document.getElementById('modalSugerir');
-        const cerrarSugerir = document.getElementById('cerrarSugerir');
-
-        if (btnSugerir && modalSugerir) {
-            btnSugerir.addEventListener('click', function(){ modalSugerir.classList.remove('hidden'); modalSugerir.classList.add('flex'); });
-        }
-        if (cerrarSugerir && modalSugerir) {
-            cerrarSugerir.addEventListener('click', function(){ modalSugerir.classList.remove('flex'); modalSugerir.classList.add('hidden'); });
-        }
-
-        const btnReportar = document.getElementById('btnReportarPregunta');
         const modalReportar = document.getElementById('modalReportar');
-        const cerrarReportar = document.getElementById('cerrarReportar');
         const reportTexto = document.getElementById('reportPreguntaTexto');
         const reportIdField = document.getElementById('report_pregunta_id');
 
-        if (btnReportar && modalReportar) {
-            btnReportar.addEventListener('click', function(){
-                // Try to show the pregunta text if present in the page
-                const preguntaEl = document.querySelector('.bg-[#343964] p') || document.querySelector('p');
-                const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
-                if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
-                // If server provides pregunta id in a global JS var, set it; otherwise leave blank
-                if (reportIdField) reportIdField.value = window.__currentPreguntaId || '';
-                modalReportar.classList.remove('hidden'); modalReportar.classList.add('flex');
+        // Use event delegation so dynamic replacements/reloads still work
+        document.addEventListener('click', function(e){
+            // Open Sugerir modal
+            if (e.target.closest('#btnSugerirPregunta')) {
+                if (modalSugerir) { modalSugerir.classList.remove('hidden'); modalSugerir.classList.add('flex'); }
+                return;
+            }
+
+            // Close Sugerir modal
+            if (e.target.closest('#cerrarSugerir')) {
+                if (modalSugerir) { modalSugerir.classList.remove('flex'); modalSugerir.classList.add('hidden'); }
+                return;
+            }
+
+            // Open Reportar modal
+            if (e.target.closest('#btnReportarPregunta')) {
+                if (modalReportar) {
+                    // Try hidden current-question element first (works after answer/result)
+                    const hidden = document.getElementById('__currentPreguntaText');
+                    if (hidden && hidden.textContent && hidden.textContent.trim().length) {
+                        if (reportTexto) reportTexto.textContent = 'Pregunta: ' + hidden.textContent.trim();
+                    } else {
+                        // Fallback to visible question element
+                        const preguntaEl = document.querySelector('p.text-white.text-2xl') || document.querySelector('p');
+                        const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
+                        if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
+                    }
+                    // Obtener el ID de la pregunta desde el elemento oculto
+                    const hiddenId = document.getElementById('__currentPreguntaId');
+                    const preguntaId = hiddenId ? hiddenId.textContent.trim() : '';
+                    if (reportIdField) reportIdField.value = preguntaId;
+                    console.log('Abriendo modal reportar - pregunta_id:', preguntaId);
+                    modalReportar.classList.remove('hidden'); modalReportar.classList.add('flex');
+                }
+                return;
+            }
+
+            // Close Reportar modal
+            if (e.target.closest('#cerrarReportar')) {
+                if (modalReportar) { modalReportar.classList.remove('flex'); modalReportar.classList.add('hidden'); }
+                return;
+            }
+        });
+
+        // Interceptar el envío del formulario de reportar para hacerlo via AJAX
+        const formReportar = document.getElementById('formReportar');
+        if (formReportar) {
+            formReportar.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(formReportar);
+                const btnReportar = document.getElementById('btnReportarPregunta');
+                
+                fetch('/paneleditor/reportarPregunta', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'fetch', 'Accept': 'application/json' }
+                })
+                .then(response => response.json().catch(()=>({status:'ok'})))
+                .then(data => {
+                    console.log('Respuesta reporte:', data);
+                    if (modalReportar) {
+                        modalReportar.classList.remove('flex');
+                        modalReportar.classList.add('hidden');
+                    }
+                    formReportar.reset();
+                    if (data.status === 'duplicate') {
+                        alert('Ya reportaste esta pregunta.');
+                    } else if (data.status === 'error') {
+                        alert('Error al enviar el reporte');
+                        return; // no deshabilitar botón si error
+                    } else {
+                        alert('Reporte enviado correctamente');
+                    }
+                    // Deshabilitar el botón para evitar nuevos reportes
+                    if (btnReportar) {
+                        btnReportar.disabled = true;
+                        btnReportar.classList.add('opacity-50','cursor-not-allowed');
+                        btnReportar.textContent = 'Reporte enviado';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al enviar reporte:', error);
+                    alert('Error al enviar el reporte. Por favor intenta nuevamente.');
+                });
             });
-        }
-        if (cerrarReportar && modalReportar) {
-            cerrarReportar.addEventListener('click', function(){ modalReportar.classList.remove('flex'); modalReportar.classList.add('hidden'); });
         }
     })();
 </script>
