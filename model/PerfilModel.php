@@ -10,7 +10,7 @@ class PerfilModel
     }
 
     public function getDatosUsuario($idUsuario){
-    $sql = "SELECT id, nombreDeUsuario, fechaNac, fotoDePerfil, sexo, direccion, mejorPuntaje, rol_id, ratio FROM usuario WHERE id = ?";
+    $sql = "SELECT id, nombreDeUsuario, fechaNac, fotoDePerfil, sexo, direccion, mejorPuntaje, rol_id, ratio, preguntas_correctas, preguntas_totales FROM usuario WHERE id = ?";
     $stmt = $this->conexion->prepare($sql);
     $stmt->bind_param("i", $idUsuario);
     $stmt->execute();
@@ -35,7 +35,4 @@ class PerfilModel
         $stmt->execute();
         $stmt->close();
     }
-
-
-
 }

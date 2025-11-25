@@ -22,12 +22,9 @@ class PreguntasController
 
     public function base()
     {
-        if(!isset($_SESSION["preguntas_totales"])){
-            $_SESSION["preguntas_totales"] = 0;
-        }
-        if(!isset($_SESSION["preguntas_correctas"])){
-            $_SESSION["preguntas_correctas"] = 0;
-        }
+        $datos = $this->perfil->getDatosUsuario($_SESSION['user_id']);
+        $_SESSION['preguntas_totales'] = $datos['preguntas_totales'];
+        $_SESSION['preguntas_correctas'] = $datos['preguntas_correctas'];
         if(!isset($_SESSION["idPartida"])) {
             $this->inicializarPartida();
         }
@@ -55,8 +52,6 @@ class PreguntasController
         if(!isset($_SESSION['id_pregunta_actual'])){
             $partida  = $this->obtenerPregunta();
 
-            $_SESSION['id_pregunta_actual'] = $partida['id_pregunta'];
-
             if (!$partida) {
                 $this->finalizarPorFaltaDePreguntas();
                 return;
@@ -83,7 +78,7 @@ class PreguntasController
         }
 
         $idsExcluidos = $_SESSION['preguntasVistas'];
-        $nivelUsuario = $_SESSION['ratio'];
+        $nivelUsuario = $_SESSION['ratio'] ?? 0.0;
         $pregunta = $this->model->obtenerPorCategoria($categoriaId, $idsExcluidos, $nivelUsuario);
         if ($pregunta) {
             $_SESSION['preguntasVistas'][] = $pregunta['id_pregunta'];
@@ -115,6 +110,7 @@ class PreguntasController
         $data['puntos'] = $_SESSION['puntajeActual'];
         if ($esCorrecta) {
             $this->sumarPuntos();
+            $_SESSION['preguntas_correctas'] ++;
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
             $this->actualizarEstadisticas($idUsuario);
@@ -130,13 +126,13 @@ class PreguntasController
     }
 
     public function sumarPuntos(){
-        $_SESSION['puntajeActual'] += 1;
-        $_SESSION['preguntas_correctas'] ++;
+        $_SESSION['puntajeActual'] += 30;
     }
 
     public function actualizarEstadisticas($idUsuario){
         $_SESSION['preguntas_totales'] ++;
         $ratio = $_SESSION['preguntas_correctas'] / $_SESSION['preguntas_totales'];
+        $_SESSION['ratio'] = $ratio;
         $this->perfil->actualizarRatio($_SESSION['preguntas_correctas'], $_SESSION['preguntas_totales'], $ratio, $idUsuario);
     }
 
