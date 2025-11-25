@@ -121,7 +121,7 @@ class PreguntasController
             $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
-
+        $this->model->actualizarDificultadPregunta($_SESSION['id_pregunta_actual'], $esCorrecta);
         unset($_SESSION['respuesta_correcta_actual'], $_SESSION['id_pregunta_actual']);
     }
 
