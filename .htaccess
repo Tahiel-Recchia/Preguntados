@@ -8,7 +8,9 @@ Options -Indexes
     RewriteEngine On
     RewriteBase /
     RewriteRule ^(public|imagenes|css|js|vendor|favicon\.ico)($|/) - [L,NC]
-
+    RewriteRule ^\.well-known/ - [L,NC]
+    RewriteCond %{REQUEST_URI} \.(png|jpg|jpeg|gif|ico|svg|bmp|webp|json|xml|map|js|css|webmanifest)$ [NC]
+    RewriteRule ^ - [L]
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)/(.*)/(.*)$ index.php?controller=$1&method=$2&id=$3 [L,QSA]
