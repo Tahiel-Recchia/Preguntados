@@ -126,4 +126,16 @@ class RegisterController
             return;
         }
     }
+
+    public function verify()
+    {
+        if (!isset($_GET['token'])) {
+            echo "Token inválido.";
+            return;
+        }
+
+        $token = hash('sha256', $_GET['token']);
+
+        $this->model->verifyToken($_GET['token']);
+    }
 }

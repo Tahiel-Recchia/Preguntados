@@ -25,6 +25,7 @@ class RegisterModel
         // Asegurar rol por defecto (1 = jugador)
         $userData['role'] = isset($userData['role']) ? (int)$userData['role'] : 1;
         $this->insertUserIntoDatabase($userData, $tokenData, $passwordHash);
+        $this->sendVerificationEmail($userData["email"], $userData["name"], $tokenData["token"]);
     }
 
 
@@ -101,54 +102,56 @@ class RegisterModel
         return $emailExists;
     }
 
-    public function verify()
-    {
-        $token = $_GET['token'] ?? null;
+    public function verifyToken($token){
+        $sql = "UPDATE usuario SET validado = 1 WHERE token = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("s", $token);
+        $stmt->execute();
 
-        if (!$token) {
-            // Token no existe
-            header("Location: /");
-            exit();
-        }
-
-        // Llamar al modelo para buscar usuario con ese token y activarlo
-        $verified = $this->model->verifyUserByToken($token);
-
-        if ($verified) {
-            // Éxito: Redirigir al login con mensaje de éxito
-            $this->renderer->render("login", [
-                "success" => "Cuenta verificada correctamente. Ya puedes iniciar sesión.",
-                'noNavbar' => true,
-                'noFooter' => true
-            ]);
+        if ($stmt->affected_rows > 0) {
+            echo "<h2>Cuenta verificada con éxito.</h2>";
         } else {
-            // Fallo: Token inválido o expirado
-            $this->renderer->render("register", [
-                "errors" => ["El enlace de verificación es inválido o ha expirado."],
-                'noNavbar' => true,
-                'noFooter' => true
-            ]);
+            echo "<h2>Token inválido o cuenta ya verificada.</h2>";
         }
     }
-
-
     public function sendVerificationEmail($email, $name, $token)
     {
-        // URL que apunta a tu método 'verify'. Ajusta 'localhost' a tu dominio real
-        $verificationLink = "http://localhost/register/verify?token=" . $token;
+        require_once __DIR__ . "/../vendor/autoload.php";
 
-        $subject = "Verifica tu cuenta en Preguntados";
-        $body = "Hola $name,<br><br>Por favor haz clic en el siguiente enlace para activar tu cuenta:<br>";
-        $body .= "<a href='$verificationLink'>$verificationLink</a>";
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
 
-        // RECOMENDACIÓN: Usa PHPMailer aquí. La función mail() nativa suele ir a SPAM.
-        // Ejemplo básico con mail() (solo para pruebas locales si tienes configurado SMTP):
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= 'From: <no-reply@tuapp.com>' . "\r\n";
+        try {
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'tom.diuorno99@gmail.com';
+            $mail->Password   = 'zguu gbtt gztc nwjj';
+            $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
 
-        if(!mail($email, $subject, $body, $headers)){
-            throw new \Exception("No se pudo enviar el correo de verificación.");
+            $mail->setFrom('no-reply@preguntados.com', 'Preguntados');
+
+            $mail->addAddress($email, $name);
+
+            $mail->isHTML(true);
+            $mail->Subject = "Verifica tu cuenta";
+
+            $verificationLink = "http://localhost/register/verify?token=" . $token;
+
+            $mail->Body = "
+            <h2>Hola $name</h2>
+            <p>Por favor hacé clic en el siguiente enlace para activar tu cuenta:</p>
+            <a href='$verificationLink' style='padding:10px 20px;background:#4f46e5;color:white;text-decoration:none;border-radius:5px;'>
+                Verificar cuenta
+            </a>
+            <br><br>
+            <p>Si no creaste esta cuenta, ignorá este mensaje.</p>
+        ";
+
+            $mail->send();
+
+        } catch (Exception $e) {
+            throw new \Exception("No se pudo enviar el email de verificación: " . $mail->ErrorInfo);
         }
     }
 }
