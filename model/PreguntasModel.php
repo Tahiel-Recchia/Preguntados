@@ -119,7 +119,6 @@ class PreguntasModel
         $sql_pregunta = "SELECT id, descripcion
                 FROM pregunta
                  WHERE aprobada = 1 AND id = ?
-                 AND id NOT IN (SELECT pregunta_id FROM reporte)
                  ORDER BY RAND() 
                  LIMIT 1";
 
