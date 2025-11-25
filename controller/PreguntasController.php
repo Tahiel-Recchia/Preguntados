@@ -25,15 +25,16 @@ class PreguntasController
         $datos = $this->perfil->getDatosUsuario($_SESSION['user_id']);
         $_SESSION['preguntas_totales'] = $datos['preguntas_totales'];
         $_SESSION['preguntas_correctas'] = $datos['preguntas_correctas'];
-        if(!isset($_SESSION["idPartida"])) {
+        if (!isset($_SESSION["idPartida"])) {
             $this->inicializarPartida();
         }
         $this->jugarPartida();
     }
 
-    public function inicializarPartida(){
-            $_SESSION["puntajeActual"] = 0;
-            $_SESSION['idPartida'] = $this->partida->iniciarPartida();
+    public function inicializarPartida()
+    {
+        $_SESSION["puntajeActual"] = 0;
+        $_SESSION['idPartida'] = $this->partida->iniciarPartida();
     }
     public function jugarPartida()
     {
@@ -49,8 +50,8 @@ class PreguntasController
 
     public function mostrarPregunta()
     {
-        if(!isset($_SESSION['id_pregunta_actual'])){
-            $partida  = $this->obtenerPregunta();
+        if (!isset($_SESSION['id_pregunta_actual'])) {
+            $partida = $this->obtenerPregunta();
 
             if (!$partida) {
                 $this->finalizarPorFaltaDePreguntas();
@@ -98,7 +99,7 @@ class PreguntasController
         $horaRespuesta = $this->model->getHoraEnvio();
         $_SESSION['horaRespuesta'] = $horaRespuesta;
 
-        if(!$this->partida->verificarTiempo($_SESSION['horaEnvio'], $horaRespuesta)){
+        if (!$this->partida->verificarTiempo($_SESSION['horaEnvio'], $horaRespuesta)) {
             $this->tiempoAgotado();
             return;
         }
@@ -110,7 +111,7 @@ class PreguntasController
         $data['puntos'] = $_SESSION['puntajeActual'];
         if ($esCorrecta) {
             $this->sumarPuntos();
-            $_SESSION['preguntas_correctas'] ++;
+            $_SESSION['preguntas_correctas']++;
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
             $this->actualizarEstadisticas($idUsuario);
@@ -125,27 +126,34 @@ class PreguntasController
         unset($_SESSION['respuesta_correcta_actual'], $_SESSION['id_pregunta_actual']);
     }
 
-    public function sumarPuntos(){
+    public function sumarPuntos()
+    {
         $_SESSION['puntajeActual'] += 30;
     }
 
-    public function actualizarEstadisticas($idUsuario){
-        $_SESSION['preguntas_totales'] ++;
+    public function actualizarEstadisticas($idUsuario)
+    {
+        $_SESSION['preguntas_totales']++;
         $ratio = $_SESSION['preguntas_correctas'] / $_SESSION['preguntas_totales'];
         $_SESSION['ratio'] = $ratio;
         $this->perfil->actualizarRatio($_SESSION['preguntas_correctas'], $_SESSION['preguntas_totales'], $ratio, $idUsuario);
     }
 
-    public function finalizarPorFaltaDePreguntas(){
+    public function finalizarPorFaltaDePreguntas()
+    {
         $this->limpiarSesionPreguntas();
         $this->actualizarEstadisticas($_SESSION['user_id']);
         $this->terminarPartida();
         header('Location: /');
     }
 
-    public function terminarPartida(){
+    public function terminarPartida()
+    {
+        if (!isset($_SESSION['idPartida'])) {
+            return;
+        }
         $idUsuario = $_SESSION['user_id'];
-        $puntajeFinal = $_SESSION['puntajeActual'];
+        $puntajeFinal = $_SESSION['puntajeActual'] ?? 0;
         $this->partida->terminarPartida($_SESSION['idPartida'], $puntajeFinal);
 
         $this->puntaje->actualizarMejorPuntaje($idUsuario, $puntajeFinal);
@@ -156,7 +164,8 @@ class PreguntasController
         unset($_SESSION['idPartida']);
     }
 
-    public function tiempoAgotado(){
+    public function tiempoAgotado()
+    {
         // Capturar la última pregunta antes de limpiar la sesión
         $idPregunta = $_SESSION['id_pregunta_actual'] ?? null;
         $data = [];
@@ -169,8 +178,10 @@ class PreguntasController
         $this->renderer->render("preguntaErronea", $data);
     }
 
-    public function procesarOpciones($data, $respuestaCorrecta, $respuestaUsuario) {
-        if (!isset($data['opciones'])) return $data;
+    public function procesarOpciones($data, $respuestaCorrecta, $respuestaUsuario)
+    {
+        if (!isset($data['opciones']))
+            return $data;
         foreach ($data['opciones'] as &$opcion) {
             $esLaCorrecta = ($opcion['descripcion'] == $respuestaCorrecta);
             $esLaSeleccionada = ($opcion['descripcion'] == $respuestaUsuario);
@@ -185,7 +196,8 @@ class PreguntasController
         return $data;
     }
 
-    public function limpiarSesionPreguntas(){
+    public function limpiarSesionPreguntas()
+    {
         unset($_SESSION['preguntasVistas']);
         unset($_SESSION['respuesta_correcta_actual']);
         unset($_SESSION['id_pregunta_actual']);
@@ -193,7 +205,8 @@ class PreguntasController
         unset($_SESSION['respuesta_correcta_actual']);
     }
 
-    public function salir(){
+    public function salir()
+    {
         $this->terminarPartida();
         header('Location: /');
         exit();
