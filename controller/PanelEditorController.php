@@ -203,9 +203,25 @@ public function aceptarReporte()
 {
     $this->requireEditor();
     $id = $_POST['id_reporte'];
-
-    $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'aceptado' WHERE id = :id");
-    $stmt->execute([':id' => $id]);
+    // Si existe columna 'estado' la marcamos como aceptado, sino no hacemos nada especial
+    $tieneEstado = false;
+    try {
+        $cols = $this->conexion->query("SHOW COLUMNS FROM reporte");
+        if ($cols && is_array($cols)) {
+            $fields = array_column($cols, 'Field');
+            $tieneEstado = in_array('estado', $fields);
+        }
+    } catch (Exception $e) {
+        $tieneEstado = false;
+    }
+    if ($tieneEstado) {
+        $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'aceptado' WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->close();
+        }
+    }
 
     header("Location: /paneleditor/verReportes");
     exit;
@@ -215,9 +231,13 @@ public function rechazarReporte()
 {
     $this->requireEditor();
     $id = $_POST['id_reporte'];
-
-    $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'rechazado' WHERE id = :id");
-    $stmt->execute([':id' => $id]);
+    // La acción "Quitar Reporte" debe borrar el registro
+    $stmt = $this->conexion->prepare("DELETE FROM reporte WHERE id = ?");
+    if ($stmt) {
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+    }
 
     header("Location: /paneleditor/verReportes");
     exit;
@@ -285,8 +305,14 @@ public function rechazarSugerencia()
     // Endpoint para reportar una pregunta (desde la UI de juego)
     public function reportarPregunta()
     {
+        error_log("=== reportarPregunta INICIO ===");
+        error_log("REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD']);
+        error_log("POST data: " . print_r($_POST, true));
+        error_log("SESSION user_id: " . ($_SESSION['user_id'] ?? 'no definido'));
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /');
+            error_log("No es POST, redirigiendo");
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
             exit;
         }
 
@@ -294,18 +320,51 @@ public function rechazarSugerencia()
         $descripcion = $_POST['descripcion'] ?? '';
         $id_usuario = $_SESSION['user_id'] ?? null;
 
+        error_log("pregunta_id extraído: " . var_export($pregunta_id, true));
+        error_log("descripcion extraída: " . var_export($descripcion, true));
+
         if (empty($pregunta_id) || empty($descripcion)) {
-            header('Location: /');
+            error_log("FALTA pregunta_id o descripcion - pregunta_id: '{$pregunta_id}', descripcion: '{$descripcion}'");
+            error_log("Redirigiendo por datos vacíos");
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
             exit;
         }
 
-        $res = $this->model->insertarReporte($pregunta_id, $descripcion, $id_usuario);
-        if ($res === false) {
-            error_log("PanelEditorController::reportarPregunta - insertarReporte returned false. pregunta_id={$pregunta_id}, usuario={$id_usuario}, descripcion=" . substr($descripcion,0,200));
-        } else {
-            error_log("PanelEditorController::reportarPregunta - reporte creado id={$res}, pregunta_id={$pregunta_id}");
+        // Prevención duplicados vía sesión también (fallback si tabla no tiene id_usuario)
+        if (!isset($_SESSION['reportes_realizados']) || !is_array($_SESSION['reportes_realizados'])) {
+            $_SESSION['reportes_realizados'] = [];
+        }
+        if (in_array($pregunta_id, $_SESSION['reportes_realizados'])) {
+            error_log("Reporte duplicado detectado en sesión para pregunta_id={$pregunta_id}");
+            return $this->responderReporteJSON(['status' => 'duplicate', 'message' => 'Ya reportaste esta pregunta.']);
         }
 
+        error_log("Intentando insertar reporte...");
+        $res = $this->model->insertarReporte($pregunta_id, $descripcion, $id_usuario);
+        if ($res === 'duplicate') {
+            error_log("PanelEditorController::reportarPregunta - modelo retornó duplicate pregunta_id={$pregunta_id}, usuario={$id_usuario}");
+            $_SESSION['reportes_realizados'][] = $pregunta_id; // asegurar consistencia
+            return $this->responderReporteJSON(['status' => 'duplicate', 'message' => 'Ya existe un reporte para esta pregunta.']);
+        } elseif ($res === false) {
+            error_log("PanelEditorController::reportarPregunta - insertarReporte returned false. pregunta_id={$pregunta_id}, usuario={$id_usuario}, descripcion=" . substr($descripcion,0,200));
+            return $this->responderReporteJSON(['status' => 'error', 'message' => 'Error al guardar el reporte']);
+        } else {
+            error_log("PanelEditorController::reportarPregunta - reporte creado EXITOSAMENTE id={$res}, pregunta_id={$pregunta_id}");
+            $_SESSION['reportes_realizados'][] = $pregunta_id;
+            return $this->responderReporteJSON(['status' => 'ok', 'id' => $res, 'message' => 'Reporte enviado']);
+        }
+    }
+
+    private function responderReporteJSON($payload) {
+        error_log("=== reportarPregunta FIN (JSON) ===");
+        // Detectar si es petición AJAX/fetch; si no, fallback a redirect
+        $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode($payload);
+            exit;
+        }
+        // Fallback: redirigir
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
         exit;
     }

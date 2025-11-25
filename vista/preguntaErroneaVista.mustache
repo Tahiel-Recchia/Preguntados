@@ -151,8 +151,9 @@
         </div>
     </div>
 </main>
-<!-- Hidden current question text for JS (always present so report modal can show it) -->
+<!-- Hidden current question text and ID for JS (always present so report modal can show it) -->
 <div id="__currentPreguntaText" style="display:none">{{pregunta}}</div>
+<div id="__currentPreguntaId" style="display:none">{{id_pregunta}}</div>
 <script>
     // Modal handlers for Sugerir / Reportar
     (function(){
@@ -185,13 +186,59 @@
                     const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
                     if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
                 }
-                // If server provides pregunta id in the template, it will already be set in the hidden input
-                if (reportIdField && !reportIdField.value) reportIdField.value = window.__currentPreguntaId || '';
+                // Obtener el ID de la pregunta desde el elemento oculto
+                const hiddenId = document.getElementById('__currentPreguntaId');
+                const preguntaId = hiddenId ? hiddenId.textContent.trim() : '';
+                if (reportIdField) reportIdField.value = preguntaId;
+                console.log('Abriendo modal reportar (error) - pregunta_id:', preguntaId);
                 modalReportar.classList.remove('hidden'); modalReportar.classList.add('flex');
             });
         }
         if (cerrarReportar && modalReportar) {
             cerrarReportar.addEventListener('click', function(){ modalReportar.classList.remove('flex'); modalReportar.classList.add('hidden'); });
+        }
+
+        // Interceptar el envío del formulario de reportar para hacerlo via AJAX
+        const formReportar = document.getElementById('formReportar');
+        if (formReportar) {
+            formReportar.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(formReportar);
+                const btnReportar = document.getElementById('btnReportarPregunta');
+                
+                fetch('/paneleditor/reportarPregunta', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'fetch', 'Accept': 'application/json' }
+                })
+                .then(response => response.json().catch(()=>({status:'ok'})))
+                .then(data => {
+                    console.log('Respuesta reporte:', data);
+                    if (modalReportar) {
+                        modalReportar.classList.remove('flex');
+                        modalReportar.classList.add('hidden');
+                    }
+                    formReportar.reset();
+                    if (data.status === 'duplicate') {
+                        alert('Ya reportaste esta pregunta.');
+                    } else if (data.status === 'error') {
+                        alert('Error al enviar el reporte');
+                        return; // no deshabilitar si error
+                    } else {
+                        alert('Reporte enviado correctamente');
+                    }
+                    if (btnReportar) {
+                        btnReportar.disabled = true;
+                        btnReportar.classList.add('opacity-50','cursor-not-allowed');
+                        btnReportar.textContent = 'Reporte enviado';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al enviar reporte:', error);
+                    alert('Error al enviar el reporte. Por favor intenta nuevamente.');
+                });
+            });
         }
     })();
 </script>

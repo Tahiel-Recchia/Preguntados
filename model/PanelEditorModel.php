@@ -20,12 +20,13 @@ class PanelEditorModel
         $creatorCol = $this->detectCreatorColumn();
 
         if ($creatorCol && $editorId !== null) {
-            $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
-                         c.descripcion AS categoria, d.descripcion AS dificultad
-                  FROM pregunta p
-                  LEFT JOIN categoria c ON p." . $catCol . " = c.id
-                  LEFT JOIN dificultad d ON p." . $difCol . " = d.id
-                  WHERE p." . $creatorCol . " = ?";
+                 $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
+                        c.descripcion AS categoria, d.descripcion AS dificultad
+                    FROM pregunta p
+                    LEFT JOIN categoria c ON p." . $catCol . " = c.id
+                    LEFT JOIN dificultad d ON p." . $difCol . " = d.id
+                    WHERE p." . $creatorCol . " = ?
+                    AND p.id NOT IN (SELECT pregunta_id FROM reporte)";
 
             $stmt = $this->conexion->prepare($query);
             if ($stmt) {
@@ -42,12 +43,13 @@ class PanelEditorModel
         }
 
         // Fallback: si no hay columna creador o no nos pasaron editorId, devolvemos solo preguntas aprobadas
-        $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
-                     c.descripcion AS categoria, d.descripcion AS dificultad
-              FROM pregunta p
-              LEFT JOIN categoria c ON p." . $catCol . " = c.id
-              LEFT JOIN dificultad d ON p." . $difCol . " = d.id
-              WHERE p.aprobada = 1";
+         $query = "SELECT p.id, p.descripcion, p.aprobada, p." . $catCol . " AS id_categoria, p." . $difCol . " AS id_dificultad,
+                c.descripcion AS categoria, d.descripcion AS dificultad
+            FROM pregunta p
+            LEFT JOIN categoria c ON p." . $catCol . " = c.id
+            LEFT JOIN dificultad d ON p." . $difCol . " = d.id
+            WHERE p.aprobada = 1
+            AND p.id NOT IN (SELECT pregunta_id FROM reporte)";
 
         $res = $this->conexion->query($query);
         if ($res === false || !is_object($res)) {
@@ -549,6 +551,43 @@ public function obtenerPreguntasSugeridas()
      */
     public function insertarReporte($pregunta_id, $descripcion, $id_usuario = null)
     {
+        // Evitar duplicados: si la tabla tiene columna id_usuario, verificar por usuario y pregunta
+        $tieneColUsuario = false;
+        try {
+            $cols = $this->conexion->query("SHOW COLUMNS FROM reporte");
+            if ($cols && is_array($cols)) {
+                $fields = array_column($cols, 'Field');
+                $tieneColUsuario = in_array('id_usuario', $fields);
+            }
+        } catch (Exception $e) {
+            // ignorar
+        }
+        if ($tieneColUsuario && $id_usuario !== null) {
+            $stmtCheck = $this->conexion->prepare("SELECT 1 FROM reporte WHERE pregunta_id = ? AND id_usuario = ? LIMIT 1");
+            if ($stmtCheck) {
+                $stmtCheck->bind_param("ii", $pregunta_id, $id_usuario);
+                $stmtCheck->execute();
+                $rs = $stmtCheck->get_result();
+                if ($rs && $rs->num_rows > 0) {
+                    $stmtCheck->close();
+                    return 'duplicate';
+                }
+                $stmtCheck->close();
+            }
+        } else {
+            // Sin columna de usuario: prevenir al menos un duplicado total por pregunta
+            $stmtCheck2 = $this->conexion->prepare("SELECT 1 FROM reporte WHERE pregunta_id = ? LIMIT 1");
+            if ($stmtCheck2) {
+                $stmtCheck2->bind_param("i", $pregunta_id);
+                $stmtCheck2->execute();
+                $rs2 = $stmtCheck2->get_result();
+                if ($rs2 && $rs2->num_rows > 0) {
+                    $stmtCheck2->close();
+                    return 'duplicate';
+                }
+                $stmtCheck2->close();
+            }
+        }
         // Intentar inserción con campos comunes
         try {
             if ($id_usuario !== null) {
