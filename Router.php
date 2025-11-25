@@ -51,7 +51,7 @@ class Router
     }
 
     public function verificarPartidaEnCurso($controllerName){
-        $controllerCheck = strtolower($controllerName);
+        $controllerCheck = strtolower($controllerName ?? '');
         if(isset($_SESSION['idPartida'])
             && $controllerCheck !== "preguntas"
             && $controllerCheck !== "ruleta") {
