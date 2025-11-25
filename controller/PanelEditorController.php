@@ -273,6 +273,46 @@ public function rechazarSugerencia()
     exit;
 }
 
+    // Actualiza una pregunta desde el modal de reporte y elimina el reporte para restaurarla al pool
+    public function actualizarDesdeReporte()
+    {
+        $this->requireEditor();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /paneleditor/verReportes');
+            exit;
+        }
+        $idPregunta = $_POST['id'] ?? null;
+        $idReporte = $_POST['id_reporte'] ?? null;
+        $descripcion = $_POST['descripcion'] ?? '';
+        $id_categoria = $_POST['id_categoria'] ?? null;
+        $id_dificultad = $_POST['id_dificultad'] ?? null;
+        $respuesta_correcta = $_POST['respuesta_correcta'] ?? '';
+        $respuesta_incorrecta1 = $_POST['respuesta_incorrecta1'] ?? '';
+        $respuesta_incorrecta2 = $_POST['respuesta_incorrecta2'] ?? '';
+        $respuesta_incorrecta3 = $_POST['respuesta_incorrecta3'] ?? '';
+        $aprobada = 1; // restaurar como aprobada
+
+        if ($idPregunta) {
+            $this->model->updatePreguntaConRespuestas(
+                $idPregunta,
+                $descripcion,
+                $id_categoria,
+                $id_dificultad,
+                $aprobada,
+                $respuesta_correcta,
+                $respuesta_incorrecta1,
+                $respuesta_incorrecta2,
+                $respuesta_incorrecta3
+            );
+            if ($idReporte) {
+                $stmt = $this->conexion->prepare("DELETE FROM reporte WHERE id = ?");
+                if ($stmt) { $stmt->bind_param("i", $idReporte); $stmt->execute(); $stmt->close(); }
+            }
+        }
+        header('Location: /paneleditor/verReportes');
+        exit;
+    }
+
 
     public function guardarSugerencia()
     {
