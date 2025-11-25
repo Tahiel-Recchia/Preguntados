@@ -192,11 +192,22 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm mb-1 text-gray-300">Categoría</label>
-            <input id="reporte_pregunta_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            <select id="reporte_pregunta_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" disabled>
+              <option value="">Seleccionar...</option>
+              <option value="1">Geografía</option>
+              <option value="2">Historia</option>
+              <option value="3">Ciencia</option>
+              <option value="4">Deportes</option>
+            </select>
           </div>
           <div>
             <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-            <input id="reporte_pregunta_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            <select id="reporte_pregunta_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" disabled>
+              <option value="">Seleccionar...</option>
+              <option value="1">Fácil</option>
+              <option value="2">Media</option>
+              <option value="3">Difícil</option>
+            </select>
           </div>
         </div>
         <div>
@@ -231,11 +242,39 @@
           <input type="hidden" name="id" id="formEliminar_pregunta_id" value="">
           <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">Eliminar Pregunta</button>
         </form>
+        <!-- Botón editar para habilitar modificación de la pregunta reportada -->
+        <button type="button" id="btnEditarReporte" onclick="habilitarEdicionReporte()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white">Editar</button>
+        <!-- Botón guardar (oculto hasta entrar en modo edición) -->
+        <button type="button" id="btnGuardarReporte" onclick="prepararConfirmacionGuardar()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white hidden">Guardar</button>
         <form id="formQuitarReporte" action="/paneleditor/rechazarReporte" method="POST" style="display:inline-block;">
           <input type="hidden" name="id_reporte" id="formQuitar_id_reporte" value="">
           <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-white">Quitar Reporte</button>
         </form>
-        <button onclick="cerrarModalVerReporte()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+        <button onclick="cancelarEdicionReporte()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+      </div>
+      <!-- Formulario oculto para enviar actualización desde reporte -->
+      <form id="formActualizarReporte" action="/paneleditor/actualizarDesdeReporte" method="POST" class="hidden">
+        <input type="hidden" name="id" id="upd_pregunta_id" value="" />
+        <input type="hidden" name="id_reporte" id="upd_reporte_id" value="" />
+        <input type="hidden" name="descripcion" id="upd_descripcion" value="" />
+        <input type="hidden" name="id_categoria" id="upd_id_categoria" value="" />
+        <input type="hidden" name="id_dificultad" id="upd_id_dificultad" value="" />
+        <input type="hidden" name="respuesta_correcta" id="upd_rta_correcta" value="" />
+        <input type="hidden" name="respuesta_incorrecta1" id="upd_rta_1" value="" />
+        <input type="hidden" name="respuesta_incorrecta2" id="upd_rta_2" value="" />
+        <input type="hidden" name="respuesta_incorrecta3" id="upd_rta_3" value="" />
+        <input type="hidden" name="aprobada" value="1" />
+      </form>
+      <!-- Overlay de confirmación guardar -->
+      <div id="confirmGuardarOverlay" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+        <div class="bg-[#1e1f3b] p-6 rounded-lg w-full max-w-md text-white shadow-xl flex flex-col gap-4">
+          <h4 class="text-lg font-semibold">Confirmar Restauración</h4>
+          <p class="text-sm text-gray-300">Al aceptar esta pregunta va a volver a estar disponible para los usuarios nuevamente.</p>
+          <div class="flex justify-end gap-3 mt-2">
+            <button type="button" onclick="cancelarConfirmacionGuardar()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg">Cancelar</button>
+            <button type="button" onclick="enviarActualizacionReporte()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg">Aceptar</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -647,8 +686,25 @@
         document.getElementById('reporte_id_field').value = r.id || '';
         document.getElementById('reporte_pregunta_id').value = r.pregunta_id || '';
         document.getElementById('reporte_pregunta_descripcion').value = p.descripcion || p.pregunta_descripcion || '';
-        document.getElementById('reporte_pregunta_categoria').value = p.categoria || p.categoria_nombre || '';
-        document.getElementById('reporte_pregunta_dificultad').value = p.dificultad || p.dificultad_nombre || '';
+        
+        // Setear categoría y dificultad en los selects
+        let catId = p.categoria_id || p.id_categoria || '';
+        let difId = p.dificultad_id || p.id_dificultad || '';
+        // Si no vienen IDs sino nombres, mapearlos
+        const catNombre = p.categoria || p.categoria_nombre || '';
+        const difNombre = p.dificultad || p.dificultad_nombre || '';
+        if (!catId && catNombre) {
+          const mapCat = {'Geografía':1,'Geografia':1,'Historia':2,'Ciencia':3,'Deportes':4};
+          catId = mapCat[catNombre] || '';
+        }
+        if (!difId && difNombre) {
+          const mapDif = {'Fácil':1,'Facil':1,'Media':2,'Difícil':3,'Dificil':3};
+          difId = mapDif[difNombre] || '';
+        }
+        const selectCat = document.getElementById('reporte_pregunta_categoria');
+        const selectDif = document.getElementById('reporte_pregunta_dificultad');
+        if (selectCat) selectCat.value = catId;
+        if (selectDif) selectDif.value = difId;
 
         let correct = rtas.find(rr => rr.es_correcta == 1) || rtas[0] || {};
         const incorrectas = rtas.filter(rr => rr.es_correcta != 1);
@@ -662,6 +718,14 @@
         // set hidden inputs for forms
         document.getElementById('formQuitar_id_reporte').value = r.id || '';
         document.getElementById('formEliminar_pregunta_id').value = r.pregunta_id || '';
+        // Guardar ids para actualización
+        document.getElementById('upd_pregunta_id').value = r.pregunta_id || '';
+        document.getElementById('upd_reporte_id').value = r.id || '';
+        // Guardar IDs en los hidden inputs (se actualizarán al editar)
+        document.getElementById('upd_id_categoria').value = catId;
+        document.getElementById('upd_id_dificultad').value = difId;
+        // Reiniciar estado edición
+        deshabilitarEdicionReporte();
       })
       .catch(err => {
         console.error('Error cargando reporte:', err);
@@ -671,13 +735,98 @@
     modal.classList.remove('hidden');
     modal.classList.add('flex');
   }
-
-  function cerrarModalVerReporte() {
-    const modal = document.getElementById('modalVerReporte');
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-  }
-</script>
+  </script>
+  <script>
+  let reporteEditMode = false;
+  function habilitarEdicionReporte() {
+    if (reporteEditMode) return;
+    reporteEditMode = true;
+    const btnEditar = document.getElementById('btnEditarReporte');
+    const btnGuardar = document.getElementById('btnGuardarReporte');
+    if (btnEditar) { btnEditar.disabled = true; btnEditar.classList.add('opacity-50','cursor-not-allowed'); }
+    if (btnGuardar) btnGuardar.classList.remove('hidden');
+      // Campos editables
+      const editableIds = ['reporte_pregunta_descripcion','reporte_rta_correcta','reporte_rta_1','reporte_rta_2','reporte_rta_3'];
+      editableIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.removeAttribute('readonly');
+          el.classList.remove('bg-[#11121f]');
+          el.classList.add('bg-[#1e1f3b]','border-[#BC6BE8]');
+        }
+      });
+      // Habilitar selects
+      const selectCat = document.getElementById('reporte_pregunta_categoria');
+      const selectDif = document.getElementById('reporte_pregunta_dificultad');
+      if (selectCat) { selectCat.removeAttribute('disabled'); selectCat.classList.remove('bg-[#11121f]'); selectCat.classList.add('bg-[#1e1f3b]','border-[#BC6BE8]'); }
+      if (selectDif) { selectDif.removeAttribute('disabled'); selectDif.classList.remove('bg-[#11121f]'); selectDif.classList.add('bg-[#1e1f3b]','border-[#BC6BE8]'); }
+    }
+  function deshabilitarEdicionReporte() {
+    reporteEditMode = false;
+    const btnEditar = document.getElementById('btnEditarReporte');
+    const btnGuardar = document.getElementById('btnGuardarReporte');
+    if (btnEditar) { btnEditar.disabled = false; btnEditar.classList.remove('opacity-50','cursor-not-allowed'); }
+    if (btnGuardar) btnGuardar.classList.add('hidden');
+      const editableIds = ['reporte_pregunta_descripcion','reporte_rta_correcta','reporte_rta_1','reporte_rta_2','reporte_rta_3'];
+      editableIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.setAttribute('readonly','readonly');
+          el.classList.remove('border-[#BC6BE8]');
+          el.classList.add('bg-[#11121f]');
+        }
+      });
+      const selectCat = document.getElementById('reporte_pregunta_categoria');
+      const selectDif = document.getElementById('reporte_pregunta_dificultad');
+      if (selectCat) { selectCat.setAttribute('disabled','disabled'); selectCat.classList.remove('border-[#BC6BE8]'); selectCat.classList.add('bg-[#11121f]'); }
+      if (selectDif) { selectDif.setAttribute('disabled','disabled'); selectDif.classList.remove('border-[#BC6BE8]'); selectDif.classList.add('bg-[#11121f]'); }
+    }
+    function prepararConfirmacionGuardar() {
+      if (!reporteEditMode) return;
+      // Copiar valores a formulario oculto
+      document.getElementById('upd_descripcion').value = document.getElementById('reporte_pregunta_descripcion').value.trim();
+      document.getElementById('upd_id_categoria').value = document.getElementById('reporte_pregunta_categoria').value;
+      document.getElementById('upd_id_dificultad').value = document.getElementById('reporte_pregunta_dificultad').value;
+      document.getElementById('upd_rta_correcta').value = document.getElementById('reporte_rta_correcta').value.trim();
+      document.getElementById('upd_rta_1').value = document.getElementById('reporte_rta_1').value.trim();
+      document.getElementById('upd_rta_2').value = document.getElementById('reporte_rta_2').value.trim();
+      document.getElementById('upd_rta_3').value = document.getElementById('reporte_rta_3').value.trim();
+      const overlay = document.getElementById('confirmGuardarOverlay');
+      if (overlay) { overlay.classList.remove('hidden'); overlay.classList.add('flex'); }
+    }
+    function cancelarConfirmacionGuardar() {
+      const overlay = document.getElementById('confirmGuardarOverlay');
+      if (overlay) { overlay.classList.remove('flex'); overlay.classList.add('hidden'); }
+    }
+    function enviarActualizacionReporte() {
+      const form = document.getElementById('formActualizarReporte');
+      if (!form) return;
+      form.submit();
+    }
+    function cerrarModalVerReporte() {
+      const modal = document.getElementById('modalVerReporte');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+      // Asegurar que se deshabilita edición al cerrar
+      deshabilitarEdicionReporte();
+    }
+    function cancelarEdicionReporte() {
+      if (reporteEditMode) {
+        // Si está en modo edición, recargar datos originales del reporte
+        const idReporte = document.getElementById('reporte_id_field').value;
+        if (idReporte) {
+          // Recargar sin cerrar modal
+          const titleSpan = document.getElementById('modalReporteId');
+          const currentId = titleSpan ? titleSpan.innerText : idReporte;
+          abrirModalVerReporte(currentId);
+        } else {
+          deshabilitarEdicionReporte();
+        }
+      } else {
+        cerrarModalVerReporte();
+      }
+    }
+  </script>
 
 
 
