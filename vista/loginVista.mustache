@@ -61,7 +61,7 @@
                     return;
                 }
                 try {
-                    const res = await fetch(`/index.php?controller=login&method=obtenerUsuario&username=${encodeURIComponent(username)}`);
+                    const res = await fetch(`/login/obtenerUsuario&username=${encodeURIComponent(username)}`);
                     if (res.ok) {
                         const data = await res.json();
                         if (data && data.fotoDePerfil) {
