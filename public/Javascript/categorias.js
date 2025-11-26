@@ -1,4 +1,3 @@
-
 function toggleFormularioCategoria() {
       const form = document.getElementById("formulario-categoria");
       form.classList.toggle("hidden");
