@@ -19,7 +19,6 @@ class Router
 
     public function executeController($controllerName, $methodName)
     {
-        $this->verificarPartidaEnCurso($controllerName);
         $controller = $this->getController($controllerName);
         if ($controller === null) {
             $controller = $this->factory->create($this->defaultController);
