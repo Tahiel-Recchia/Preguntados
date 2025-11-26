@@ -95,7 +95,7 @@ class PreguntasController
         $idPregunta = $_SESSION['id_pregunta_actual'];
         $idUsuario = $_SESSION['user_id'];
         $respuestaUsuario = $_POST['respuesta_usuario'];
-        $data['categorias'] = $this->model->getCategorias();
+        $data['categorias'] = $this->categoria->getCategorias();
         $respuestaCorrecta = $_SESSION['respuesta_correcta_actual'];
 
         $horaRespuesta = $this->model->getHoraEnvio();
