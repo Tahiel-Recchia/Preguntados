@@ -136,6 +136,11 @@ class RegisterController
 
         $token = hash('sha256', $_GET['token']);
 
-        $this->model->verifyToken($_GET['token']);
+        $resultado = $this->model->verifyToken($_GET['token']);
+        if($resultado){
+            $this->renderer->render("verificacionExitosa", ["noNavbar" => true, "noFooter" => true]);
+        }else{
+            $this->renderer->render("verificacionFallida", ["error" => "Token invalido", "noNavbar" => true, "noFooter" => true]);
+        }
     }
 }

@@ -161,7 +161,7 @@
             chartDificultad.options.plugins.legend.labels.color = "white";
             chartDificultad.update();
 
-            const response = await fetch("index.php?controller=paneladmin&method=generarPdfGraficos", {
+            const response = await fetch("/paneladmin/generarPdfGraficos", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ grafico1, grafico2, grafico3 })

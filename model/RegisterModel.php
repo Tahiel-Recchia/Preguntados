@@ -103,17 +103,26 @@ class RegisterModel
     }
 
     public function verifyToken($token){
-        $sql = "UPDATE usuario SET validado = 1 WHERE token = ?";
+        $sql = "SELECT id FROM usuario WHERE token = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $token);
         $stmt->execute();
+        $result = $stmt->get_result();
 
-        if ($stmt->affected_rows > 0) {
-            echo "<h2>Cuenta verificada con éxito.</h2>";
-        } else {
-            echo "<h2>Token inválido o cuenta ya verificada.</h2>";
+        if($result->num_rows === 0){
+            return false;
         }
+
+        $user = $result->fetch_assoc();
+        $idUsuario = $user["id"];
+
+        $sql = "UPDATE usuario SET validado = 1, token = NULL WHERE id=?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+        return true;
     }
+
     public function sendVerificationEmail($email, $name, $token)
     {
         require_once __DIR__ . "/../vendor/autoload.php";
