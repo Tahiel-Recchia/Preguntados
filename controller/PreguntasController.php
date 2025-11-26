@@ -114,14 +114,13 @@ class PreguntasController
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
             $this->actualizarEstadisticas($idUsuario);
-
             $this->renderer->render("preguntas", $data);
         } else {
             $this->terminarPartida();
             $this->actualizarEstadisticas($idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
-        $this->model->actualizarDificultadPregunta($_SESSION['id_pregunta_actual'], $esCorrecta);
+        $this->model->actualizarDificultadPregunta($idPregunta, $esCorrecta);
         unset($_SESSION['respuesta_correcta_actual'], $_SESSION['id_pregunta_actual']);
     }
 
