@@ -445,37 +445,44 @@ class PanelEditorController
 
     // === Categorías ===
     public function guardarCategoria()
-    {
-        $this->requireEditor();
+{
+    $this->requireEditor();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            $descripcion = $_POST['descripcion'] ?? '';
-            $color = $_POST['color'] ?? '';
+        $descripcion = $_POST['descripcion'] ?? '';
+        $color = $_POST['color'] ?? '';
 
-            // --- Imagen ---
-            $nombreImagen = null;
-            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        $rutaImagen = null;
 
-                $tmp = $_FILES['imagen']['tmp_name'];
-                $nombreOriginal = basename($_FILES['imagen']['name']);
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
 
-                // Nombre único para evitar conflictos
-                $nombreImagen = time() . "_" . $nombreOriginal;
+            $tmp = $_FILES['imagen']['tmp_name'];
 
-                // Carpeta donde se guardan
-                $destino = __DIR__ . "public/categorias/" . $nombreImagen;
+            $nombreOriginal = basename($_FILES['imagen']['name']);
+            $nombreImagen = preg_replace('/[^a-zA-Z0-9._-]/', '_', $nombreOriginal);
 
-                move_uploaded_file($tmp, $destino);
+            // ✔ Ruta física correcta
+            $destino = __DIR__ . "/../public/categorias/" . $nombreImagen;
+
+            // Si falla, lo mostramos
+            if (!move_uploaded_file($tmp, $destino)) {
+                die("ERROR moviendo archivo a: " . $destino);
             }
 
-            // Llamo al modelo
-            $this->categoria->guardarCategoria($descripcion, $color, $nombreImagen);
+            // ✔ Ruta que se guarda en la BD
+            $rutaImagen = "/public/categorias/" . $nombreImagen;
         }
 
-        header("Location: /paneleditor");
-        exit;
+        $this->categoria->guardarCategoria($descripcion, $color, $rutaImagen);
     }
+
+    header("Location: /paneleditor/categorias");
+    exit;
+}
+
+
+
 
     public function eliminarCategoria()
     {
@@ -521,12 +528,12 @@ class PanelEditorController
                 $tmp = $_FILES['imagen']['tmp_name'];
                 $nombreOriginal = basename($_FILES['imagen']['name']);
                 $nuevaImagen = time() . "_" . preg_replace('/[^a-zA-Z0-9._-]/', '_', $nombreOriginal);
-                $destino = __DIR__ . "/../public/imagenes_categorias/" . $nuevaImagen;
+                $destino = __DIR__ . "/../public/categorias/" . $nuevaImagen;
                 move_uploaded_file($tmp, $destino);
 
                 // borrar imagen vieja si existe y no es null
                 if ($imagenVieja) {
-                    $rutaVieja = __DIR__ . "/../public/imagenes_categorias/" . $imagenVieja;
+                    $rutaVieja = __DIR__ . "/../public/categorias/" . $imagenVieja;
                     if (file_exists($rutaVieja))
                         unlink($rutaVieja);
                 }
