@@ -42,7 +42,7 @@ class PanelEditorController
         $data['categorias'] = $this->categoria->getCategorias();
         $this->renderer->render('panelEditor', $data);
     }
-    
+
 
     // === Crear nueva pregunta ===
     public function guardar()
@@ -198,49 +198,49 @@ class PanelEditorController
         $this->renderer->render('panelEditor', $data);
     }
 
-public function aceptarReporte()
-{
-    $this->requireEditor();
-    $id = $_POST['id_reporte'];
-    // Si existe columna 'estado' la marcamos como aceptado, sino no hacemos nada especial
-    $tieneEstado = false;
-    try {
-        $cols = $this->conexion->query("SHOW COLUMNS FROM reporte");
-        if ($cols && is_array($cols)) {
-            $fields = array_column($cols, 'Field');
-            $tieneEstado = in_array('estado', $fields);
-        }
-    } catch (Exception $e) {
+    public function aceptarReporte()
+    {
+        $this->requireEditor();
+        $id = $_POST['id_reporte'];
+        // Si existe columna 'estado' la marcamos como aceptado, sino no hacemos nada especial
         $tieneEstado = false;
+        try {
+            $cols = $this->conexion->query("SHOW COLUMNS FROM reporte");
+            if ($cols && is_array($cols)) {
+                $fields = array_column($cols, 'Field');
+                $tieneEstado = in_array('estado', $fields);
+            }
+        } catch (Exception $e) {
+            $tieneEstado = false;
+        }
+        if ($tieneEstado) {
+            $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'aceptado' WHERE id = ?");
+            if ($stmt) {
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $stmt->close();
+            }
+        }
+
+        header("Location: /paneleditor/verReportes");
+        exit;
     }
-    if ($tieneEstado) {
-        $stmt = $this->conexion->prepare("UPDATE reporte SET estado = 'aceptado' WHERE id = ?");
+
+    public function rechazarReporte()
+    {
+        $this->requireEditor();
+        $id = $_POST['id_reporte'];
+        // La acción "Quitar Reporte" debe borrar el registro
+        $stmt = $this->conexion->prepare("DELETE FROM reporte WHERE id = ?");
         if ($stmt) {
             $stmt->bind_param("i", $id);
             $stmt->execute();
             $stmt->close();
         }
+
+        header("Location: /paneleditor/verReportes");
+        exit;
     }
-
-    header("Location: /paneleditor/verReportes");
-    exit;
-}
-
-public function rechazarReporte()
-{
-    $this->requireEditor();
-    $id = $_POST['id_reporte'];
-    // La acción "Quitar Reporte" debe borrar el registro
-    $stmt = $this->conexion->prepare("DELETE FROM reporte WHERE id = ?");
-    if ($stmt) {
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    header("Location: /paneleditor/verReportes");
-    exit;
-}
 
     public function verSugerencias()
     {
@@ -254,23 +254,23 @@ public function rechazarReporte()
         $this->renderer->render('panelEditor', $data);
     }
 
-public function aceptarSugerencia()
-{
-    $this->requireEditor();
-    $id = $_POST['id_sugerencia'];
-    $this->model->aceptarSugerencia($id, $_SESSION['user_id'] ?? null);
-    header("Location: /paneleditor/verSugerencias");
-    exit;
-}
+    public function aceptarSugerencia()
+    {
+        $this->requireEditor();
+        $id = $_POST['id_sugerencia'];
+        $this->model->aceptarSugerencia($id, $_SESSION['user_id'] ?? null);
+        header("Location: /paneleditor/verSugerencias");
+        exit;
+    }
 
-public function rechazarSugerencia()
-{
-    $this->requireEditor();
-    $id = $_POST['id_sugerencia'];
-    $this->model->rechazarSugerencia($id);
-    header("Location: /paneleditor/verSugerencias");
-    exit;
-}
+    public function rechazarSugerencia()
+    {
+        $this->requireEditor();
+        $id = $_POST['id_sugerencia'];
+        $this->model->rechazarSugerencia($id);
+        header("Location: /paneleditor/verSugerencias");
+        exit;
+    }
 
     // Actualiza una pregunta desde el modal de reporte y elimina el reporte para restaurarla al pool
     public function actualizarDesdeReporte()
@@ -305,7 +305,11 @@ public function rechazarSugerencia()
             );
             if ($idReporte) {
                 $stmt = $this->conexion->prepare("DELETE FROM reporte WHERE id = ?");
-                if ($stmt) { $stmt->bind_param("i", $idReporte); $stmt->execute(); $stmt->close(); }
+                if ($stmt) {
+                    $stmt->bind_param("i", $idReporte);
+                    $stmt->execute();
+                    $stmt->close();
+                }
             }
         }
         header('Location: /paneleditor/verReportes');
@@ -353,7 +357,8 @@ public function rechazarSugerencia()
         if ($isAjax) {
             // === LA SOLUCIÓN MÁGICA ESTÁ AQUÍ ===
             // Borramos cualquier HTML (header, menu, etc) que se haya cargado antes
-            if (ob_get_length()) ob_clean();
+            if (ob_get_length())
+                ob_clean();
 
             header('Content-Type: application/json');
 
@@ -377,7 +382,7 @@ public function rechazarSugerencia()
         error_log("REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD']);
         error_log("POST data: " . print_r($_POST, true));
         error_log("SESSION user_id: " . ($_SESSION['user_id'] ?? 'no definido'));
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             error_log("No es POST, redirigiendo");
             header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
@@ -414,7 +419,7 @@ public function rechazarSugerencia()
             $_SESSION['reportes_realizados'][] = $pregunta_id; // asegurar consistencia
             return $this->responderReporteJSON(['status' => 'duplicate', 'message' => 'Ya existe un reporte para esta pregunta.']);
         } elseif ($res === false) {
-            error_log("PanelEditorController::reportarPregunta - insertarReporte returned false. pregunta_id={$pregunta_id}, usuario={$id_usuario}, descripcion=" . substr($descripcion,0,200));
+            error_log("PanelEditorController::reportarPregunta - insertarReporte returned false. pregunta_id={$pregunta_id}, usuario={$id_usuario}, descripcion=" . substr($descripcion, 0, 200));
             return $this->responderReporteJSON(['status' => 'error', 'message' => 'Error al guardar el reporte']);
         } else {
             error_log("PanelEditorController::reportarPregunta - reporte creado EXITOSAMENTE id={$res}, pregunta_id={$pregunta_id}");
@@ -423,7 +428,8 @@ public function rechazarSugerencia()
         }
     }
 
-    private function responderReporteJSON($payload) {
+    private function responderReporteJSON($payload)
+    {
         error_log("=== reportarPregunta FIN (JSON) ===");
         // Detectar si es petición AJAX/fetch; si no, fallback a redirect
         $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
@@ -434,6 +440,102 @@ public function rechazarSugerencia()
         }
         // Fallback: redirigir
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
+        exit;
+    }
+
+    // === Categorías ===
+    public function guardarCategoria()
+    {
+        $this->requireEditor();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $descripcion = $_POST['descripcion'] ?? '';
+            $color = $_POST['color'] ?? '';
+
+            // --- Imagen ---
+            $nombreImagen = null;
+            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+
+                $tmp = $_FILES['imagen']['tmp_name'];
+                $nombreOriginal = basename($_FILES['imagen']['name']);
+
+                // Nombre único para evitar conflictos
+                $nombreImagen = time() . "_" . $nombreOriginal;
+
+                // Carpeta donde se guardan
+                $destino = __DIR__ . "public/categorias/" . $nombreImagen;
+
+                move_uploaded_file($tmp, $destino);
+            }
+
+            // Llamo al modelo
+            $this->categoria->guardarCategoria($descripcion, $color, $nombreImagen);
+        }
+
+        header("Location: /paneleditor");
+        exit;
+    }
+
+    public function eliminarCategoria()
+    {
+        $this->requireEditor();
+
+        $id = $_POST['id'] ?? null;
+        if (!$id) {
+            header("Location: /paneleditor");
+            exit;
+        }
+
+        // Buscar categoría
+        $categoria = $this->categoria->getCategoriaById($id);
+
+        // Borrar imagen física
+        $ruta = __DIR__ . "public/categorias/" . $categoria['imagen'];
+        if (file_exists($ruta)) {
+            unlink($ruta);
+        }
+
+        // Borrar BD
+        $this->categoria->eliminarCategoria($id);
+
+        header("Location: /paneleditor");
+        exit;
+    }
+
+    public function editarCategoria()
+    {
+        $this->requireEditor();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = intval($_POST['id'] ?? 0);
+            $descripcion = $_POST['descripcion'] ?? '';
+            $color = $_POST['color'] ?? '';
+
+            // Traer categoría actual para imagen vieja
+            $categoriaActual = $this->categoria->getCategoriaById($id);
+            $imagenVieja = $categoriaActual['imagen'] ?? null;
+            $nuevaImagen = $imagenVieja;
+
+            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+                $tmp = $_FILES['imagen']['tmp_name'];
+                $nombreOriginal = basename($_FILES['imagen']['name']);
+                $nuevaImagen = time() . "_" . preg_replace('/[^a-zA-Z0-9._-]/', '_', $nombreOriginal);
+                $destino = __DIR__ . "/../public/imagenes_categorias/" . $nuevaImagen;
+                move_uploaded_file($tmp, $destino);
+
+                // borrar imagen vieja si existe y no es null
+                if ($imagenVieja) {
+                    $rutaVieja = __DIR__ . "/../public/imagenes_categorias/" . $imagenVieja;
+                    if (file_exists($rutaVieja))
+                        unlink($rutaVieja);
+                }
+            }
+
+            $this->categoria->actualizarCategoria($id, $descripcion, $color, $nuevaImagen);
+        }
+
+        header("Location: /paneleditor");
         exit;
     }
 }

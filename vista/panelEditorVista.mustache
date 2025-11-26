@@ -1,10 +1,15 @@
 <main class="w-full p-8 flex flex-col gap-8 text-[#E2E4F3]">
   <h1 class="text-3xl font-bold border-b-2 border-[#2c2f56] pb-3">Panel del Editor</h1>
-    <div class="flex gap-4 mb-6">
+  <div class="flex gap-4 mb-6">
     <button id="btnPreguntas" type="button"
       class="tab-btn px-5 py-2 rounded-lg font-semibold border border-[#BC6BE8] text-[#FFFFFF] hover:bg-[#BC6BE8]/20 transition"
       onclick="mostrarSeccion('preguntas')">
       Preguntas
+    </button>
+    <button id="btnCategorias" type="button"
+      class="tab-btn px-5 py-2 rounded-lg font-semibold border border-[#BC6BE8] text-[#FFFFFF] hover:bg-[#BC6BE8]/20 transition"
+      onclick="mostrarSeccion('categorias')">
+      Categorías
     </button>
     <button id="btnReportes" type="button"
       class="tab-btn px-5 py-2 rounded-lg font-semibold border border-[#BC6BE8] text-[#FFFFFF] hover:bg-[#BC6BE8]/20 transition"
@@ -18,76 +23,76 @@
     </button>
   </div>
 
-  <!-- ===== BOTÓN DESPLEGAR FORMULARIO SOLO EN SECCIÓN PREGUNTAS ===== -->
-  <section id="seccion-preguntas-top">
-    <button 
-      onclick="toggleFormulario()" 
-      class="w-fit py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
-        <path fill-rule="evenodd" d="M12 2.25a9.75 9.75 0 1 0 9.75 9.75A9.76 9.76 0 0 0 12 2.25Zm0 18a8.25 8.25 0 1 1 8.25-8.25A8.26 8.26 0 0 1 12 20.25ZM12.75 7.5a.75.75 0 0 0-1.5 0v4.5H7.5a.75.75 0 0 0 0 1.5h3.75v3.75a.75.75 0 0 0 1.5 0V13.5H16.5a.75.75 0 0 0 0-1.5h-3.75Z" clip-rule="evenodd"/>
-      </svg>
-      Agregar Nueva Pregunta
-    </button>
-
-    <!-- ===== FORMULARIO NUEVA PREGUNTA ===== -->
-    <section id="formulario" class="bg-[#2c2f56] rounded-xl p-6 shadow-xl hidden transition-all duration-300">
-      <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
-          <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75S6.615 21.75 12 21.75 21.75 17.385 21.75 12 17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+  <!-- ===== LISTADO DE PREGUNTAS EXISTENTES ===== -->
+  <section id="seccion-preguntas">
+    <!-- ===== BOTÓN DESPLEGAR FORMULARIO SOLO EN SECCIÓN PREGUNTAS ===== -->
+    <section id="seccion-preguntas-top">
+      <button 
+        onclick="toggleFormulario()" 
+        class="w-fit py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
+          <path fill-rule="evenodd" d="M12 2.25a9.75 9.75 0 1 0 9.75 9.75A9.76 9.76 0 0 0 12 2.25Zm0 18a8.25 8.25 0 1 1 8.25-8.25A8.26 8.26 0 0 1 12 20.25ZM12.75 7.5a.75.75 0 0 0-1.5 0v4.5H7.5a.75.75 0 0 0 0 1.5h3.75v3.75a.75.75 0 0 0 1.5 0V13.5H16.5a.75.75 0 0 0 0-1.5h-3.75Z" clip-rule="evenodd"/>
         </svg>
-        Nueva Pregunta
-      </h2>
-
-  <form action="/paneleditor/guardar" method="POST" class="flex flex-col gap-4">
-      <div>
-        <label class="block text-sm mb-1 text-gray-300">Descripción</label>
-        <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-[#BC6BE8]"></textarea>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm mb-1 text-gray-300">Categoría</label>
-          <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
-            <option value="">Seleccionar...</option>
-            {{#categorias}}
-                <option value="{{id}}">{{descripcion}}</option>
-            {{/categorias}}
-          </select>
-        </div>
-      </div>
-
-      <!-- ===== RESPUESTAS ===== -->
-      <div class="mt-2">
-        <h3 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h3>
-        <div class="flex flex-col gap-2">
-          <div>
-            <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
-            <input type="text" name="respuesta_correcta" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
-          </div>
-          <div>
-            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
-            <input type="text" name="respuesta_incorrecta1" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
-          </div>
-          <div>
-            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
-            <input type="text" name="respuesta_incorrecta2" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
-          </div>
-          <div>
-            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
-            <input type="text" name="respuesta_incorrecta3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="mt-4 py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition">
-        Guardar Pregunta
+        Agregar Nueva Pregunta
       </button>
-    </form>
-  
-  </section>
 
-    <!-- ===== LISTADO DE PREGUNTAS EXISTENTES ===== -->
-    <section id="seccion-preguntas">
+      <!-- ===== FORMULARIO NUEVA PREGUNTA ===== -->
+      <section id="formulario" class="bg-[#2c2f56] rounded-xl p-6 shadow-xl hidden transition-all duration-300">
+        <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
+            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75S6.615 21.75 12 21.75 21.75 17.385 21.75 12 17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+          </svg>
+          Nueva Pregunta
+        </h2>
+
+        <form action="/paneleditor/guardar" method="POST" class="flex flex-col gap-4">
+          <div>
+            <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+            <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-[#BC6BE8]"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+              <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+                <option value="">Seleccionar...</option>
+                {{#categorias}}
+                    <option value="{{id}}">{{descripcion}}</option>
+                {{/categorias}}
+              </select>
+            </div>
+          </div>
+
+          <!-- ===== RESPUESTAS ===== -->
+          <div class="mt-2">
+            <h3 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h3>
+            <div class="flex flex-col gap-2">
+              <div>
+                <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+                <input type="text" name="respuesta_correcta" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+              </div>
+              <div>
+                <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+                <input type="text" name="respuesta_incorrecta1" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+              </div>
+              <div>
+                <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+                <input type="text" name="respuesta_incorrecta2" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+              </div>
+              <div>
+                <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+                <input type="text" name="respuesta_incorrecta3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="mt-4 py-3 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] font-semibold text-white hover:opacity-90 active:opacity-80 transition">
+            Guardar Pregunta
+          </button>
+        </form>
+      </section>
+    </section>
+
     <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
       Listado de Preguntas
     </h2>
@@ -132,41 +137,206 @@
     </div>
   </section>
 
-  <!-- ===== SECCIÓN REPORTES ===== -->
-<section id="seccion-reportes" class="hidden">
-  <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
-    Preguntas Reportadas
-  </h2>
-  <div class="overflow-x-auto">
-      <table class="w-full border-collapse">
-        <thead>
-          <tr class="bg-[#2c2f56] text-[#E2E4F3]">
-            <th class="p-3 text-left">ID</th>
-            <th class="p-3 text-left">Pregunta</th>
-            <th class="p-3 text-left">Motivo</th>
-            <th class="p-3 text-center">Acción</th>
-          </tr>
-      </thead>
-      <tbody class="text-gray-300">
-        {{#reportes}}
-        <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
-          <td class="p-3">{{id_reporte}}</td>
-          <td class="p-3">{{pregunta}}</td>
-          <td class="p-3">{{descripcion}}</td>
-          <td class="p-3 text-center">
-            <button onclick="abrirModalVerReporte({{id_reporte}})" class="px-4 py-2 rounded-lg bg-[#3b82f6] hover:bg-[#2563eb] text-white">Ver</button>
-          </td>
-        </tr>
-        {{/reportes}}
-        {{^reportes}}
-        <tr>
-          <td class="p-3 text-gray-400" colspan="3">NO HAY REPORTES</td>
-        </tr>
-        {{/reportes}}
-      </tbody>
-    </table>
+  <!-- ===== SECCIÓN CATEGORIAS ===== -->
+  
+  <section id="seccion-categorias" class="hidden">
+
+    <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
+      Categorías
+    </h2>
+
+    <!-- BOTÓN AGREGAR -->
+    <button onclick="toggleFormularioCategoria()" 
+      class="w-fit py-2 px-5 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white font-semibold mb-4">
+      + Nueva Categoría
+    </button>
+
+    <!-- FORMULARIO AGREGAR CATEGORIA -->
+    <section id="formulario-categoria" class="bg-[#2c2f56] rounded-xl p-6 shadow-xl hidden">
+      <h3 class="text-xl font-semibold mb-3">Nueva Categoría</h3>
+
+      <form action="/paneleditor/guardarcategoria" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+          <input type="text" name="descripcion" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Color</label>
+          <input type="color" name="color" class="w-full h-10 bg-[#1e1f3b] rounded-lg">
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Imagen</label>
+          <input type="file" name="imagen" accept="image/*" class="text-white">
+        </div>
+
+        <button class="py-2 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white">
+          Guardar Categoría
+        </button>
+
+      </form>
+    </section>
+ 
+
+      <!-- LISTADO -->
+      <div class="overflow-x-auto mt-6">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="bg-[#2c2f56] text-[#E2E4F3]">
+                  <th class="p-3 text-left">ID</th>
+                  <th class="p-3 text-left">Descripción</th>
+                  <th class="p-3 text-left">Color</th>
+                  <th class="p-3 text-left">Imagen</th>
+                  <th class="p-3 text-center">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody class="text-gray-300">
+                {{#categorias}}
+                <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
+                  <td class="p-3">{{id}}</td>
+                  <td class="p-3">{{descripcion}}</td>
+                  <td class="p-3">
+                    <span class="px-3 py-1 rounded-lg" style="background: {{color}};">{{color}}</span>
+                  </td>
+                  <td class="p-3">
+                    <img src="{{imagen}}" class="h-12 rounded-lg">
+                  </td>
+                  <td class="p-3 flex justify-center gap-2">
+                    <button 
+                      onclick="abrirModalEditarCategoria('{{id}}', '{{descripcion}}', '{{color}}', '{{imagen}}')" 
+                      class="px-3 py-1 bg-[#BC6BE8] rounded-lg text-white">
+                      Editar
+                    </button>
+                    <button 
+                      onclick="abrirModalEliminarCategoria({{id}})" 
+                      class="px-3 py-1 bg-red-600 rounded-lg text-white">
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+                {{/categorias}}
+              </tbody>
+
+            </table>
+          </div>        
+  </section>
+
+      <!-- ===== MODAL ELIMINAR CATEGORÍA ===== -->
+      <div id="modal-eliminar-categoria" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-[#2c2f56] p-6 rounded-xl shadow-2xl w-full max-w-md">
+          
+          <h3 class="text-xl font-bold text-red-400 mb-4">Eliminar Categoría</h3>
+          <p class="text-gray-300 mb-6">
+            ¿Seguro que querés eliminar esta categoría? Esta acción no se puede deshacer.
+          </p>
+
+          <form action="/paneleditor/eliminarCategoria" method="POST" onsubmit="return confirm('¿Eliminar categoría?')">
+            <input type="hidden" name="id" id="categoriaAEliminar">
+
+            <button 
+              type="button" 
+              onclick="cerrarModalEliminarCategoria()" 
+              class="px-4 py-2 bg-gray-500 rounded-lg text-white hover:bg-gray-600">
+              Cancelar
+            </button>
+
+            <button 
+              type="submit" 
+              class="px-4 py-2 bg-red-600 rounded-lg text-white hover:bg-red-700">
+              Eliminar
+            </button>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- ===== MODAL EDITAR CATEGORÍA ===== -->
+  <div id="modal-editar-categoria" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
+    <div class="bg-[#2c2f56] p-6 rounded-xl shadow-2xl w-full max-w-md">
+
+      <h3 class="text-xl font-bold text-[#BC6BE8] mb-4">Editar Categoría</h3>
+
+      <!-- FORMULARIO EDITAR -->
+      <form id="formEditarCategoria" action="/paneleditor/editarcategoria" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+
+        <input type="hidden" name="id" id="edit_cat_id">
+
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Descripción</label>
+          <input type="text" name="descripcion" id="edit_cat_descripcion" 
+                class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Color</label>
+          <input type="color" name="color" id="edit_cat_color" 
+                class="w-full h-10 bg-[#1e1f3b] rounded-lg">
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1 text-gray-300">Imagen Actual</label>
+          <img id="edit_cat_imagen_preview" src="" class="h-16 rounded-lg mb-2 border border-gray-600">
+
+          <label class="block text-sm mb-1 text-gray-300">Nueva Imagen (opcional)</label>
+          <input type="file" name="imagen" accept="image/*" class="text-white">
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button type="button" onclick="cerrarModalEditarCategoria()" 
+                  class="px-4 py-2 bg-gray-500 rounded-lg text-white hover:bg-gray-600">
+            Cancelar
+          </button>
+
+          <button type="submit" 
+                  class="px-4 py-2 bg-[#BC6BE8] rounded-lg text-white hover:opacity-80">
+            Guardar cambios
+          </button>
+        </div>
+
+      </form>
+    </div>
   </div>
-</section>
+
+
+
+  <!-- ===== SECCIÓN REPORTES ===== -->
+  <section id="seccion-reportes" class="hidden">
+    <h2 class="text-2xl font-semibold mb-4 text-[#BC6BE8] flex items-center gap-2">
+      Preguntas Reportadas
+    </h2>
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-[#2c2f56] text-[#E2E4F3]">
+              <th class="p-3 text-left">ID</th>
+              <th class="p-3 text-left">Pregunta</th>
+              <th class="p-3 text-left">Motivo</th>
+              <th class="p-3 text-center">Acción</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-300">
+          {{#reportes}}
+          <tr class="border-b border-[#3f4477] hover:bg-[#3f4477] transition">
+            <td class="p-3">{{id_reporte}}</td>
+            <td class="p-3">{{pregunta}}</td>
+            <td class="p-3">{{descripcion}}</td>
+            <td class="p-3 text-center">
+              <button onclick="abrirModalVerReporte({{id_reporte}})" class="px-4 py-2 rounded-lg bg-[#3b82f6] hover:bg-[#2563eb] text-white">Ver</button>
+            </td>
+          </tr>
+          {{/reportes}}
+          {{^reportes}}
+          <tr>
+            <td class="p-3 text-gray-400" colspan="3">NO HAY REPORTES</td>
+          </tr>
+          {{/reportes}}
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   <!-- Modal para ver reporte (mostrar pregunta + motivo + acciones) -->
   <div id="modalVerReporte" class="fixed inset-0 bg-black bg-opacity-50 hidden items-start md:items-center justify-center z-50 p-4">
@@ -299,126 +469,130 @@
   </section>
 
 </main>
-<!-- Modal para ver sugerencia (solo lectura) -->
-<div id="modalVerSugerencia" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg max-h-[85vh] overflow-y-auto">
-    <h3 class="text-xl font-semibold mb-3">SUGERENCIA: <span id="modalSugerenciaId">-</span></h3>
-    <div id="modalContenido" class="flex flex-col gap-4">
-      <input type="hidden" id="sugerencia_id" value="">
-      <div>
-        <label class="block text-sm mb-1 text-gray-300">Pregunta</label>
-        <textarea id="sugerencia_descripcion" rows="3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly></textarea>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- Modal para ver sugerencia (solo lectura) -->
+  <div id="modalVerSugerencia" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-2xl text-white shadow-lg max-h-[85vh] overflow-y-auto">
+      <h3 class="text-xl font-semibold mb-3">SUGERENCIA: <span id="modalSugerenciaId">-</span></h3>
+      <div id="modalContenido" class="flex flex-col gap-4">
+        <input type="hidden" id="sugerencia_id" value="">
         <div>
-          <label class="block text-sm mb-1 text-gray-300">Categoría</label>
-          <input id="sugerencia_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          <label class="block text-sm mb-1 text-gray-300">Pregunta</label>
+          <textarea id="sugerencia_descripcion" rows="3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly></textarea>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm mb-1 text-gray-300">Categoría</label>
+            <input id="sugerencia_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
+          <div>
+            <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
+            <input id="sugerencia_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          </div>
         </div>
         <div>
-          <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-          <input id="sugerencia_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
-        </div>
-      </div>
-      <div>
-        <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
-        <div class="flex flex-col gap-2">
-          <div>
-            <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
-            <input id="sugerencia_rta_correcta" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
-          </div>
-          <div>
-            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
-            <input id="sugerencia_rta_1" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
-          </div>
-          <div>
-            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
-            <input id="sugerencia_rta_2" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
-          </div>
-          <div>
-            <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
-            <input id="sugerencia_rta_3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+          <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
+          <div class="flex flex-col gap-2">
+            <div>
+              <label class="block text-sm mb-1 text-green-400">Respuesta correcta:</label>
+              <input id="sugerencia_rta_correcta" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            </div>
+            <div>
+              <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 1:</label>
+              <input id="sugerencia_rta_1" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            </div>
+            <div>
+              <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 2:</label>
+              <input id="sugerencia_rta_2" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            </div>
+            <div>
+              <label class="block text-sm mb-1 text-red-400">Respuesta incorrecta 3:</label>
+              <input id="sugerencia_rta_3" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="flex justify-end gap-3 mt-4">
-      <form id="formRechazarSugerencia" action="/paneleditor/rechazarSugerencia" method="POST" style="display:inline-block;">
-        <input type="hidden" name="id_sugerencia" id="rechazar_id" value="">
-        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">Rechazar</button>
-      </form>
-      <form id="formAceptarSugerencia" action="/paneleditor/aceptarSugerencia" method="POST" style="display:inline-block;">
-        <input type="hidden" name="id_sugerencia" id="aceptar_id" value="">
-        <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white">Aceptar</button>
-      </form>
-      <button onclick="cerrarModalVerSugerencia()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+      <div class="flex justify-end gap-3 mt-4">
+        <form id="formRechazarSugerencia" action="/paneleditor/rechazarSugerencia" method="POST" style="display:inline-block;">
+          <input type="hidden" name="id_sugerencia" id="rechazar_id" value="">
+          <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">Rechazar</button>
+        </form>
+        <form id="formAceptarSugerencia" action="/paneleditor/aceptarSugerencia" method="POST" style="display:inline-block;">
+          <input type="hidden" name="id_sugerencia" id="aceptar_id" value="">
+          <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white">Aceptar</button>
+        </form>
+        <button onclick="cerrarModalVerSugerencia()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+      </div>
     </div>
   </div>
-</div>
-<script>
-  // Función para mostrar/ocultar el formulario de nueva pregunta
-  function toggleFormulario() {
-    const form = document.getElementById("formulario");
-    form.classList.toggle("hidden");
-  }
-</script>
-<script>
-  // Mostrar sección preguntas por defecto y botón activo
-  window.addEventListener('DOMContentLoaded', function() {
-    mostrarSeccion('preguntas');
-  });
-  function mostrarSeccion(seccion) {
-    const secPreg = document.getElementById('seccion-preguntas');
-    const secRep = document.getElementById('seccion-reportes');
-    const secSug = document.getElementById('seccion-sugerencias');
+  <script>
+    // Función para mostrar/ocultar el formulario de nueva pregunta
+    function toggleFormulario() {
+      const form = document.getElementById("formulario");
+      form.classList.toggle("hidden");
+    }
+  </script>
+  <script>
+    // Mostrar sección preguntas por defecto y botón activo
+    window.addEventListener('DOMContentLoaded', function() {
+      mostrarSeccion('preguntas');
+    });
+    function mostrarSeccion(seccion) {
+      const secPreg = document.getElementById('seccion-preguntas');
+      const secRep = document.getElementById('seccion-reportes');
+      const secSug = document.getElementById('seccion-sugerencias');
+      const secCat = document.getElementById('seccion-categorias'); 
 
-    // Mostrar/ocultar con inline style y con clase 'hidden' para cubrir ambos métodos
-    if (secPreg) {
-      if (seccion === 'preguntas') { secPreg.style.display = 'block'; secPreg.classList.remove('hidden'); } else { secPreg.style.display = 'none'; secPreg.classList.add('hidden'); }
+      // Mostrar/ocultar con inline style y con clase 'hidden' para cubrir ambos métodos
+      if (secPreg) {
+        if (seccion === 'preguntas') { secPreg.style.display = 'block'; secPreg.classList.remove('hidden'); } else { secPreg.style.display = 'none'; secPreg.classList.add('hidden'); }
+      }
+      if (secCat) {
+        if (seccion === 'categorias') { secCat.style.display = 'block'; secCat.classList.remove('hidden'); } else { secCat.style.display = 'none'; secCat.classList.add('hidden'); }
+      }
+      if (secRep) {
+        if (seccion === 'reportes') { secRep.style.display = 'block'; secRep.classList.remove('hidden'); } else { secRep.style.display = 'none'; secRep.classList.add('hidden'); }
+      }
+      if (secSug) {
+        if (seccion === 'sugerencias') { secSug.style.display = 'block'; secSug.classList.remove('hidden'); } else { secSug.style.display = 'none'; secSug.classList.add('hidden'); }
+      }
+      // Unificar color de botón activo
+      document.getElementById('btnPreguntas').classList.remove('bg-[#BC6BE8]');
+      document.getElementById('btnCategorias').classList.remove('bg-[#BC6BE8]');
+      document.getElementById('btnReportes').classList.remove('bg-[#BC6BE8]');
+      document.getElementById('btnSugerencias').classList.remove('bg-[#BC6BE8]');
+      if (seccion === 'preguntas') document.getElementById('btnPreguntas').classList.add('bg-[#BC6BE8]');
+      if (seccion === 'reportes') document.getElementById('btnReportes').classList.add('bg-[#BC6BE8]');
+      if (seccion === 'sugerencias') document.getElementById('btnSugerencias').classList.add('bg-[#BC6BE8]');
+      if (seccion === 'categorias') document.getElementById('btnCategorias').classList.add('bg-[#BC6BE8]');
     }
-    if (secRep) {
-      if (seccion === 'reportes') { secRep.style.display = 'block'; secRep.classList.remove('hidden'); } else { secRep.style.display = 'none'; secRep.classList.add('hidden'); }
-    }
-    if (secSug) {
-      if (seccion === 'sugerencias') { secSug.style.display = 'block'; secSug.classList.remove('hidden'); } else { secSug.style.display = 'none'; secSug.classList.add('hidden'); }
-    }
-    // Unificar color de botón activo
-    document.getElementById('btnPreguntas').classList.remove('bg-[#BC6BE8]');
-    document.getElementById('btnReportes').classList.remove('bg-[#BC6BE8]');
-    document.getElementById('btnSugerencias').classList.remove('bg-[#BC6BE8]');
-    if (seccion === 'preguntas') {
-      document.getElementById('btnPreguntas').classList.add('bg-[#BC6BE8]');
-    } else if (seccion === 'reportes') {
-      document.getElementById('btnReportes').classList.add('bg-[#BC6BE8]');
-    } else if (seccion === 'sugerencias') {
-      document.getElementById('btnSugerencias').classList.add('bg-[#BC6BE8]');
-    }
-  }
-  window.onload = function() {
-    mostrarSeccion('preguntas');
-  };
+    window.onload = function() {
+      mostrarSeccion('preguntas');
+    };
 
-  // Añadir listeners seguros a los botones de pestañas (fallback si onclick inline falla)
-  document.addEventListener('DOMContentLoaded', function() {
-    const bRep = document.getElementById('btnReportes');
-    const bSug = document.getElementById('btnSugerencias');
-    const bPreg = document.getElementById('btnPreguntas');
-    if (bRep) bRep.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('reportes'); });
-    if (bSug) bSug.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('sugerencias'); });
-    if (bPreg) bPreg.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('preguntas'); });
-  });
-</script>
+    // Añadir listeners seguros a los botones de pestañas (fallback si onclick inline falla)
+    document.addEventListener('DOMContentLoaded', function() {
+      const bRep = document.getElementById('btnReportes');
+      const bCat = document.getElementById('btnCategorias');
+      const bSug = document.getElementById('btnSugerencias');
+      const bPreg = document.getElementById('btnPreguntas');
+      if (bRep) bRep.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('reportes'); });
+      if (bCat) bCat.addEventListener('click', e => { e.preventDefault(); mostrarSeccion('categorias'); }); // NUEVO
+      if (bSug) bSug.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('sugerencias'); });
+      if (bPreg) bPreg.addEventListener('click', function(e){ e.preventDefault(); mostrarSeccion('preguntas'); });
+    });
+  </script>
 
-<!-- Modal de eliminación -->
-<div id="modalEliminar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-md text-white shadow-lg">
-    <h3 class="text-xl font-semibold mb-3">¿Estás seguro?</h3>
-    <p class="text-sm text-gray-300 mb-5">Esta acción eliminará permanentemente la pregunta seleccionada.</p>
-    <div class="flex justify-end gap-3">
-      <button onclick="cerrarModalEliminar()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
-      <button onclick="eliminarPregunta()" class="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700">Aceptar</button>
+  <!-- Modal de eliminación -->
+  <div id="modalEliminar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-md text-white shadow-lg">
+      <h3 class="text-xl font-semibold mb-3">¿Estás seguro?</h3>
+      <p class="text-sm text-gray-300 mb-5">Esta acción eliminará permanentemente la pregunta seleccionada.</p>
+      <div class="flex justify-end gap-3">
+        <button onclick="cerrarModalEliminar()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancelar</button>
+        <button onclick="eliminarPregunta()" class="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700">Aceptar</button>
+      </div>
     </div>
   </div>
-</div>
 
 <script>
   // Variables para los modales
@@ -802,6 +976,38 @@
       }
     }
   </script>
+<script>
+  function toggleFormularioCategoria() {
+      const form = document.getElementById("formulario-categoria");
+      form.classList.toggle("hidden");
+  }
+  // === ELIMINAR ===
+  function abrirModalEliminarCategoria(id) {
+    document.getElementById("categoriaAEliminar").value = id;
+    document.getElementById("modal-eliminar-categoria").classList.remove("hidden");
+  }
+  
+  function cerrarModalEliminarCategoria() {
+    document.getElementById("modal-eliminar-categoria").classList.add("hidden");
+  }
 
+  // === EDITAR ===
+  function abrirModalEditarCategoria(id, descripcion, color, imagen) {
+      // Setear valores en inputs
+      document.getElementById("edit_cat_id").value = id;
+      document.getElementById("edit_cat_descripcion").value = descripcion;
+      document.getElementById("edit_cat_color").value = color;
+
+      // Previsualización de imagen actual
+      document.getElementById("edit_cat_imagen_preview").src = imagen;
+
+      // Mostrar modal
+      document.getElementById("modal-editar-categoria").classList.remove("hidden");
+  }
+
+  function cerrarModalEditarCategoria() {
+      document.getElementById("modal-editar-categoria").classList.add("hidden");
+  }
+</script>
 
 
