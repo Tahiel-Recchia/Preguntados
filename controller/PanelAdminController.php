@@ -13,16 +13,9 @@ class PanelAdminController
         $this->renderer = $renderer;
         $this->model = $model;
     }
-    private function requireAdmin()
-    {
-        if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [3])) {
-            header('Location: /');
-            exit;
-        }
-    }
+    
     public function base()
     {
-        $this->requireAdmin();
         $data = [];
         // Proveer datos de sesión a la vista para que el navbar tenga la misma estructura que en otras pantallas
         if (isset($_SESSION['user_id'])) {
@@ -43,8 +36,6 @@ class PanelAdminController
     }
     public function generarPdfGraficos()
     {
-        $this->requireAdmin();
-
         // Limpiar cualquier salida previa
         while (ob_get_level()) {
             ob_end_clean();

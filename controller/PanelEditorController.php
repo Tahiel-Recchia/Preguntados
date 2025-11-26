@@ -14,16 +14,8 @@ class PanelEditorController
         $this->model = $model;
         $this->categoria = $categoria;
     }
-    private function requireEditor()
-    {
-        if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], [2])) {
-            header('Location: /');
-            exit;
-        }
-    }
     public function base()
     {
-        $this->requireEditor();
         $data = [];
         if (isset($_SESSION['user_id'])) {
             $data['sesion'] = [
@@ -47,7 +39,7 @@ class PanelEditorController
     // === Crear nueva pregunta ===
     public function guardar()
     {
-        $this->requireEditor();
+
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $descripcion = $_POST["descripcion"];
             $id_categoria = $_POST["id_categoria"];
@@ -77,7 +69,6 @@ class PanelEditorController
     // === Eliminar pregunta ===
     public function eliminar()
     {
-        $this->requireEditor();
         $id = $_POST["id"] ?? null;
         if ($id) {
             $this->model->deletePregunta($id);
@@ -88,7 +79,6 @@ class PanelEditorController
 
     public function actualizar()
     {
-        $this->requireEditor();
         $id = $_POST["id"];
         $descripcion = $_POST["descripcion"];
         $id_categoria = $_POST["id_categoria"];
@@ -147,7 +137,6 @@ class PanelEditorController
      */
     public function obtenerReporte()
     {
-        $this->requireEditor();
         $id = $_GET['id'] ?? null;
         if (!$id) {
             header('Content-Type: application/json');
@@ -188,7 +177,6 @@ class PanelEditorController
 
     public function verReportes()
     {
-        $this->requireEditor();
         $data = [];
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         $data['reportes'] = is_array($this->model->obtenerReportesPendientes()) ? array_values($this->model->obtenerReportesPendientes()) : [];
@@ -200,7 +188,6 @@ class PanelEditorController
 
     public function aceptarReporte()
     {
-        $this->requireEditor();
         $id = $_POST['id_reporte'];
         // Si existe columna 'estado' la marcamos como aceptado, sino no hacemos nada especial
         $tieneEstado = false;
@@ -228,7 +215,6 @@ class PanelEditorController
 
     public function rechazarReporte()
     {
-        $this->requireEditor();
         $id = $_POST['id_reporte'];
         // La acción "Quitar Reporte" debe borrar el registro
         $stmt = $this->conexion->prepare("DELETE FROM reporte WHERE id = ?");
@@ -244,7 +230,6 @@ class PanelEditorController
 
     public function verSugerencias()
     {
-        $this->requireEditor();
         $data = [];
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         $sugs = $this->model->obtenerPreguntasSugeridas();
@@ -256,7 +241,6 @@ class PanelEditorController
 
     public function aceptarSugerencia()
     {
-        $this->requireEditor();
         $id = $_POST['id_sugerencia'];
         $this->model->aceptarSugerencia($id, $_SESSION['user_id'] ?? null);
         header("Location: /paneleditor/verSugerencias");
@@ -265,7 +249,6 @@ class PanelEditorController
 
     public function rechazarSugerencia()
     {
-        $this->requireEditor();
         $id = $_POST['id_sugerencia'];
         $this->model->rechazarSugerencia($id);
         header("Location: /paneleditor/verSugerencias");
@@ -275,7 +258,6 @@ class PanelEditorController
     // Actualiza una pregunta desde el modal de reporte y elimina el reporte para restaurarla al pool
     public function actualizarDesdeReporte()
     {
-        $this->requireEditor();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /paneleditor/verReportes');
             exit;
@@ -445,49 +427,46 @@ class PanelEditorController
 
     // === Categorías ===
     public function guardarCategoria()
-{
-    $this->requireEditor();
+    {
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        $descripcion = $_POST['descripcion'] ?? '';
-        $color = $_POST['color'] ?? '';
+            $descripcion = $_POST['descripcion'] ?? '';
+            $color = $_POST['color'] ?? '';
 
-        $rutaImagen = null;
+            $rutaImagen = null;
 
-        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
 
-            $tmp = $_FILES['imagen']['tmp_name'];
+                $tmp = $_FILES['imagen']['tmp_name'];
 
-            $nombreOriginal = basename($_FILES['imagen']['name']);
-            $nombreImagen = preg_replace('/[^a-zA-Z0-9._-]/', '_', $nombreOriginal);
+                $nombreOriginal = basename($_FILES['imagen']['name']);
+                $nombreImagen = preg_replace('/[^a-zA-Z0-9._-]/', '_', $nombreOriginal);
 
-            // ✔ Ruta física correcta
-            $destino = __DIR__ . "/../public/categorias/" . $nombreImagen;
+                // ✔ Ruta física correcta
+                $destino = __DIR__ . "/../public/categorias/" . $nombreImagen;
 
-            // Si falla, lo mostramos
-            if (!move_uploaded_file($tmp, $destino)) {
-                die("ERROR moviendo archivo a: " . $destino);
+                // Si falla, lo mostramos
+                if (!move_uploaded_file($tmp, $destino)) {
+                    die("ERROR moviendo archivo a: " . $destino);
+                }
+
+                // ✔ Ruta que se guarda en la BD
+                $rutaImagen = "/public/categorias/" . $nombreImagen;
             }
 
-            // ✔ Ruta que se guarda en la BD
-            $rutaImagen = "/public/categorias/" . $nombreImagen;
+            $this->categoria->guardarCategoria($descripcion, $color, $rutaImagen);
         }
 
-        $this->categoria->guardarCategoria($descripcion, $color, $rutaImagen);
+        header("Location: /paneleditor/categorias");
+        exit;
     }
-
-    header("Location: /paneleditor/categorias");
-    exit;
-}
 
 
 
 
     public function eliminarCategoria()
     {
-        $this->requireEditor();
-
         $id = $_POST['id'] ?? null;
         if (!$id) {
             header("Location: /paneleditor");
@@ -512,7 +491,6 @@ class PanelEditorController
 
     public function editarCategoria()
     {
-        $this->requireEditor();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = intval($_POST['id'] ?? 0);
