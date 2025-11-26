@@ -5,12 +5,14 @@ class PanelEditorController
     private $conexion;
     private $renderer;
     private $model;
+    private $categoria;
 
-    public function __construct($conexion, $renderer, $model)
+    public function __construct($conexion, $renderer, $model, $categoria)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
+        $this->categoria = $categoria;
     }
     private function requireEditor()
     {
@@ -37,6 +39,7 @@ class PanelEditorController
         $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
         $reportes = $this->model->obtenerReportesPendientes();
         $data['reportes'] = is_array($reportes) ? array_values($reportes) : [];
+        $data['categorias'] = $this->categoria->getCategorias();
         $this->renderer->render('panelEditor', $data);
     }
     
@@ -48,7 +51,6 @@ class PanelEditorController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $descripcion = $_POST["descripcion"];
             $id_categoria = $_POST["id_categoria"];
-            $id_dificultad = $_POST["id_dificultad"];
             $respuesta_correcta = $_POST["respuesta_correcta"];
             $respuesta_incorrecta1 = $_POST["respuesta_incorrecta1"];
             $respuesta_incorrecta2 = $_POST["respuesta_incorrecta2"];
@@ -57,7 +59,6 @@ class PanelEditorController
             $this->model->insertarPregunta(
                 $descripcion,
                 $id_categoria,
-                $id_dificultad,
                 $respuesta_correcta,
                 $respuesta_incorrecta1,
                 $respuesta_incorrecta2,
@@ -91,7 +92,6 @@ class PanelEditorController
         $id = $_POST["id"];
         $descripcion = $_POST["descripcion"];
         $id_categoria = $_POST["id_categoria"];
-        $id_dificultad = $_POST["id_dificultad"];
         $aprobada = isset($_POST["aprobada"]) ? 1 : 0;
         $respuesta_correcta = $_POST["respuesta_correcta"];
         $respuesta_incorrecta1 = $_POST["respuesta_incorrecta1"];
@@ -102,7 +102,6 @@ class PanelEditorController
             $id,
             $descripcion,
             $id_categoria,
-            $id_dificultad,
             $aprobada,
             $respuesta_correcta,
             $respuesta_incorrecta1,
@@ -317,7 +316,6 @@ public function rechazarSugerencia()
     public function guardarSugerencia()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            // Si no es POST, responder acorde al tipo de petición
             $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
             if ($isAjax) {
                 header('Content-Type: application/json');
@@ -330,15 +328,16 @@ public function rechazarSugerencia()
 
         $descripcion = $_POST['descripcion'] ?? '';
         $id_categoria = $_POST['id_categoria'] ?? null;
-        $id_dificultad = $_POST['id_dificultad'] ?? null;
         $respuesta_correcta = $_POST['respuesta_correcta'] ?? '';
         $respuesta_incorrecta1 = $_POST['respuesta_incorrecta1'] ?? '';
         $respuesta_incorrecta2 = $_POST['respuesta_incorrecta2'] ?? '';
         $respuesta_incorrecta3 = $_POST['respuesta_incorrecta3'] ?? '';
 
-        // Validaciones mínimas
-        if (empty($descripcion) || empty($respuesta_correcta) || empty($respuesta_incorrecta1) || empty($respuesta_incorrecta2) || empty($respuesta_incorrecta3)) {
-            $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+        // Detectar Ajax correctamente
+        $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+
+        // VALIDACIÓN DE CAMPOS VACÍOS
+        if (empty($descripcion) || empty($respuesta_correcta) /* ... resto de condiciones ... */) {
             if ($isAjax) {
                 header('Content-Type: application/json');
                 echo json_encode(['status' => 'error', 'message' => 'Campos incompletos']);
@@ -348,10 +347,16 @@ public function rechazarSugerencia()
             exit;
         }
 
-        $id = $this->model->insertarSugerencia($descripcion, $id_categoria, $id_dificultad, $respuesta_correcta, $respuesta_incorrecta1, $respuesta_incorrecta2, $respuesta_incorrecta3);
-        $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+        // Insertamos en BD
+        $id = $this->model->insertarSugerencia($descripcion, $id_categoria, $respuesta_correcta, $respuesta_incorrecta1, $respuesta_incorrecta2, $respuesta_incorrecta3);
+
         if ($isAjax) {
+            // === LA SOLUCIÓN MÁGICA ESTÁ AQUÍ ===
+            // Borramos cualquier HTML (header, menu, etc) que se haya cargado antes
+            if (ob_get_length()) ob_clean();
+
             header('Content-Type: application/json');
+
             if ($id) {
                 echo json_encode(['status' => 'ok', 'id' => $id, 'message' => 'Sugerencia enviada']);
             } else {
@@ -359,7 +364,8 @@ public function rechazarSugerencia()
             }
             exit;
         }
-        // Fallback navegación tradicional
+
+        // Fallback normal
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/'));
         exit;
     }

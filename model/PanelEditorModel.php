@@ -112,7 +112,6 @@ class PanelEditorModel
     public function insertarPregunta(
         $descripcion,
         $id_categoria,
-        $id_dificultad,
         $respuesta_correcta,
         $respuesta_incorrecta1,
         $respuesta_incorrecta2,
@@ -122,20 +121,19 @@ class PanelEditorModel
         // === INSERTAR PREGUNTA ===
         $cols = $this->detectPreguntaColumns();
         $catCol = $cols['categoria'];
-        $difCol = $cols['dificultad'];
 
         // Si existe columna creador y se proporcionó, incluirla en el INSERT
         $creatorCol = $this->detectCreatorColumn();
         if ($creatorCol && $creadorId !== null) {
-            $sql = "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", " . $difCol . ", " . $creatorCol . ") VALUES (?, 1, ?, ?, ?)";
+            $sql = "INSERT INTO pregunta (descripcion, aprobada, " . $catCol  . ", id_dificultad, " . $creatorCol . ") VALUES (?, 1, ?, 2, ?)";
             $stmt = $this->conexion->prepare($sql);
-            if ($stmt) $stmt->bind_param("siii", $descripcion, $id_categoria, $id_dificultad, $creadorId);
+            if ($stmt) $stmt->bind_param("sii", $descripcion, $id_categoria, $creadorId);
         } else {
             $stmt = $this->conexion->prepare(
-                "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", " . $difCol . ") 
-            VALUES (?, 1, ?, ?)"
+                "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", id_dificultad)
+            VALUES (?, 1, ?, 2)"
             );
-            if ($stmt) $stmt->bind_param("sii", $descripcion, $id_categoria, $id_dificultad);
+            if ($stmt) $stmt->bind_param("si", $descripcion, $id_categoria);
         }
         $stmt->execute();
 
@@ -195,19 +193,18 @@ class PanelEditorModel
         return $resultado->fetch_assoc();
     }
 
-    public function updatePreguntaConRespuestas($id, $descripcion, $id_categoria, $id_dificultad, $aprobada, $respCorrecta, $resp1, $resp2, $resp3)
+    public function updatePreguntaConRespuestas($id, $descripcion, $id_categoria, $aprobada, $respCorrecta, $resp1, $resp2, $resp3)
     {
         $cols = $this->detectPreguntaColumns();
         $catCol = $cols['categoria'];
-        $difCol = $cols['dificultad'];
 
         $stmt = $this->conexion->prepare("
         UPDATE pregunta 
-        SET descripcion = ?, " . $catCol . " = ?, " . $difCol . " = ?, aprobada = ?
+        SET descripcion = ?, " . $catCol . " = ?, aprobada = ?
         WHERE id = ?
     ");
             try {
-                $stmt->bind_param("siiii", $descripcion, $id_categoria, $id_dificultad, $aprobada, $id);
+                $stmt->bind_param("siii", $descripcion, $id_categoria, $aprobada, $id);
                 $ok = $stmt->execute();
                 if ($stmt->errno) {
                     error_log("Error en UPDATE pregunta (id={$id}): " . $stmt->error);
@@ -489,17 +486,16 @@ public function obtenerPreguntasSugeridas()
     /**
      * Inserta una sugerencia de pregunta (aprobada = 2) y sus respuestas asociadas
      */
-    public function insertarSugerencia($descripcion, $id_categoria, $id_dificultad, $respuesta_correcta, $respuesta_incorrecta1, $respuesta_incorrecta2, $respuesta_incorrecta3)
+    public function insertarSugerencia($descripcion, $id_categoria, $respuesta_correcta, $respuesta_incorrecta1, $respuesta_incorrecta2, $respuesta_incorrecta3)
     {
         $cols = $this->detectPreguntaColumns();
         $catCol = $cols['categoria'];
-        $difCol = $cols['dificultad'];
 
         try {
             $stmt = $this->conexion->prepare(
-                "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", " . $difCol . ") VALUES (?, 2, ?, ?)"
+                "INSERT INTO pregunta (descripcion, aprobada, " . $catCol . ", id_dificultad) VALUES (?, 2, ?, 2)"
             );
-            $stmt->bind_param("sii", $descripcion, $id_categoria, $id_dificultad);
+            $stmt->bind_param("si", $descripcion, $id_categoria);
             $stmt->execute();
             $id_pregunta = $stmt->insert_id;
             $stmt->close();

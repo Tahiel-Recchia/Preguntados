@@ -8,9 +8,10 @@ class PreguntasController
     private $partida;
     private $perfil;
     private $puntaje;
+    private $categoria;
 
 
-    public function __construct($conexion, $renderer, $model, $partida, $perfil, $puntaje)
+    public function __construct($conexion, $renderer, $model, $partida, $perfil, $puntaje, $categoria)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
@@ -18,6 +19,7 @@ class PreguntasController
         $this->partida = $partida;
         $this->perfil = $perfil;
         $this->puntaje = $puntaje;
+        $this->categoria = $categoria;
     }
 
     public function base()
@@ -61,6 +63,7 @@ class PreguntasController
             $_SESSION['respuesta_correcta_actual'] = $this->model->getRespuestaCorrecta($partida['id_pregunta']);
             $_SESSION['horaEnvio'] = $this->model->getHoraEnvio();
             $partida['puntos'] = $_SESSION['puntajeActual'];
+
         } else {
             $partida = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
         }
@@ -92,7 +95,7 @@ class PreguntasController
         $idPregunta = $_SESSION['id_pregunta_actual'];
         $idUsuario = $_SESSION['user_id'];
         $respuestaUsuario = $_POST['respuesta_usuario'];
-
+        $data['categorias'] = $this->model->getCategorias();
         $respuestaCorrecta = $_SESSION['respuesta_correcta_actual'];
 
         $horaRespuesta = $this->model->getHoraEnvio();

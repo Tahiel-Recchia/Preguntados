@@ -15,20 +15,9 @@
       <div>
         <label class="block text-sm mb-1 text-gray-300">Categoría</label>
         <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
-          <option value="1" {{#pregunta.id_categoria_1}}selected{{/pregunta.id_categoria_1}}>Geografía</option>
-          <option value="2" {{#pregunta.id_categoria_2}}selected{{/pregunta.id_categoria_2}}>Historia</option>
-          <option value="3" {{#pregunta.id_categoria_3}}selected{{/pregunta.id_categoria_3}}>Entretenimiento</option>
-          <option value="4" {{#pregunta.id_categoria_4}}selected{{/pregunta.id_categoria_4}}>Ciencia</option>
-            <option value="4" {{#pregunta.id_categoria_5}}selected{{/pregunta.id_categoria_5}}>Geografía</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-        <select name="id_dificultad" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
-          <option value="1" {{#pregunta.id_dificultad_1}}selected{{/pregunta.id_dificultad_1}}>Fácil</option>
-          <option value="2" {{#pregunta.id_dificultad_2}}selected{{/pregunta.id_dificultad_2}}>Media</option>
-          <option value="3" {{#pregunta.id_dificultad_3}}selected{{/pregunta.id_dificultad_3}}>Difícil</option>
+         {{#categorias}}
+             <option value="{{id}}" {{#selected}}selected{{/selected}}>{{descripcion}}</option>
+         {{/categorias}}
         </select>
       </div>
     </div>

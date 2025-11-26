@@ -49,20 +49,9 @@
           <label class="block text-sm mb-1 text-gray-300">Categoría</label>
           <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
             <option value="">Seleccionar...</option>
-            <option value="1">Deportes</option>
-            <option value="2">Historia</option>
-            <option value="3">Entretenimiento</option>
-            <option value="4">Ciencia</option>
-              <option value="5">Geografía</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-          <select name="id_dificultad" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
-            <option value="">Seleccionar...</option>
-            <option value="1">Fácil</option>
-            <option value="2">Media</option>
-            <option value="3">Difícil</option>
+            {{#categorias}}
+                <option value="{{id}}">{{descripcion}}</option>
+            {{/categorias}}
           </select>
         </div>
       </div>
@@ -130,7 +119,7 @@
               {{/aprobada}}
             </td>
             <td class="p-3 flex justify-center gap-2">
-              <a href="/editorpregunta/editar/{{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
+              <a href="/editorpregunta/base/{{id}}" class="px-3 py-1 bg-[#BC6BE8] rounded-lg hover:opacity-80 transition text-white">Editar</a>
               <button onclick="abrirModalEliminarInline({{id}})" data-action="eliminar" data-id="{{id}}" class="px-3 py-1 bg-red-600 rounded-lg hover:bg-red-700 transition text-white">Eliminar</button>
             </td>
           </tr>
@@ -195,21 +184,12 @@
             <label class="block text-sm mb-1 text-gray-300">Categoría</label>
             <select id="reporte_pregunta_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" disabled>
               <option value="">Seleccionar...</option>
-              <option value="1">Geografía</option>
-              <option value="2">Historia</option>
-              <option value="3">Ciencia</option>
-              <option value="4">Deportes</option>
+           {{#categorias}}
+               <option value="{{id}}">{{descripcion}}</option>
+           {{/categorias}}
             </select>
           </div>
-          <div>
-            <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-            <select id="reporte_pregunta_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" disabled>
-              <option value="">Seleccionar...</option>
-              <option value="1">Fácil</option>
-              <option value="2">Media</option>
-              <option value="3">Difícil</option>
-            </select>
-          </div>
+
         </div>
         <div>
           <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
@@ -259,7 +239,6 @@
         <input type="hidden" name="id_reporte" id="upd_reporte_id" value="" />
         <input type="hidden" name="descripcion" id="upd_descripcion" value="" />
         <input type="hidden" name="id_categoria" id="upd_id_categoria" value="" />
-        <input type="hidden" name="id_dificultad" id="upd_id_dificultad" value="" />
         <input type="hidden" name="respuesta_correcta" id="upd_rta_correcta" value="" />
         <input type="hidden" name="respuesta_incorrecta1" id="upd_rta_1" value="" />
         <input type="hidden" name="respuesta_incorrecta2" id="upd_rta_2" value="" />
@@ -661,7 +640,6 @@
     document.getElementById('reporte_pregunta_id').value = '';
     document.getElementById('reporte_pregunta_descripcion').value = '';
     document.getElementById('reporte_pregunta_categoria').value = '';
-    document.getElementById('reporte_pregunta_dificultad').value = '';
     document.getElementById('reporte_rta_correcta').value = '';
     document.getElementById('reporte_rta_1').value = '';
     document.getElementById('reporte_rta_2').value = '';
@@ -703,9 +681,7 @@
           difId = mapDif[difNombre] || '';
         }
         const selectCat = document.getElementById('reporte_pregunta_categoria');
-        const selectDif = document.getElementById('reporte_pregunta_dificultad');
         if (selectCat) selectCat.value = catId;
-        if (selectDif) selectDif.value = difId;
 
         let correct = rtas.find(rr => rr.es_correcta == 1) || rtas[0] || {};
         const incorrectas = rtas.filter(rr => rr.es_correcta != 1);
@@ -724,7 +700,6 @@
         document.getElementById('upd_reporte_id').value = r.id || '';
         // Guardar IDs en los hidden inputs (se actualizarán al editar)
         document.getElementById('upd_id_categoria').value = catId;
-        document.getElementById('upd_id_dificultad').value = difId;
         // Reiniciar estado edición
         deshabilitarEdicionReporte();
       })
@@ -787,7 +762,6 @@
       // Copiar valores a formulario oculto
       document.getElementById('upd_descripcion').value = document.getElementById('reporte_pregunta_descripcion').value.trim();
       document.getElementById('upd_id_categoria').value = document.getElementById('reporte_pregunta_categoria').value;
-      document.getElementById('upd_id_dificultad').value = document.getElementById('reporte_pregunta_dificultad').value;
       document.getElementById('upd_rta_correcta').value = document.getElementById('reporte_rta_correcta').value.trim();
       document.getElementById('upd_rta_1').value = document.getElementById('reporte_rta_1').value.trim();
       document.getElementById('upd_rta_2').value = document.getElementById('reporte_rta_2').value.trim();

@@ -21,6 +21,7 @@ class LoginController
             if (isset($_SESSION['login_error'])) {
                 $data['error'] = $_SESSION['login_error'];
                 unset($_SESSION['login_error']);
+
             }
             $this->renderer->render('login', $data);
         }

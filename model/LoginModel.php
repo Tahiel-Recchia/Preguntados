@@ -12,11 +12,11 @@ class LoginModel {
             SELECT u.*, r.descripcion AS rol_nombre 
             FROM usuario u 
             LEFT JOIN rol r ON u.rol_id = r.id
-            WHERE u.nombreDeUsuario = ?
+            WHERE LOWER(u.nombreDeUsuario) = ?
         ";
 
         $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("s", $user);
+        $stmt->bind_param("s", strtolower($user));
         $stmt->execute();
         $resultado = $stmt->get_result();
         $fila = $resultado->fetch_assoc();
@@ -34,10 +34,9 @@ class LoginModel {
             return "Usuario no verificado";
         }
 
-        // ✅ Ahora devolvemos también el rol
         return [
             'user_id' => $fila["id"],
-            'nombreDeUsuario' => $user,
+            'nombreDeUsuario' => $fila["nombreDeUsuario"],
             'rol' => $fila["rol_id"],
             'ratio' => $fila["ratio"]
         ];

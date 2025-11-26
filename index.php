@@ -17,7 +17,7 @@ if(isset($_SESSION['idPartida'])
     && !in_array($controller, $controladoresDeJuego)) {
     call_user_func([$pregunta, "terminarPartida"]);
 }
-if(isset($_SESSION['idUsuario'])){
+if(isset($_SESSION['user_id'])){
     $rolActual = $_SESSION['rol'];
     $rolesProhibidosEnJuego = [$ROL_ADMIN, $ROL_EDITOR];
     $controladoresJuegoInicio = ['preguntas', 'ruleta', 'buscarpartida'];
@@ -27,13 +27,19 @@ if(isset($_SESSION['idUsuario'])){
     }
 
     $controladoresEditor = ['paneleditor', 'editorpregunta'];
-    if ($rolActual == $ROL_USUARIO && in_array($controller, $controladoresEditor)) {
+    if ($rolActual == $ROL_USUARIO && in_array($controller, $controladoresEditor) && $method !== 'guardarSugerencia' && $method !== 'reportarPregunta') {
         header("Location: /");
         exit();
     }
 
-    if ($rolActual == $ROL_EDITOR && $controller == "paneladmin") {
+    if (($rolActual == $ROL_EDITOR || $rolActual == $ROL_USUARIO) && $controller == "paneladmin") {
         header("Location: /");
+        exit();
+    }
+} else{
+    $controladoresSinLogin = ['login', 'register'];
+    if(!in_array($controller, $controladoresSinLogin)){
+        header("Location: /login");
         exit();
     }
 }

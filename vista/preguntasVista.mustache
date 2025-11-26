@@ -119,18 +119,10 @@
                     <label class="block text-sm mb-1 text-gray-300">Categoría</label>
                     <select name="id_categoria" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required>
                         <option value="">Seleccionar...</option>
-                        <option value="1">Geografía</option>
-                        <option value="2">Historia</option>
-                        <option value="3">Ciencia</option>
-                        <option value="4">Deportes</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-                    <select name="id_dificultad" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required>
-                        <option value="1">Fácil</option>
-                        <option value="2">Media</option>
-                        <option value="3">Difícil</option>
+                      {{#categorias}}
+                          <option value="{{id}}">{{descripcion}}</option>
+                      {{/categorias}}
+
                     </select>
                 </div>
             </div>
@@ -168,139 +160,5 @@
     </div>
 </div>
 
-<script>
-    // Modal handlers for Sugerir / Reportar
-    (function(){
-        // Cache modal elements (may be null if not present)
-        const modalSugerir = document.getElementById('modalSugerir');
-        const modalReportar = document.getElementById('modalReportar');
-        const reportTexto = document.getElementById('reportPreguntaTexto');
-        const reportIdField = document.getElementById('report_pregunta_id');
-
-        // Use event delegation so dynamic replacements/reloads still work
-        document.addEventListener('click', function(e){
-            // Open Sugerir modal
-            if (e.target.closest('#btnSugerirPregunta')) {
-                if (modalSugerir) { modalSugerir.classList.remove('hidden'); modalSugerir.classList.add('flex'); }
-                return;
-            }
-
-            // Close Sugerir modal
-            if (e.target.closest('#cerrarSugerir')) {
-                if (modalSugerir) { modalSugerir.classList.remove('flex'); modalSugerir.classList.add('hidden'); }
-                return;
-            }
-
-            // Open Reportar modal
-            if (e.target.closest('#btnReportarPregunta')) {
-                if (modalReportar) {
-                    // Try hidden current-question element first (works after answer/result)
-                    const hidden = document.getElementById('__currentPreguntaText');
-                    if (hidden && hidden.textContent && hidden.textContent.trim().length) {
-                        if (reportTexto) reportTexto.textContent = 'Pregunta: ' + hidden.textContent.trim();
-                    } else {
-                        // Fallback to visible question element
-                        const preguntaEl = document.querySelector('p.text-white.text-2xl') || document.querySelector('p');
-                        const texto = preguntaEl ? preguntaEl.textContent.trim() : '';
-                        if (reportTexto) reportTexto.textContent = texto ? ('Pregunta: ' + texto) : '';
-                    }
-                    // Obtener el ID de la pregunta desde el elemento oculto
-                    const hiddenId = document.getElementById('__currentPreguntaId');
-                    const preguntaId = hiddenId ? hiddenId.textContent.trim() : '';
-                    if (reportIdField) reportIdField.value = preguntaId;
-                    console.log('Abriendo modal reportar - pregunta_id:', preguntaId);
-                    modalReportar.classList.remove('hidden'); modalReportar.classList.add('flex');
-                }
-                return;
-            }
-
-            // Close Reportar modal
-            if (e.target.closest('#cerrarReportar')) {
-                if (modalReportar) { modalReportar.classList.remove('flex'); modalReportar.classList.add('hidden'); }
-                return;
-            }
-        });
-
-        // Interceptar el envío del formulario de reportar para hacerlo via AJAX
-        const formReportar = document.getElementById('formReportar');
-        if (formReportar) {
-            formReportar.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(formReportar);
-                const btnReportar = document.getElementById('btnReportarPregunta');
-                
-                fetch('/paneleditor/reportarPregunta', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin',
-                    headers: { 'X-Requested-With': 'fetch', 'Accept': 'application/json' }
-                })
-                .then(response => response.json().catch(()=>({status:'ok'})))
-                .then(data => {
-                    console.log('Respuesta reporte:', data);
-                    if (modalReportar) {
-                        modalReportar.classList.remove('flex');
-                        modalReportar.classList.add('hidden');
-                    }
-                    formReportar.reset();
-                    if (data.status === 'duplicate') {
-                        alert('Ya reportaste esta pregunta.');
-                    } else if (data.status === 'error') {
-                        alert('Error al enviar el reporte');
-                        return; // no deshabilitar botón si error
-                    } else {
-                        alert('Reporte enviado correctamente');
-                    }
-                    // Deshabilitar el botón para evitar nuevos reportes
-                    if (btnReportar) {
-                        btnReportar.disabled = true;
-                        btnReportar.classList.add('opacity-50','cursor-not-allowed');
-                        btnReportar.textContent = 'Reporte enviado';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al enviar reporte:', error);
-                    alert('Error al enviar el reporte. Por favor intenta nuevamente.');
-                });
-            });
-        }
-
-        // Interceptar envío del formulario de sugerencia para hacerlo via AJAX y NO navegar
-        const formSugerir = document.getElementById('formSugerir');
-        if (formSugerir) {
-            formSugerir.addEventListener('submit', function(e){
-                e.preventDefault();
-                const fd = new FormData(formSugerir);
-                const btnSugerir = document.getElementById('btnSugerirPregunta');
-                fetch('/paneleditor/guardarSugerencia', {
-                    method: 'POST',
-                    body: fd,
-                    credentials: 'same-origin',
-                    headers: { 'X-Requested-With': 'fetch', 'Accept': 'application/json' }
-                })
-                .then(r => r.json().catch(()=>({status:'ok'})))
-                .then(data => {
-                    console.log('Respuesta sugerencia:', data);
-                    // Cerrar modal y resetear
-                    if (modalSugerir) { modalSugerir.classList.remove('flex'); modalSugerir.classList.add('hidden'); }
-                    formSugerir.reset();
-                    if (data.status === 'error') {
-                        alert(data.message || 'Error al enviar la sugerencia');
-                        return;
-                    }
-                    alert('Sugerencia enviada correctamente');
-                    // Opcional: deshabilitar botón para evitar spam
-                    if (btnSugerir) {
-                        btnSugerir.disabled = true;
-                        btnSugerir.classList.add('opacity-50','cursor-not-allowed');
-                        btnSugerir.textContent = 'Sugerencia enviada';
-                    }
-                })
-                .catch(err => {
-                    console.error('Error sugerencia:', err);
-                    alert('Error al enviar la sugerencia. Intenta nuevamente.');
-                });
-            });
-        }
-    })();
-</script>
+<script src="../public/javascript/reportarPregunta.js"></script>
+<script src="../public/Javascript/sugerirPregunta.js"></script>

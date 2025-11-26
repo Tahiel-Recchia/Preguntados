@@ -116,7 +116,7 @@ class PreguntasModel
     }
 
     public function obtenerPorId($idPreguntaBuscada) {
-        $sql_pregunta = "SELECT id, descripcion
+        $sql_pregunta = "SELECT id, descripcion, id_categoria
                 FROM pregunta
                  WHERE aprobada = 1 AND id = ?
                  ORDER BY RAND() 
