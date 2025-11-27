@@ -46,6 +46,6 @@ if ($httpCode !== 200 || !$response) {
     exit;
 }
 
-// 🔥 DEVOLVER SOLO EL JSON ORIGINAL (necesario para response.json())
+// DEVOLVER SOLO EL JSON ORIGINAL (necesario para response.json())
 echo $response;
 exit;
