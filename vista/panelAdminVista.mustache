@@ -1,9 +1,66 @@
-<div class="w-full max-w-6xl mx-auto px-4 p-5">
-
-    <h2 class="text-2xl font-bold mb-6 text-white">Jugadores por país</h2>
+<div class="w-full max-w-6xl mx-auto px-4 p-2">
 
     <div class="bg-black/10 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-white/10">
+
+        <h2 class="text-xl font-bold mt-10 mb-4 text-white">Partidas jugadas</h2>
+
+        <div class="flex justify-center mb-4">
+           <select id="periodoSelect" class="rounded-lg px-3 py-2 bg-black/20 text-white border border-white/30">
+                <option class="text-black bg-white" value="dia">Últimos 30 días</option>
+                <option class="text-black bg-white" value="semana">Últimas 12 semanas</option>
+                <option class="text-black bg-white" value="mes">Últimos 12 meses</option>
+                <option class="text-black bg-white" value="ano">Últimos años</option>
+            </select>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur p-5 rounded-xl border border-white/10">
+            <canvas id="partidasChart" style="width:100%; height:350px;"></canvas>
+        </div>
+
+        <h2 class="text-2xl font-bold mt-4 mb-6 text-white">Jugadores por ciudad</h2>
+
+        <div class="overflow-hidden rounded-xl border border-white/20" id="tablaCiudadContainer">
+            <table class="table-auto w-full text-white">
+                <thead>
+                <tr class="bg-white/20">
+                    <th class="px-4 py-3 text-left font-semibold">Ciudad</th>
+                    <th class="px-4 py-3 text-left font-semibold">Cantidad</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#jugadoresPorCiudad}}
+                    <tr class="border-b border-white/10 hover:bg-white/10 transition">
+                        <td class="px-4 py-3">{{ciudad}}</td>
+                        <td class="px-4 py-3">{{cantidad}}</td>
+                    </tr>
+                {{/jugadoresPorCiudad}}
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-2xl font-bold mt-4 mb-6 text-white">Jugadores por edad</h2>
+
+        <div class="overflow-hidden rounded-xl border border-white/20" id="tablaEdadContainer">
+            <table class="table-auto w-full text-white">
+                <thead>
+                <tr class="bg-white/20">
+                    <th class="px-4 py-3 text-left font-semibold">Edad</th>
+                    <th class="px-4 py-3 text-left font-semibold">Cantidad</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#jugadoresPorEdad}}
+                    <tr class="border-b border-white/10 hover:bg-white/10 transition">
+                        <td class="px-4 py-3">{{edad}}</td>
+                        <td class="px-4 py-3">{{cantidad}}</td>
+                    </tr>
+                {{/jugadoresPorEdad}}
+                </tbody>
+            </table>
+        </div>
+
         <!-- TABLA -->
+        <h2 class="text-2xl font-bold mt-4 mb-6 text-white">Jugadores por país</h2>
         <div class="overflow-hidden rounded-xl border border-white/20" id="tablaContainer">
             <table class="table-auto w-full text-white">
                 <thead>
@@ -46,6 +103,7 @@
         </div>
     </div>
 
+    
    <script>
         let chartJugadores;
         let chartDificultad;
@@ -135,47 +193,112 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         async function descargarPDF() {
-            const tabla = document.getElementById("tablaContainer");
-            const tablaCanvas = await html2canvas(tabla, { backgroundColor: "#000000ff" });
-            // Cambiar a negro solo para exportar
-            chartJugadores.options.plugins.legend.labels.color = "black";
-            chartJugadores.options.scales.x.ticks.color = "black";
-            chartJugadores.options.scales.y.ticks.color = "black";
-            chartJugadores.update();
+            const periodo = document.getElementById("periodoSelect").value; // filtro seleccionado
+            // Tablas
+            const tablaPartidas = await html2canvas(document.getElementById("partidasChart").parentElement, { backgroundColor: "#000000ff" });
+            const tablaCiudad = await html2canvas(document.getElementById("tablaCiudadContainer"), { backgroundColor: "#000000ff" });
+            const tablaEdad = await html2canvas(document.getElementById("tablaEdadContainer"), { backgroundColor: "#000000ff" });
+            const tablaPais = await html2canvas(document.getElementById("tablaContainer"), { backgroundColor: "#000000ff" });
 
+            // Gráfico de dificultad
             chartDificultad.options.plugins.legend.labels.color = "black";
             chartDificultad.update();
-
             await new Promise(resolve => setTimeout(resolve, 200));
-
-            const grafico1 = jugadoresChart.toDataURL("image/png");
-            const grafico2 = dificultadChart.toDataURL("image/png");
-            const grafico3 = tablaCanvas.toDataURL("image/png");
-
-            // Restaurar a blanco
-            chartJugadores.options.plugins.legend.labels.color = "white";
-            chartJugadores.options.scales.x.ticks.color = "white";
-            chartJugadores.options.scales.y.ticks.color = "white";
-            chartJugadores.update();
-
+            const graficoDificultad = dificultadChart.toDataURL("image/png");
             chartDificultad.options.plugins.legend.labels.color = "white";
             chartDificultad.update();
 
+            // Convertir tablas a imágenes
+            const imgPartidas = tablaPartidas.toDataURL("image/png");
+            const imgCiudad = tablaCiudad.toDataURL("image/png");
+            const imgEdad = tablaEdad.toDataURL("image/png");
+            const imgPais = tablaPais.toDataURL("image/png");
+
+            // Enviar al backend
             const response = await fetch("/paneladmin/generarPdfGraficos", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ grafico1, grafico2, grafico3 })
+                body: JSON.stringify({ imgPartidas, imgCiudad, imgEdad, imgPais, graficoDificultad, periodo})
             });
 
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
-
             const a = document.createElement("a");
             a.href = url;
             a.download = "reporte_graficos.pdf";
             a.click();
-
             window.URL.revokeObjectURL(url);
         }
+
     </script>
+    <script>
+        const dataDia = JSON.parse('{{{ partidasPorDiaJson }}}');
+        const dataSemana = JSON.parse('{{{ partidasPorSemanaJson }}}');
+        const dataMes = JSON.parse('{{{ partidasPorMesJson }}}');
+        const dataAno = JSON.parse('{{{ partidasPorAnoJson }}}');
+
+        const ctxPartidas = document.getElementById('partidasChart').getContext('2d');
+
+        let partidasChart = new Chart(ctxPartidas, {
+            type: 'line',
+            data: {
+                labels: dataDia.map(p => p.fecha),
+                datasets: [{
+                    label: 'Partidas jugadas',
+                    data: dataDia.map(p => parseInt(p.cantidad)),
+                    fill: true,
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: { enabled: true },
+                    legend: { labels: { color: "white" } }
+                },
+                hover: { mode: 'nearest', intersect: true },
+                scales: {
+                    y: { ticks: { color: "white" }, beginAtZero: true, grid: { color: "rgba(255,255,255,0.1)" } },
+                    x: { ticks: { color: "white" }, grid: { display: false } }
+                }
+            }
+        });
+
+        // Función para actualizar el gráfico según la opción
+        function actualizarGrafico(periodo) {
+            let datos, labels;
+
+            switch(periodo) {
+                case 'dia':
+                    labels = dataDia.map(p => p.fecha);
+                    datos = dataDia.map(p => parseInt(p.cantidad));
+                    break;
+                case 'semana':
+                    labels = dataSemana.map(p => `Semana ${p.semana}/${p.anio}`);
+                    datos = dataSemana.map(p => parseInt(p.cantidad));
+                    break;
+                case 'mes':
+                    labels = dataMes.map(p => `${p.mes}/${p.anio}`);
+                    datos = dataMes.map(p => parseInt(p.cantidad));
+                    break;
+                case 'ano':
+                    labels = dataAno.map(p => p.anio);
+                    datos = dataAno.map(p => parseInt(p.cantidad));
+                    break;
+            }
+
+            partidasChart.data.labels = labels;
+            partidasChart.data.datasets[0].data = datos;
+            partidasChart.update();
+        }
+
+        // Evento del dropdown
+        document.getElementById('periodoSelect').addEventListener('change', (e) => {
+            actualizarGrafico(e.target.value);
+        });
+    </script>
+
+        
 </div>
