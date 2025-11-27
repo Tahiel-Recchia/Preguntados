@@ -86,7 +86,7 @@ class PreguntasController
         if ($pregunta) {
             $_SESSION['preguntasVistas'][] = $pregunta['id_pregunta'];
         }
-
+        $pregunta['categoria'] = $this->categoria->getCategoriaById($categoriaId);
         return $pregunta;
     }
 

@@ -441,7 +441,6 @@
             <th class="p-3 text-left">ID</th>
             <th class="p-3 text-left">Descripción</th>
             <th class="p-3 text-left">Categoría</th>
-            <th class="p-3 text-left">Dificultad</th>
             <th class="p-3 text-center">Acciones</th>
           </tr>
         </thead>
@@ -451,7 +450,6 @@
             <td class="p-3">{{id}}</td>
             <td class="p-3">{{descripcion}}</td>
             <td class="p-3">{{categoria}}</td>
-            <td class="p-3">{{dificultad}}</td>
             <td class="p-3 flex justify-center gap-2">
               <button onclick="abrirModalVerSugerencia({{id}})" class="px-4 py-2 rounded-lg bg-[#3b82f6] hover:bg-[#2563eb] text-white">Ver</button>
             </td>
@@ -483,10 +481,6 @@
           <div>
             <label class="block text-sm mb-1 text-gray-300">Categoría</label>
             <input id="sugerencia_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
-          </div>
-          <div>
-            <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-            <input id="sugerencia_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
           </div>
         </div>
         <div>
@@ -707,10 +701,6 @@
           <label class="block text-sm mb-1 text-gray-300">Categoría</label>
           <input id="sugerencia_categoria" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
         </div>
-        <div>
-          <label class="block text-sm mb-1 text-gray-300">Dificultad</label>
-          <input id="sugerencia_dificultad" class="w-full bg-[#11121f] border border-[#3f4477] rounded-lg p-2 text-white" readonly />
-        </div>
       </div>
       <div>
         <h4 class="text-lg font-semibold text-[#BC6BE8] mb-2">Respuestas</h4>
@@ -756,7 +746,6 @@
     document.getElementById('sugerencia_id').value = '';
     document.getElementById('sugerencia_descripcion').value = '';
     document.getElementById('sugerencia_categoria').value = '';
-    document.getElementById('sugerencia_dificultad').value = '';
     document.getElementById('sugerencia_rta_correcta').value = '';
     document.getElementById('sugerencia_rta_1').value = '';
     document.getElementById('sugerencia_rta_2').value = '';
@@ -779,7 +768,6 @@
         if (p) {
           document.getElementById('sugerencia_descripcion').value = p.descripcion || '';
           document.getElementById('sugerencia_categoria').value = p.categoria || p.categoria_nombre || '';
-          document.getElementById('sugerencia_dificultad').value = p.dificultad || p.dificultad_nombre || '';
         }
         // rellenar respuestas: asumir que la respuesta correcta está marcada con es_correcta=1
         let correct = rtas.find(r => r.es_correcta == 1) || rtas[0] || {};

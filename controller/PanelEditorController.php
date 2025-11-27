@@ -183,6 +183,7 @@ class PanelEditorController
         $data['preguntas'] = is_array($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) ? array_values($this->model->obtenerPreguntas($_SESSION['user_id'] ?? null)) : [];
         $sugs = $this->model->obtenerPreguntasSugeridas();
         $data['sugerencias'] = is_array($sugs) ? array_values($sugs) : [];
+        $data['categorias'] = $this->categoria->getCategorias();
         $this->renderer->render('panelEditor', $data);
     }
 

@@ -7,13 +7,14 @@ class MenuController{
     private $model;
 
     private $perfil;
-
-    public function __construct($conexion, $renderer, $ranking, $perfil)
+private $categoria;
+    public function __construct($conexion, $renderer, $ranking, $perfil, $categoria)
     {
         $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $ranking;
         $this->perfil = $perfil;
+        $this->categoria = $categoria;
     }
 
 
@@ -26,11 +27,11 @@ class MenuController{
         }
         if (isset($_SESSION["nombreDeUsuario"])) {
             $data["sesion"] = $this->perfil->getDatosUsuario($_SESSION["user_id"]);
-            // Indicar a la vista si el usuario es editor (rol_id == 2)
-            // Mostrar opciones de editor también para administradores (rol_id 3)
+
             $data["isJugador"] = isset($data["sesion"]) && isset($data["sesion"]["rol_id"]) && in_array(intval($data["sesion"]["rol_id"]), [1], true);
             $data["isEditor"] = isset($data["sesion"]) && isset($data["sesion"]["rol_id"]) && in_array(intval($data["sesion"]["rol_id"]), [2], true);
             $data["isAdmin"] = isset($data["sesion"]) && isset($data["sesion"]["rol_id"]) && in_array(intval($data["sesion"]["rol_id"]), [3], true);
+            $data['categorias'] = $this->categoria->getCategorias();
         }
         $data["ranking"] = $this->model->getRankingLimitado(5);
         $this->renderer->render("menu", $data);
