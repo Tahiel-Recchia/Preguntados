@@ -133,6 +133,15 @@
     inputFile.addEventListener('change', () => {
         const file = inputFile.files[0];
         if (file) {
+            // Validar tamaño del archivo (2MB máximo)
+            const maxSize = 2 * 1024 * 1024; // 2MB en bytes
+            if (file.size > maxSize) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                alert(`La imagen es demasiado grande (${sizeMB}MB). El tamaño máximo permitido es 2MB.`);
+                inputFile.value = ''; // Limpiar el input
+                previewImg.src = '/public/placeholder.png'; // Restaurar imagen por defecto
+                return;
+            }
             const reader = new FileReader();
             reader.onload = e => previewImg.src = e.target.result;
             reader.readAsDataURL(file);

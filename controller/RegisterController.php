@@ -72,9 +72,10 @@ class RegisterController
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
             return "/public/placeholder.png";
         }
-        $maxSize = 2 * 1024 * 1024;
+        $maxSize = 2 * 1024 * 1024; // 2MB en bytes
         if ($file['size'] > $maxSize) {
-            throw new \Exception("La imagen no puede superar los 2MB.");
+            $sizeMB = round($file['size'] / (1024 * 1024), 2);
+            throw new \Exception("La imagen es demasiado grande ({$sizeMB}MB). El tamaño máximo permitido es 2MB.");
         }
 
         $permitidos = ['image/jpeg', 'image/png', 'image/gif'];
