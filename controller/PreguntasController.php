@@ -216,7 +216,7 @@ class PreguntasController
         echo json_encode([
             'status' => 'ok',
             'timestamp_inicio' => $timestamp,
-            'hora_servidor_actual' => time() // Útil para sincronizar relojes
+            'hora_servidor_actual' => time()
         ]);
     }
 
