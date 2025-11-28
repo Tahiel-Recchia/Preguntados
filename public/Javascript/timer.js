@@ -13,7 +13,7 @@ if (timer) {
 
                 let tiempoReal = TIEMPO_MAXIMO - segundosTranscurridos;
                 if (tiempoReal <= 0) {
-                    window.location.href = "/preguntas/tiempoAgotado";
+                   window.location.href = "/preguntas/tiempoAgotado";
                     return;
                 }
 

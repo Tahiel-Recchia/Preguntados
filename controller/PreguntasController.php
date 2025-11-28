@@ -76,16 +76,16 @@ class PreguntasController
         if ($categoriaId == null) {
             return null;
         }
-        if (!isset($_SESSION['preguntasVistas']) || !is_array($_SESSION['preguntasVistas'])) {
-            $_SESSION['preguntasVistas'] = [];
+        $idUsuario = $_SESSION['user_id'];
+
+        if(!$this->verificarCategoriaValida($categoriaId, $idUsuario)){
+            header('Location: /ruleta/base');
+            exit();
         }
 
-        $idsExcluidos = $_SESSION['preguntasVistas'];
         $nivelUsuario = $_SESSION['ratio'] ?? 0.0;
-        $pregunta = $this->model->obtenerPorCategoria($categoriaId, $idsExcluidos, $nivelUsuario);
-        if ($pregunta) {
-            $_SESSION['preguntasVistas'][] = $pregunta['id_pregunta'];
-        }
+        $pregunta = $this->model->obtenerPorCategoria($idUsuario, $categoriaId, $nivelUsuario);
+
         $pregunta['categoria'] = $this->categoria->getCategoriaById($categoriaId);
         return $pregunta;
     }
@@ -125,6 +125,7 @@ class PreguntasController
             $this->renderer->render("preguntaErronea", $data);
         }
         $this->model->actualizarDificultadPregunta($idPregunta, $esCorrecta);
+        $this->model->guardarPreguntaVista($idUsuario, $idPregunta);
         unset($_SESSION['respuesta_correcta_actual'], $_SESSION['id_pregunta_actual']);
     }
 
@@ -217,5 +218,22 @@ class PreguntasController
             'timestamp_inicio' => $timestamp,
             'hora_servidor_actual' => time() // Útil para sincronizar relojes
         ]);
+    }
+
+    public function verificarCategoriaValida($categoriaId, $idUsuario){
+        $categoriasConEstado = $this->categoria->getCategoriasConEstado($idUsuario);
+
+        $esCategoriaValida = false;
+
+        foreach ($categoriasConEstado as $cat) {
+            if ($cat['id'] == $categoriaId) {
+                if ($cat['disponible'] === true) {
+                    $esCategoriaValida = true;
+                }
+                break;
+            }
+        }
+
+        return $esCategoriaValida;
     }
 }

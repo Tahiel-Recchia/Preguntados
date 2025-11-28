@@ -15,9 +15,9 @@ class RuletaController
     }
 
     public function base(){
-        $categoriasArray = $this->model->getCategorias();
+        $idUsuario = $_SESSION['user_id'];
+        $categoriasArray = $this->model->getCategoriasConEstado($idUsuario);
         $data["categorias_json"] =  json_encode($categoriasArray);
-        // Normalizar datos de sesión para que el navbar use la misma estructura en todas las vistas
 
         $this->renderer->render("ruleta", $data);
     }

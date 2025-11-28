@@ -20,7 +20,6 @@ console.log(categorias);
 let anguloActual = 0;
 let estaGirando = false;
 
-// --- NUEVO: PRECARGA DE IMÁGENES ---
 const imagenesCargadas = {};
 let totalImagenesACargar = numCategorias;
 let imagenesCargadasCount = 0;
@@ -73,7 +72,12 @@ function dibujarRuleta() {
         ctx.moveTo(0, 0);
         ctx.arc(0, 0, radio - 10, anguloInicio, anguloFin);
         ctx.closePath();
-        ctx.fillStyle = colores[i % colores.length];
+        if (categoria.disponible === false) {
+            ctx.fillStyle = "#555555";
+        } else {
+            ctx.fillStyle = colores[i % colores.length];
+
+        }
         ctx.fill();
         ctx.strokeStyle = "#E2E4F3";
         ctx.lineWidth = 2;
@@ -117,11 +121,35 @@ function iniciarGiro() {
         return;
     }
 
+    // 1. FILTRAR ÍNDICES DISPONIBLES
+    // Creamos un array que solo contenga los números de índice (0, 2, 5...)
+    // de las categorías que vienen marcadas como disponibles desde el backend.
+    const indicesValidos = [];
+    categorias.forEach((cat, index) => {
+        // Asumimos que tu JSON ahora trae true/false en 'disponible'
+        // Si 'disponible' no existe (undefined), asumimos true para que no se rompa
+        if (cat.disponible !== false) {
+            indicesValidos.push(index);
+        }
+    });
+
+    // Validación de seguridad: Si por alguna razón todo viene false (no debería pasar por lógica de backend)
+    if (indicesValidos.length === 0) {
+        pResultado.innerHTML = "Error: No hay categorías disponibles.";
+        return;
+    }
+
     estaGirando = true;
     botonGirar.disabled = true;
     pResultado.textContent = "Girando...";
 
-    const indiceGanador = Math.floor(Math.random() * numCategorias);
+    // 2. ELEGIR GANADOR SOLO DE LOS VÁLIDOS
+    // Elegimos una posición al azar dentro del array de índices válidos
+    const indiceAleatorioDeValidos = Math.floor(Math.random() * indicesValidos.length);
+
+    // Obtenemos el índice REAL de la categoría (ej: la categoría 3)
+    const indiceGanador = indicesValidos[indiceAleatorioDeValidos];
+
     const categoriaGanadora = categorias[indiceGanador];
 
     const anguloMedioGanador = (indiceGanador * anguloPorSegmento) + (anguloPorSegmento / 2);

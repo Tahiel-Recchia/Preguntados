@@ -41,28 +41,24 @@ class PreguntasModel
         return 3;
     }
 
-    private function buscarPreguntaEnBD($categoriaId, $idsExcluidos, $dificultad = null)
+    private function buscarPreguntaEnBD($idUsuario, $categoriaId, $dificultad = null)
     {
         $sql = "SELECT p.id, p.descripcion, c.descripcion AS categoria_nombre
             FROM pregunta p
             JOIN categoria c ON p.id_categoria = c.id
-            WHERE p.aprobada = 1 AND p.id_categoria = ?";
+            LEFT JOIN usuario_pregunta up 
+                ON p.id = up.pregunta_id AND up.usuario_id = ?
+            WHERE p.aprobada = 1 
+            AND p.id_categoria = ?
+            AND up.pregunta_id IS NULL";
 
-        $params = [$categoriaId];
-        $types = "i";
+        $params = [$idUsuario, $categoriaId];
+        $types = "ii";
 
         if ($dificultad !== null) {
             $sql .= " AND p.id_dificultad = ?";
             $params[] = $dificultad;
             $types .= "i";
-        }
-
-        if (!empty($idsExcluidos)) {
-
-            $placeholders = implode(',', array_fill(0, count($idsExcluidos), '?'));
-            $sql .= " AND p.id NOT IN ($placeholders)";
-            $params = array_merge($params, $idsExcluidos);
-            $types .= str_repeat('i', count($idsExcluidos));
         }
 
         $sql .= " ORDER BY RAND() LIMIT 1";
@@ -216,5 +212,14 @@ class PreguntasModel
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("iidi",$respuestas_correctas,$respuestas_totales,$dificultad,$idPregunta);
         $stmt->execute();
+    }
+
+    public function guardarPreguntaVista($idUsuario, $idPregunta) {
+        $sql = "INSERT INTO usuario_pregunta (usuario_id, pregunta_id) VALUES (?, ?)";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("ii", $idUsuario, $idPregunta);
+        $stmt->execute();
+        $stmt->close();
     }
 }

@@ -10,7 +10,7 @@ class PartidaModel {
         $fecha_inicio_obj = new DateTime();
         $horaInicio = $fecha_inicio_obj->format('Y-m-d H:i:s');
         $estado = "En curso";
-        $sql = "INSERT INTO Partida (horaInicio, estado, id_usuario) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO partida (horaInicio, estado, id_usuario) VALUES (?, ?, ?)";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("ssi", $horaInicio, $estado, $_SESSION['user_id']);
         $stmt->execute();
@@ -21,7 +21,7 @@ class PartidaModel {
         $fecha_fin_obj = new DateTime();
         $horaFin = $fecha_fin_obj->format('Y-m-d H:i:s');
         $estado = "Finalizada";
-        $sql = "UPDATE Partida SET horaFin = ?, estado = ?, puntaje = ? WHERE id = ?";
+        $sql = "UPDATE partida SET horaFin = ?, estado = ?, puntaje = ? WHERE id = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("ssii", $horaFin, $estado, $puntaje, $idPartida);
         $stmt->execute();
