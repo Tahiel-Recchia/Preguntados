@@ -66,6 +66,8 @@ class PreguntasController
 
         } else {
             $partida = $this->model->obtenerPorId($_SESSION['id_pregunta_actual']);
+            $partida['categoria'] = $this->categoria->getCategoriaById($_GET['categoria']);
+            $partida['puntos'] = $_SESSION['puntajeActual'];
         }
         $partida['ocultarNavbar'] = true;
         $this->renderer->render("preguntas", $partida);
@@ -165,11 +167,12 @@ class PreguntasController
         $idPregunta = $_SESSION['id_pregunta_actual'] ?? null;
         $data = [];
         if ($idPregunta) {
-            // Obtener descripción e id para que el modal de reporte funcione también por timeout
             $data = $this->model->obtenerPorId($idPregunta) ?? [];
         }
-        $this->terminarPartida();
+
         $data['tiempoAgotado'] = "¡Te quedaste sin tiempo!";
+        $data['puntos'] = $_SESSION['puntajeActual'];
+        $this->terminarPartida();
         $this->renderer->render("preguntaErronea", $data);
     }
 
