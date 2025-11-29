@@ -24,9 +24,6 @@ class PreguntasController
 
     public function base()
     {
-        $datos = $this->perfil->getDatosUsuario($_SESSION['user_id']);
-        $_SESSION['preguntas_totales'] = $datos['preguntas_totales'];
-        $_SESSION['preguntas_correctas'] = $datos['preguntas_correctas'];
         if(!isset($_SESSION["idPartida"])) {
             $this->inicializarPartida();
         }
@@ -116,14 +113,13 @@ class PreguntasController
         $data['puntos'] = $_SESSION['puntajeActual'];
         if ($esCorrecta) {
             $this->sumarPuntos();
-            $_SESSION['preguntas_correctas'] ++;
             $data['mensaje_resultado'] = "¡Correcto!";
             $data['es_correcto'] = true;
-            $this->actualizarEstadisticas($idUsuario);
+            $this->actualizarEstadisticas(1, $idUsuario);
             $this->renderer->render("preguntas", $data);
         } else {
             $this->terminarPartida();
-            $this->actualizarEstadisticas($idUsuario);
+            $this->actualizarEstadisticas(0, $idUsuario);
             $this->renderer->render("preguntaErronea", $data);
         }
         $this->model->actualizarDificultadPregunta($idPregunta, $esCorrecta);
@@ -135,11 +131,8 @@ class PreguntasController
         $_SESSION['puntajeActual'] += 1;
     }
 
-    public function actualizarEstadisticas($idUsuario){
-        $_SESSION['preguntas_totales'] ++;
-        $ratio = $_SESSION['preguntas_correctas'] / $_SESSION['preguntas_totales'];
-        $_SESSION['ratio'] = $ratio;
-        $this->perfil->actualizarRatio($_SESSION['preguntas_correctas'], $_SESSION['preguntas_totales'], $ratio, $idUsuario);
+    public function actualizarEstadisticas($esCorrecta, $idUsuario){
+        $this->perfil->actualizarRatio($esCorrecta,  $idUsuario);
     }
 
     public function finalizarPorFaltaDePreguntas(){
@@ -163,7 +156,10 @@ class PreguntasController
     }
 
     public function tiempoAgotado(){
-        // Capturar la última pregunta antes de limpiar la sesión
+        $idUsuario = $_SESSION['user_id'];
+        $idPregunta = $_SESSION['id_pregunta_actual'];
+        $this->actualizarEstadisticas(0, $idUsuario);
+        $this->model->guardarPreguntaVista($idUsuario, $idPregunta);
         $idPregunta = $_SESSION['id_pregunta_actual'] ?? null;
         $data = [];
         if ($idPregunta) {
@@ -194,7 +190,6 @@ class PreguntasController
 
     public function limpiarSesionPreguntas(){
         unset($_SESSION['preguntasVistas']);
-        unset($_SESSION['respuesta_correcta_actual']);
         unset($_SESSION['id_pregunta_actual']);
         unset($_SESSION['horaEnvio'], $_SESSION['horaRespuesta']);
         unset($_SESSION['respuesta_correcta_actual']);

@@ -21,10 +21,14 @@ class PerfilModel
         return $fila;
     }
 
-    public function actualizarRatio($correctas, $totales, $ratio, $idUsuario){
-        $sqlUpdate = "UPDATE usuario SET preguntas_correctas = ?, preguntas_totales = ?, ratio = ? WHERE id = ?";
+    public function actualizarRatio($esCorrecta, $idUsuario){
+        $sqlUpdate = "UPDATE usuario SET 
+                preguntas_correctas = preguntas_correctas + ?, 
+                preguntas_totales = preguntas_totales + 1, 
+                ratio = (preguntas_correctas + ?) / (preguntas_totales + 1) 
+            WHERE id = ?";
         $stmtUpdate = $this->conexion->prepare($sqlUpdate);
-        $stmtUpdate->bind_param("iidi", $correctas, $totales, $ratio, $idUsuario);
+        $stmtUpdate->bind_param("iii", $esCorrecta,$esCorrecta, $idUsuario);
         $stmtUpdate->execute();
     }
     public function actualizarDireccion($userId, $direccion)
