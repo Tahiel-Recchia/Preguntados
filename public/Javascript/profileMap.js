@@ -1,6 +1,16 @@
 let map;
 
 document.addEventListener("DOMContentLoaded", async function () {
+    const container = L.DomUtil.get('map');
+    if (container != null) {
+        container._leaflet_id = null; // <--- ESTA LÍNEA ES MÁGICA
+    }
+
+    // Si la variable map todavía tiene algo, lo borramos también
+    if (map) {
+        map.remove();
+        map = null;
+    }
     const mapElement = document.getElementById("map");
     const direccion = mapElement.dataset.direccion;
     async function obtenerCoordenadas(direccion) {
@@ -10,14 +20,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         try{
             const direccionCodificada = encodeURIComponent(direccion);
             const res = await fetch(
-                `/helper/buscarDireccion.php?direccion=${direccionCodificada}`
+                `/Api/buscarDireccion?direccion=${direccionCodificada}`
             );
+            console.log(res);
 
             if (!res.ok) {
                 throw new Error(`Error HTTP: ${res.status}`);
             }
 
             const data = await res.json();
+            console.log(data);
             if (data && data.length > 0) {
                 return {
                     lat: data[0].lat,

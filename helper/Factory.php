@@ -30,6 +30,7 @@ include_once("model/AdminModel.php");
 include_once("controller/PanelAdminController.php");
 include_once("model/HistoriaModel.php");
 include_once("controller/HistorialController.php");
+include_once ("controller/ApiController.php");
 
 class Factory
 {
@@ -78,6 +79,7 @@ class Factory
         $this->objetos["paneladmincontroller"] = new PanelAdminController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["adminmodel"]);
         $this->objetos["historialmodel"] = new HistoriaModel($this->objetos["database"]);
         $this->objetos["historialcontroller"] = new HistorialController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["historialmodel"]);
+        $this->objetos["apicontroller"] = new ApiController();
     }
 
 

@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// 1. Validar
+
 if (empty($_GET['direccion'])) {
     header('Content-Type: application/json');
     http_response_code(400);
@@ -12,19 +12,11 @@ if (empty($_GET['direccion'])) {
     exit;
 }
 
-// --- INICIO DE LA SOLUCIÓN ---
+$direccion_raw = $_GET['direccion'];
+$direccion_encoded = urlencode($direccion_raw);
 
-// 2. Preparar la URL para Nominatim
-$direccion_raw = $_GET['direccion']; // Contiene "Lima, Perú"
-$direccion_encoded = urlencode($direccion_raw); // Lo convierte a "Lima%2C+Per%C3%BA"
-
-// Ahora usamos la variable codificada para construir la URL
 $url = "https://nominatim.openstreetmap.org/search?q={$direccion_encoded}&format=json&limit=1";
 
-// --- FIN DE LA SOLUCIÓN ---
-
-
-// 3. Usar cURL para la conexión
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -34,16 +26,16 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
 $response = curl_exec($ch);
 
-// 4. Manejar errores de cURL
+
 if (curl_errno($ch)) {
     header('Content-Type: application/json');
     http_response_code(500);
-    echo json_encode(["error" => "Error en cURL: " . curl_error($ch)]); // Esto fue lo que vimos
+    echo json_encode(["error" => "Error en cURL: " . curl_error($ch)]);
     curl_close($ch);
     exit;
 }
 
-// 5. Manejar errores de Nominatim
+/
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
