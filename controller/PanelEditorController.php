@@ -268,7 +268,6 @@ class PanelEditorController
         $idReporte = $_POST['id_reporte'] ?? null;
         $descripcion = $_POST['descripcion'] ?? '';
         $id_categoria = $_POST['id_categoria'] ?? null;
-        $id_dificultad = $_POST['id_dificultad'] ?? null;
         $respuesta_correcta = $_POST['respuesta_correcta'] ?? '';
         $respuesta_incorrecta1 = $_POST['respuesta_incorrecta1'] ?? '';
         $respuesta_incorrecta2 = $_POST['respuesta_incorrecta2'] ?? '';
@@ -280,7 +279,6 @@ class PanelEditorController
                 $idPregunta,
                 $descripcion,
                 $id_categoria,
-                $id_dificultad,
                 $aprobada,
                 $respuesta_correcta,
                 $respuesta_incorrecta1,
