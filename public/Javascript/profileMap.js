@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!direccion) return null;
         try {
             const direccionCodificada = encodeURIComponent(direccion);
-            // Nota: Mantengo tu ruta /Api/ (asegúrate que tu archivo sea ApiController.php)
             const res = await fetch(`/Api/buscarDireccion?direccion=${direccionCodificada}`);
 
             if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);

@@ -287,6 +287,21 @@ class PanelEditorModel
 
     public function deletePregunta($id)
     {
+        $stmt = $this->conexion->prepare("DELETE FROM reporte WHERE pregunta_id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+
+        $stmt = $this->conexion->prepare("DELETE FROM usuario_pregunta WHERE pregunta_id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+
+        $stmt = $this->conexion->prepare("DELETE FROM respuesta WHERE id_pregunta = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+
         $stmt = $this->conexion->prepare("DELETE FROM pregunta WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
