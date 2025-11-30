@@ -8,13 +8,15 @@ $pregunta = $factory->create("preguntascontroller");
 $ROL_ADMIN = 3;
 $ROL_EDITOR = 2;
 $ROL_USUARIO = 1;
-$controladoresDeJuego = ['preguntas', 'ruleta'];
+$controladoresDeJuego = ['preguntas', 'ruleta', 'panelEditor'];
+$metodosDeJuego = ['reportarPregunta'];
 
 $controller = isset($_GET['controller']) ? strtolower($_GET['controller']) : null;
 $method     = isset($_GET['method']) ? $_GET['method'] : null;
 
 if(isset($_SESSION['idPartida'])
-    && !in_array($controller, $controladoresDeJuego)) {
+    && !in_array($controller, $controladoresDeJuego)
+    && !in_array($method, $metodosDeJuego)) {
     call_user_func([$pregunta, "terminarPartida"]);
 }
 if(isset($_SESSION['user_id'])){

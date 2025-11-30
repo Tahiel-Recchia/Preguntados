@@ -7,6 +7,7 @@ class PanelEditorController
     private $model;
     private $categoria;
 
+
     public function __construct($conexion, $renderer, $model, $categoria)
     {
         $this->conexion = $conexion;
@@ -474,17 +475,8 @@ class PanelEditorController
             exit;
         }
 
-        // Buscar categoría
-        $categoria = $this->categoria->getCategoriaById($id);
-
-        // Borrar imagen física
-        $ruta = __DIR__ . "public/categorias/" . $categoria['imagen'];
-        if (file_exists($ruta)) {
-            unlink($ruta);
-        }
-
         // Borrar BD
-        $this->categoria->eliminarCategoria($id);
+        $this->model->deleteCategoria($id);
 
         header("Location: /paneleditor");
         exit;

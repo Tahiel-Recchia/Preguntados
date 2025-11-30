@@ -222,4 +222,5 @@ class PreguntasModel
         $stmt->execute();
         $stmt->close();
     }
+
 }

@@ -310,10 +310,51 @@ class PanelEditorModel
         return $filasAfectadas > 0;
     }
 
-    /**
-     * Detecta los nombres reales de las columnas de categoría/dificultad en la tabla 'pregunta'
-     * Devuelve un array con keys 'categoria' y 'dificultad' que contienen el nombre de la columna.
-     */
+public function deleteCategoria($idCategoria)
+{
+    // 1. Iniciamos el modo "seguro" (Transacción)
+    // Si tu versión de PHP es muy vieja y esto da error, puedes borrar esta línea.
+    $this->conexion->beginTransaction();
+
+    try {
+        // PASO A: Obtener los IDs de las preguntas de esta categoría
+        $sql = "SELECT id FROM pregunta WHERE id_categoria = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idCategoria);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $idsPreguntas = [];
+        while ($row = $result->fetch_assoc()) {
+            $idsPreguntas[] = $row['id'];
+        }
+        $stmt->close();
+
+
+        foreach ($idsPreguntas as $idPregunta) {
+            $exito = $this->deletePregunta($idPregunta);
+
+            if (!$exito) {
+                throw new Exception("Error al borrar la pregunta ID: " . $idPregunta);
+            }
+        }
+
+
+        $stmt = $this->conexion->prepare("DELETE FROM categoria WHERE id = ?");
+        $stmt->bind_param("i", $idCategoria);
+        $stmt->execute();
+
+        $filasAfectadas = $stmt->affected_rows;
+        $stmt->close();
+        $this->conexion->commit();
+
+
+    } catch (Exception $e) {
+        $this->conexion->rollback();
+    }
+}
+
+
     private function detectPreguntaColumns()
     {
         $default = ['categoria' => 'id_categoria', 'dificultad' => 'id_dificultad'];
@@ -336,10 +377,8 @@ class PanelEditorModel
         return ['categoria' => $categoria, 'dificultad' => $dificultad];
     }
 
-    /**
-     * Detecta el nombre de la tabla de respuestas: 'respuesta' o 'respuestas'
-     * Devuelve el nombre encontrado o 'respuesta' por defecto.
-     */
+
+
     private function detectRespuestasTable()
     {
         // Intentar 'respuesta' primero
@@ -366,10 +405,7 @@ class PanelEditorModel
         return 'respuesta';
     }
 
-    /**
-     * Detecta posible columna que almacene el id del creador/editor en la tabla 'pregunta'.
-     * Devuelve el nombre de la columna o null si no se encuentra.
-     */
+
     private function detectCreatorColumn()
     {
         try {
@@ -498,9 +534,7 @@ public function obtenerPreguntasSugeridas()
         $stmt->close();
     }
 
-    /**
-     * Inserta una sugerencia de pregunta (aprobada = 2) y sus respuestas asociadas
-     */
+
     public function insertarSugerencia($descripcion, $id_categoria, $respuesta_correcta, $respuesta_incorrecta1, $respuesta_incorrecta2, $respuesta_incorrecta3)
     {
         $cols = $this->detectPreguntaColumns();
@@ -556,10 +590,7 @@ public function obtenerPreguntasSugeridas()
         return $id_pregunta;
     }
 
-    /**
-     * Inserta un reporte asociado a una pregunta.
-     * Intentará usar columna id_usuario si se proporciona, y fallará de forma segura si la tabla tiene diferente esquema.
-     */
+
     public function insertarReporte($pregunta_id, $descripcion, $id_usuario = null)
     {
         // Evitar duplicados: si la tabla tiene columna id_usuario, verificar por usuario y pregunta

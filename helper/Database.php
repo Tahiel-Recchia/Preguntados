@@ -49,4 +49,19 @@ class Database
         return $this->conexion->insert_id;
     }
 
+    public function beginTransaction()
+    {
+        return $this->conexion->begin_transaction();
+    }
+
+    public function commit()
+    {
+        return $this->conexion->commit();
+    }
+
+    public function rollback()
+    {
+        return $this->conexion->rollback();
+    }
+
 }

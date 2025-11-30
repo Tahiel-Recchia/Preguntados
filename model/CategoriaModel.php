@@ -42,14 +42,7 @@ class CategoriaModel
         $stmt->close();
         return $res;
     }
-    public function eliminarCategoria($id)
-    {
-        $sql = "DELETE FROM categoria WHERE id = ?";
-        $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $stmt->close();
-    }
+
     public function actualizarCategoria($id, $descripcion, $color, $imagen)
     {
         $sql = "UPDATE categoria SET descripcion = ?, color = ?, imagen = ? WHERE id = ?";
