@@ -163,7 +163,7 @@
             marker = L.marker([lat, lng]).addTo(map);
 
             try {
-                const response = await fetch(`/helper/nominatim.php?lat=${lat}&lon=${lng}`);
+                const response = await fetch(`/Api/obtenerDireccionPorCoordenadas?lat=${lat}&lon=${lng}`);
 
                 if (!response.ok) {
                     const text = await response.text();
@@ -174,11 +174,21 @@
                 const data = await response.json();
 
                 const address = data.address || {};
-                const city = address.city || address.town || address.village || address.state || '';
-                const country = address.country || '';
-                const fullAddress = country && city ? `${country}, ${city}` : (country || city || 'Ubicación desconocida');
+                const pais = address.country || "";
+                const provincia = address.state || address.region || "";
+                const ciudad = address.city || address.town || address.village || address.hamlet || "";
 
-                document.getElementById('addressInput').value = fullAddress;
+                // Armar: País, Provincia, Ciudad
+                let partes = [];
+
+                if (pais) partes.push(pais);
+                if (provincia) partes.push(provincia);
+                if (ciudad) partes.push(ciudad);
+
+                const fullAddress = partes.join(", ");
+
+                document.getElementById("addressInput").value = fullAddress || "Ubicación desconocida";
+
             } catch (error) {
                 console.error('Error al obtener ubicación:', error);
             }
