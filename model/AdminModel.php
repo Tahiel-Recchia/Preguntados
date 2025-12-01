@@ -60,7 +60,14 @@ class AdminModel
     {
         $query = "
         SELECT 
-            TRIM(SUBSTRING_INDEX(direccion, ',', -1)) AS ciudad,
+            -- Obtener la ciudad (3er campo)
+            CASE 
+                WHEN LENGTH(SUBSTRING_INDEX(direccion, ',', 3)) 
+                     - LENGTH(SUBSTRING_INDEX(direccion, ',', 2)) > 1
+                THEN TRIM(SUBSTRING_INDEX(direccion, ',', -1))   -- Tiene ciudad
+                ELSE TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(direccion, ',', 2), ',', -1)) -- Usa provincia
+            END AS ciudad,
+
             COUNT(*) AS cantidad
         FROM usuario
         WHERE direccion IS NOT NULL AND direccion <> ''
@@ -82,6 +89,7 @@ class AdminModel
 
         return $datos;
     }
+
 
     public function obtenerJugadoresPorEdad()
     {
