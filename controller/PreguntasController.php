@@ -2,7 +2,6 @@
 
 class PreguntasController
 {
-    private $conexion;
     private $renderer;
     private $model;
     private $partida;
@@ -11,9 +10,8 @@ class PreguntasController
     private $categoria;
 
 
-    public function __construct($conexion, $renderer, $model, $partida, $perfil, $puntaje, $categoria)
+    public function __construct($renderer, $model, $partida, $perfil, $puntaje, $categoria)
     {
-        $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
         $this->partida = $partida;

@@ -3,14 +3,12 @@ use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 class PerfilController
 {
-    private $conexion;
     private $renderer;
     private $model;
     private $qr;
 
-    public function __construct($conexion, $renderer, $model, $qr)
+    public function __construct($renderer, $model, $qr)
     {
-        $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
         $this->qr = $qr;

@@ -2,13 +2,11 @@
 
 class EditorPreguntaController
 {
-    private $conexion;
     private $renderer;
     private $model;
 private $categorias;
-    public function __construct($conexion, $renderer, $model, $categorias)
+    public function __construct($renderer, $model, $categorias)
     {
-        $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
         $this->categorias = $categorias;

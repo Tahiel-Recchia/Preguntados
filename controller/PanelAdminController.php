@@ -3,13 +3,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Dompdf\Dompdf;
 class PanelAdminController
 {
-    private $conexion;
     private $renderer;
     private $model;
 
-    public function __construct($conexion, $renderer, $model)
+    public function __construct($renderer, $model)
     {
-        $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
     }
@@ -18,14 +16,7 @@ class PanelAdminController
     {
         $data = [];
         // Proveer datos de sesión a la vista para que el navbar tenga la misma estructura que en otras pantallas
-        if (isset($_SESSION['user_id'])) {
-            $data['sesion'] = [
-                'id' => $_SESSION['user_id'],
-                'nombreDeUsuario' => $_SESSION['nombreDeUsuario'] ?? null,
-                'fotoDePerfil' => $_SESSION['fotoDePerfil'] ?? '/public/placeholder.png',
-                'rol' => $_SESSION['rol'] ?? null
-            ];
-        }
+
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         // cargar tabla
         $data["jugadoresPorPais"] = $this->model->obtenerJugadoresPorPais();
@@ -125,10 +116,6 @@ class PanelAdminController
     public function hacerEditor()
     {
         $idUsuario = $_GET["id"];
-        if ($_SESSION['rol'] !== 3) {
-            header("Location: /");
-            exit();
-        }
         $this->model->hacerEditor($idUsuario);
         header("Location: /perfil/base/" . $idUsuario);
         exit();
@@ -137,10 +124,6 @@ class PanelAdminController
     public function eliminarEditor()
     {
         $idUsuario = $_GET["id"];
-        if ($_SESSION['rol'] !== 3) {
-            header("Location: /");
-            exit();
-        }
         $this->model->eliminarEditor($idUsuario);
         header("Location: /perfil/base/" . $idUsuario);
         exit();

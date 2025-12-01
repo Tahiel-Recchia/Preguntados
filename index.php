@@ -8,7 +8,7 @@ $pregunta = $factory->create("preguntascontroller");
 $ROL_ADMIN = 3;
 $ROL_EDITOR = 2;
 $ROL_USUARIO = 1;
-$controladoresDeJuego = ['preguntas', 'ruleta', 'panelEditor'];
+$controladoresDeJuego = ['preguntas', 'ruleta', 'usuario'];
 $metodosDeJuego = ['reportarPregunta'];
 
 $controller = isset($_GET['controller']) ? strtolower($_GET['controller']) : null;
@@ -29,7 +29,7 @@ if(isset($_SESSION['user_id'])){
     }
 
     $controladoresEditor = ['paneleditor', 'editorpregunta'];
-    if ($rolActual == $ROL_USUARIO && in_array($controller, $controladoresEditor) && $method !== 'guardarSugerencia' && $method !== 'reportarPregunta') {
+    if ($rolActual == $ROL_USUARIO && in_array($controller, $controladoresEditor)) {
         header("Location: /");
         exit();
     }

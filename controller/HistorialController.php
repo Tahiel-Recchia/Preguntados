@@ -3,15 +3,14 @@
 class HistorialController
 {
 
-    private $conexion;
 
     private $renderer;
 
     private $historialmodel;
 
-    public function __construct($conexion, $renderer, $historialmodel)
+    public function __construct($renderer, $historialmodel)
     {
-        $this->conexion = $conexion;
+
         $this->renderer = $renderer;
         $this->historialmodel = $historialmodel;
     }

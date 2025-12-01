@@ -2,15 +2,13 @@
 
 class MenuController{
 
-    private $conexion;
     private $renderer;
     private $model;
 
     private $perfil;
 private $categoria;
-    public function __construct($conexion, $renderer, $ranking, $perfil, $categoria)
+    public function __construct($renderer, $ranking, $perfil, $categoria)
     {
-        $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $ranking;
         $this->perfil = $perfil;

@@ -3,15 +3,13 @@
 class RankingController
 {
 
-    private $conexion;
     private $renderer;
     private $model;
     private $perfil;
 
-    public function __construct($conexion, $renderer, $model, $perfil)
+    public function __construct($renderer, $model, $perfil)
     {
 
-        $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
         $this->perfil = $perfil;

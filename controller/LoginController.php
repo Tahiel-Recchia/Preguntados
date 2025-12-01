@@ -1,13 +1,11 @@
 <?php
 class LoginController
 {
-    private $conexion;
     private $renderer;
     private $model;
 
-    public function __construct($conexion, $renderer, $model)
+    public function __construct($renderer, $model)
     {
-        $this->conexion = $conexion;
         $this->renderer = $renderer;
         $this->model = $model;
     }

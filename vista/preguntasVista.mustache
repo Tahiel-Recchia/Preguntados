@@ -118,7 +118,7 @@
     <div class="bg-[#1e1f3b] rounded-lg p-6 w-full max-w-lg text-white shadow-lg">
         <h3 class="text-xl font-semibold mb-3">Reportar pregunta</h3>
         <div id="reportPreguntaTexto" class="mb-3 text-gray-200"></div>
-        <form id="formReportar" action="/paneleditor/reportarPregunta" method="POST" class="flex flex-col gap-3">
+        <form id="formReportar" action="/usuario/reportarPregunta" method="POST" class="flex flex-col gap-3">
             <input type="hidden" name="pregunta_id" id="report_pregunta_id" value="{{id_pregunta}}">
             <label class="block text-sm mb-1 text-gray-300">Descripción breve (motivo)</label>
             <textarea name="descripcion" rows="3" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white" required></textarea>

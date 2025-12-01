@@ -36,7 +36,7 @@ if (formReportar) {
         const formData = new FormData(formReportar);
         const btnReportar = document.getElementById('btnReportarPregunta');
 
-        fetch('/paneleditor/reportarPregunta', {
+        fetch('/usuario/reportarPregunta', {
             method: 'POST',
             body: formData,
             credentials: 'same-origin',

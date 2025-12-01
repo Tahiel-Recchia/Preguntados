@@ -30,7 +30,9 @@ include_once("model/AdminModel.php");
 include_once("controller/PanelAdminController.php");
 include_once("model/HistoriaModel.php");
 include_once("controller/HistorialController.php");
-include_once ("controller/ApiController.php");
+include_once("controller/ApiController.php");
+include_once("controller/UsuarioController.php");
+include_once("model/UsuarioModel.php");
 
 class Factory
 {
@@ -50,36 +52,35 @@ class Factory
         $this->objetos["renderer"] = new Renderer("vista", "vista/partial");
         $this->objetos["router"] = new Router($this, 'menucontroller', 'base');
         $this->objetos["loginmodel"] = new LoginModel($this->objetos["database"]);
-        $this->objetos["logincontroller"] = new LoginController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["loginmodel"]);
+        $this->objetos["logincontroller"] = new LoginController($this->objetos["renderer"], $this->objetos["loginmodel"]);
         $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
-        // PerfilModel necesario para MenuController; crear antes de instanciar menucontroller
         $this->objetos["perfilmodel"] = new PerfilModel($this->objetos["database"]);
-        // Instanciar MenuController (controlador por defecto)
-        $this->objetos["menucontroller"] = new MenuController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"], $this->objetos['categoriamodel']);
+        $this->objetos["menucontroller"] = new MenuController($this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"], $this->objetos['categoriamodel']);
         $this->objetos["registermodel"] = new RegisterModel($this->objetos["database"]);
-        $this->objetos["registercontroller"] = new RegisterController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["registermodel"]);
+        $this->objetos["registercontroller"] = new RegisterController($this->objetos["renderer"], $this->objetos["registermodel"]);
         $this->objetos["qrmodel"] = new QrModel();
-        $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["perfilmodel"], $this->objetos["qrmodel"]);
-        // editor model y controller
+        $this->objetos["perfilcontroller"] = new PerfilController($this->objetos["renderer"], $this->objetos["perfilmodel"], $this->objetos["qrmodel"]);
         $this->objetos["puntajemodel"] = new PuntajeModel($this->objetos["database"]);
-
         $this->objetos["preguntasmodel"] = new PreguntasModel($this->objetos["database"]);
         $this->objetos["partidamodel"] = new PartidaModel($this->objetos["database"]);
-        $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["preguntasmodel"], $this->objetos["partidamodel"], $this->objetos["perfilmodel"], $this->objetos["puntajemodel"], $this->objetos["categoriamodel"]);
+        $this->objetos["preguntascontroller"] = new PreguntasController($this->objetos["renderer"], $this->objetos["preguntasmodel"], $this->objetos["partidamodel"], $this->objetos["perfilmodel"], $this->objetos["puntajemodel"], $this->objetos["categoriamodel"]);
         $this->objetos["buscarpartidamodel"] = new BuscarPartidaModel($this->objetos["database"]);
-        $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
+        $this->objetos["buscarpartidacontroller"] = new BuscarPartidaController($this->objetos["renderer"], $this->objetos["buscarpartidamodel"]);
         $this->objetos["rankingmodel"] = new RankingModel($this->objetos["database"]);
-        $this->objetos["rankingcontroller"] = new RankingController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"]);
-        $this->objetos["ruletacontroller"] = new RuletaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["categoriamodel"]);
+        $this->objetos["rankingcontroller"] = new RankingController($this->objetos["renderer"], $this->objetos["rankingmodel"], $this->objetos["perfilmodel"]);
+        $this->objetos["ruletacontroller"] = new RuletaController($this->objetos["renderer"], $this->objetos["categoriamodel"]);
         $this->objetos["paneleditormodel"] = new PanelEditorModel($this->objetos["database"]);
-        $this->objetos["paneleditorcontroller"] = new PanelEditorController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["paneleditormodel"], $this->objetos["categoriamodel"]);
+        $this->objetos["paneleditorcontroller"] = new PanelEditorController($this->objetos["renderer"], $this->objetos["paneleditormodel"], $this->objetos["categoriamodel"]);
         $this->objetos["editorpreguntamodel"] = new EditorPreguntaModel($this->objetos["database"]);
-        $this->objetos["editorpreguntacontroller"] = new EditorPreguntaController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["editorpreguntamodel"], $this->objetos["categoriamodel"]);
+        $this->objetos["editorpreguntacontroller"] = new EditorPreguntaController($this->objetos["renderer"], $this->objetos["editorpreguntamodel"], $this->objetos["categoriamodel"]);
         $this->objetos["adminmodel"] = new AdminModel($this->objetos["database"]);
-        $this->objetos["paneladmincontroller"] = new PanelAdminController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["adminmodel"]);
+        $this->objetos["paneladmincontroller"] = new PanelAdminController($this->objetos["renderer"], $this->objetos["adminmodel"]);
         $this->objetos["historialmodel"] = new HistoriaModel($this->objetos["database"]);
-        $this->objetos["historialcontroller"] = new HistorialController($this->objetos["database"], $this->objetos["renderer"], $this->objetos["historialmodel"]);
+        $this->objetos["historialcontroller"] = new HistorialController($this->objetos["renderer"], $this->objetos["historialmodel"]);
         $this->objetos["apicontroller"] = new ApiController();
+        $this->objetos["usuariomodel"] = new UsuarioModel($this->objetos["database"]);
+        $this->objetos["usuariocontroller"] = new UsuarioController($this->objetos["renderer"], $this->objetos["usuariomodel"]);
+
     }
 
 

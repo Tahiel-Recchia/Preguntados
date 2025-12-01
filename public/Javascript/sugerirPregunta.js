@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const fd = new FormData(formSugerir);
             const btnEnviar = formSugerir.querySelector('button[type="submit"]');
 
-            fetch('/paneleditor/guardarSugerencia', {
+            fetch('/usuario/guardarSugerencia', {
                 method: 'POST',
                 body: fd,
                 credentials: 'same-origin',
