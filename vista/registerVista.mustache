@@ -163,7 +163,7 @@
             marker = L.marker([lat, lng]).addTo(map);
 
             try {
-                const response = await fetch(`/Api/obtenerDireccionPorCoordenadas?lat=${lat}&lon=${lng}`);
+                const response = await fetch(`Api/obtenerDireccionPorCoordenadas?lat=${lat}&lon=${lng}`);
 
                 if (!response.ok) {
                     const text = await response.text();

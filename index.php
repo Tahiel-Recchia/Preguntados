@@ -39,7 +39,7 @@ if(isset($_SESSION['user_id'])){
         exit();
     }
 } else{
-    $controladoresSinLogin = ['login', 'register', 'Api'];
+    $controladoresSinLogin = ['login', 'register', 'api'];
     if(!in_array($controller, $controladoresSinLogin)){
         header("Location: /login");
         exit();
