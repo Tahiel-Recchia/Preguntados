@@ -257,7 +257,7 @@ class PanelEditorController
 
             $rutaImagen = null;
 
-            // Validaciones requeridas: descripción e imagen obligatorias
+
             $tieneImagen = isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK;
             if (empty($descripcion) || !$tieneImagen) {
                 // Redirigir con advertencia sin guardar
