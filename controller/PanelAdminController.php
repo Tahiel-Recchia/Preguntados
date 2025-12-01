@@ -15,7 +15,6 @@ class PanelAdminController
     public function base()
     {
         $data = [];
-        // Proveer datos de sesión a la vista para que el navbar tenga la misma estructura que en otras pantallas
 
         $data['nombreDeUsuario'] = $_SESSION['nombreDeUsuario'] ?? null;
         // cargar tabla
