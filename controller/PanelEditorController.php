@@ -252,12 +252,20 @@ class PanelEditorController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            $descripcion = $_POST['descripcion'] ?? '';
+            $descripcion = trim($_POST['descripcion'] ?? '');
             $color = $_POST['color'] ?? '';
 
             $rutaImagen = null;
 
-            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+            // Validaciones requeridas: descripción e imagen obligatorias
+            $tieneImagen = isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK;
+            if (empty($descripcion) || !$tieneImagen) {
+                // Redirigir con advertencia sin guardar
+                header("Location: /paneleditor/categorias?error=categoria_requerida");
+                exit;
+            }
+
+            if ($tieneImagen) {
 
                 $tmp = $_FILES['imagen']['tmp_name'];
 

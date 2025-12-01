@@ -155,11 +155,11 @@
     <section id="formulario-categoria" class="bg-[#2c2f56] rounded-xl p-6 shadow-xl hidden">
       <h3 class="text-xl font-semibold mb-3">Nueva Categoría</h3>
 
-      <form action="/paneleditor/guardarcategoria" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+      <form id="formNuevaCategoria" action="/paneleditor/guardarcategoria" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
 
         <div>
           <label class="block text-sm mb-1 text-gray-300">Descripción</label>
-          <input type="text" name="descripcion" class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
+          <input type="text" name="descripcion" id="cat_descripcion" required class="w-full bg-[#1e1f3b] border border-[#3f4477] rounded-lg p-2 text-white">
         </div>
 
         <div>
@@ -169,7 +169,7 @@
 
         <div>
           <label class="block text-sm mb-1 text-gray-300">Imagen</label>
-          <input type="file" name="imagen" accept="image/*" class="text-white">
+          <input type="file" name="imagen" id="cat_imagen" accept="image/*" required class="text-white">
         </div>
 
         <button class="py-2 px-6 rounded-lg bg-gradient-to-r from-[#E65895] to-[#BC6BE8] text-white">
@@ -178,6 +178,39 @@
 
       </form>
     </section>
+    <script>
+      // Validación del formulario de nueva categoría (cliente)
+      (function(){
+        const form = document.getElementById('formNuevaCategoria');
+        if (form) {
+          form.addEventListener('submit', function(e){
+            const nombre = document.getElementById('cat_descripcion');
+            const imagen = document.getElementById('cat_imagen');
+            const nombreOk = nombre && nombre.value && nombre.value.trim().length > 0;
+            const imagenOk = imagen && imagen.files && imagen.files.length > 0;
+            if (!nombreOk || !imagenOk) {
+              e.preventDefault();
+              alert('Nombre e imagen son obligatorios para crear una categoría.');
+              return false;
+            }
+          });
+        }
+
+        // Mostrar advertencia si el backend redirigió con error=categoria_requerida
+        try {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('error') === 'categoria_requerida') {
+            // Abrir el formulario para que el usuario complete los campos
+            if (typeof toggleFormularioCategoria === 'function') {
+              toggleFormularioCategoria(true);
+            }
+            alert('No se pudo guardar. Debes completar nombre e imagen.');
+          }
+        } catch (err) {
+          console.warn('No se pudo leer parámetros de URL:', err);
+        }
+      })();
+    </script>
  
 
       <!-- LISTADO -->
